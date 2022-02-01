@@ -56,6 +56,6 @@ combined_embeddings, combined_labels, combined_patches = run_inference_on_test_i
 
 visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8))
 
-visualize_embedded_segment_patches(training_embeddings, training_embeddings, training_embedding_patches, figsize=(12,8))
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8))
 
 visualize_embedded_segment_patches(combined_embeddings, combined_labels, combined_patches, figsize=(12,8))
