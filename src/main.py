@@ -191,7 +191,7 @@ training_embedding_labels = labels
 
 training_embedding_patches = patches
 
-combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(test_image_file_paths, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, feature_extractor_module_url, resize_dimension)
+combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(test_image_file_paths, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca)
 
 
 
