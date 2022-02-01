@@ -1,5 +1,5 @@
 from .core_utils import segment_image_and_extract_segment_features
-from src.features.metric_learning_utils import embedd_segment_feature_vectors_using_supervised_pca
+from ..features.metric_learning_utils import embedd_segment_feature_vectors_using_supervised_pca
 
 
 
