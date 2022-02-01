@@ -13,7 +13,7 @@ rng = default_rng()
 
 import sys
 sys.path.append('./')
-from .core_utils import merge_segmentation_patches_from_all_images
+from models.core_utils import merge_segmentation_patches_from_all_images
     
     
 
