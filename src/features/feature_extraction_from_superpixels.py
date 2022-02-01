@@ -23,7 +23,7 @@ def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segmen
     
     print('Resizing images)')
 
-    list_of_resized_ndarrays = [resize(im, (64,64)) for im in list_of_ndarrays]
+    list_of_resized_ndarrays = [resize(im, (64,64)) for im in list_of_segment_patches]
 
     print('Extracting hog features ...')
     matrix_of_feature_vectors = np.vstack([model(image_array) for image_array in list_of_resized_ndarrays])
