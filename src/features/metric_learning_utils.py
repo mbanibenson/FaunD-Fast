@@ -65,15 +65,15 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #return embedded_feature_vectors, original_feature_vectors, labels, combined_patches, None, nca
 
 
-    def find_transformation_matrix(A, x, b, design_matrix_shape):
+def find_transformation_matrix(A, x, b, design_matrix_shape):
     '''
     Solve for A
-    
+
     '''
     A = A.reshape(design_matrix_shape)
-    
+
     frob_norm = norm((x @ A - b), ord='fro')
-    
+
     return frob_norm
 
 
