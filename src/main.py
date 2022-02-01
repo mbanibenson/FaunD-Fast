@@ -160,44 +160,44 @@ def segment_image_and_extract_segment_features(file_path, feature_extractor_modu
     return underwater_image_of_ccz
 
 
-if __name__ == '__main__':
+#if __name__ == '__main__':
     
     
-    directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-1_021-1_OFOS-02/')
-    
-    directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
-    
-    directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
-    
-    
-    
-    underwater_images_file_paths = list(directory_containing_underwater_images.iterdir())[:10]
-    
-    underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths]
-    
-    
-    support_set_feature_vectors, support_set_patches = extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets)
-    
-    
+directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-1_021-1_OFOS-02/')
 
-    embedded_feature_vectors, original_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_pca = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, support_set_feature_vectors, support_set_patches)
-    
-    
-    test_image_file_paths = random.sample(list(directory_containing_test_images.iterdir()), 30)
-    
-    training_embeddings =  embedded_feature_vectors
+directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
 
-    training_embedding_labels = labels
-
-    training_embedding_patches = patches
-    
-    combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(test_image_file_paths, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, feature_extractor_module_url, resize_dimension)
+directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
 
 
 
+underwater_images_file_paths = list(directory_containing_underwater_images.iterdir())[:10]
 
-    visualize_embedded_segment_patches(embedded_feature_vectors, labels, figsize=(12,8))
-    
-    visualize_embedded_segment_patches(embedded_feature_vectors, labels, patches, figsize=(12,8))
-    
-    visualize_embedded_segment_patches(combined_embeddings, combined_labels, combined_patches, figsize=(12,8))
+underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths]
+
+
+support_set_feature_vectors, support_set_patches = extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets)
+
+
+
+embedded_feature_vectors, original_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_pca = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, support_set_feature_vectors, support_set_patches)
+
+
+test_image_file_paths = random.sample(list(directory_containing_test_images.iterdir()), 30)
+
+training_embeddings =  embedded_feature_vectors
+
+training_embedding_labels = labels
+
+training_embedding_patches = patches
+
+combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(test_image_file_paths, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, feature_extractor_module_url, resize_dimension)
+
+
+
+
+visualize_embedded_segment_patches(embedded_feature_vectors, labels, figsize=(12,8))
+
+visualize_embedded_segment_patches(embedded_feature_vectors, labels, patches, figsize=(12,8))
+
+visualize_embedded_segment_patches(combined_embeddings, combined_labels, combined_patches, figsize=(12,8))
