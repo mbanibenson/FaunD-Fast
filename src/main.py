@@ -35,6 +35,7 @@ from features.feature_extraction_from_superpixels import extract_hand_engineered
 from features.metric_learning_utils import embedd_segment_feature_vectors_using_supervised_pca
 from models.predict_model import run_inference_on_test_images
 from visualization.visualize import visualize_embedded_segment_patches
+from models.train_model import train_non_background_detection_model
 
 
 rng = default_rng()
@@ -49,29 +50,11 @@ directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support s
 directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
 
 
-
-underwater_images_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())[:10]
-
-underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths]
+(training_embeddings, original_feature_vectors, training_embedding_labels, training_embedding_patches, 
+optimization_results_object_for_finding_transformation_matrix, trained_pca) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 
-support_set_feature_vectors, support_set_patches = extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets)
-
-
-
-embedded_feature_vectors, original_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_pca = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, support_set_feature_vectors, support_set_patches)
-
-
-test_image_file_paths = random.sample(list(directory_containing_test_images.iterdir()), 30)
-
-training_embeddings =  embedded_feature_vectors
-
-training_embedding_labels = labels
-
-training_embedding_patches = patches
-
-combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(test_image_file_paths, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca)
-
+combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca)
 
 
 

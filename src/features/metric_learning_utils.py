@@ -10,17 +10,6 @@ from numpy.random import default_rng
 from sklearn.decomposition import KernelPCA
 
 rng = default_rng()
-
-def merge_segmentation_patches_from_all_images(segmented_image_objects):
-    '''
-    Gather all feature vectors from all instances of segmented images
-    
-    '''
-    feature_vectors = np.concatenate([segmented_image_object.segment_patches_feature_vectors for segmented_image_object in segmented_image_objects], axis=0)
-    
-    segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
-    
-    return feature_vectors, segment_patches[:len(feature_vectors)]
     
     
 

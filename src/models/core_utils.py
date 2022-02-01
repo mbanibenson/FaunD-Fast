@@ -1,3 +1,30 @@
+from pathlib import Path
+from skimage.io import imread
+from skimage.segmentation import felzenszwalb, slic, quickshift, watershed
+from skimage.segmentation import mark_boundaries
+from skimage.measure import label, regionprops
+import numpy as np
+from skimage.transform import resize, rescale
+from sklearn.neighbors import NeighborhoodComponentsAnalysis
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+from numpy.random import default_rng
+#import tensorflow_hub as hub
+import tensorflow as tf
+from itertools import chain
+from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+from sklearn.decomposition import KernelPCA
+from skimage.feature import hog, BRIEF
+from functools import partial
+from skimage.color import rgb2gray
+import  random
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.metrics.pairwise import cosine_similarity
+from scipy.linalg import norm
+from scipy.optimize import nnls
+from scipy.optimize import minimize
+
 class underwater_image:
     '''
     Read an image and segment it
@@ -116,3 +143,16 @@ def segment_image_and_extract_segment_features(file_path, feature_extractor_modu
     
     
     return underwater_image_of_ccz
+
+
+
+def merge_segmentation_patches_from_all_images(segmented_image_objects):
+    '''
+    Gather all feature vectors from all instances of segmented images
+    
+    '''
+    feature_vectors = np.concatenate([segmented_image_object.segment_patches_feature_vectors for segmented_image_object in segmented_image_objects], axis=0)
+    
+    segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
+    
+    return feature_vectors, segment_patches[:len(feature_vectors)]
