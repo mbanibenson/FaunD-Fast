@@ -10,6 +10,9 @@ from numpy.random import default_rng
 from sklearn.decomposition import KernelPCA
 
 rng = default_rng()
+
+import sys
+sys.path.append('./')
     
     
 
