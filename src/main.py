@@ -106,7 +106,7 @@ class underwater_image:
         segment_patches = extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb)
         
         '''
-        segmented_image=self.segmented_image, 
+        segmented_image=self.segmented_image 
         
         image_as_rgb=self.rgb_image
 
