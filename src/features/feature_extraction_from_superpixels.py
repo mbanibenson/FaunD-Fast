@@ -86,6 +86,6 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
     '''
     support_set_patches = [imread(fp) for fp in Path(directory_containing_support_sets).iterdir()]
     
-    support_set_patches_feature_vectors = extract_hog_features_for_a_list_of_ndarrays(support_set_patches)
+    support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
 
     return support_set_patches_feature_vectors, support_set_patches
