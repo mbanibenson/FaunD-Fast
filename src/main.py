@@ -38,7 +38,7 @@ rng = default_rng()
 
 #if __name__ == '__main__':
     
-    
+## Set path to background images, support sets and test sets    
 directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-1_021-1_OFOS-02/')
 
 directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
@@ -46,14 +46,16 @@ directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support s
 directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
 
 
+##Train the model
 (training_embeddings, original_feature_vectors, training_embedding_labels, training_embedding_patches, 
 optimization_results_object_for_finding_transformation_matrix, trained_pca) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 
+##Perform inference on the trained model
 combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca)
 
 
-
+##Visualize the results
 visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8))
 
 visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8))
