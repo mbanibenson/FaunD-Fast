@@ -25,6 +25,14 @@ from scipy.linalg import norm
 from scipy.optimize import nnls
 from scipy.optimize import minimize
 
+import sys
+sys.path.append('./')
+
+from data.read_datasets import read_individual_rgb_image
+from features.superpixel_generation import generate_superpixels_using_slic
+from features.superpixel_generation import extract_image_patches_corresponding_to_the_superpixels
+from features.feature_extraction_from_superpixels import extract_hand_engineered_hog_features_for_segmentation_patches
+
 class underwater_image:
     '''
     Read an image and segment it
