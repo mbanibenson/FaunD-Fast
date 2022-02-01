@@ -1,5 +1,6 @@
 from pathlib import Path
 import numpy as np
+import random
 from skimage.transform import resize, rescale
 from .core_utils import merge_segmentation_patches_from_all_images
 from .core_utils import segment_image_and_extract_segment_features
