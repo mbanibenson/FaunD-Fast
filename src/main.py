@@ -171,7 +171,7 @@ directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_imag
 
 
 
-underwater_images_file_paths = list(directory_containing_underwater_images.iterdir())[:10]
+underwater_images_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())[:10]
 
 underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths]
 
