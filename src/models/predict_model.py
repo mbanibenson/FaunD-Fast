@@ -1,7 +1,7 @@
 from pathlib import Path
 import numpy as np
 from skimage.transform import resize, rescale
-.core_utils import merge_segmentation_patches_from_all_images
+from .core_utils import merge_segmentation_patches_from_all_images
 from features.superpixel_generation import segment_image_and_extract_segment_features
 
 
