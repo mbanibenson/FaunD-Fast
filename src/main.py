@@ -18,19 +18,28 @@ from sklearn.decomposition import KernelPCA
 from skimage.feature import hog, BRIEF
 from functools import partial
 from skimage.color import rgb2gray
-#import cv2
 import  random
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
 from sklearn.metrics.pairwise import cosine_similarity
-
 from scipy.linalg import norm
-
 from scipy.optimize import nnls
-
 from scipy.optimize import minimize
 
+#Modules
+from data.read_datasets import read_individual_rgb_image
+from features.superpixel_generation import generate_superpixels_using_slic
+from features.superpixel_generation import extract_image_patches_corresponding_to_the_superpixels
+
+from features.superpixel_generation import extract_hand_engineered_hog_features_for_segmentation_patches
+
+from features.superpixel_generation import extract_hand_engineered_hog_support_set_feature_vectors
+from features.metric_learning_utils import embedd_segment_feature_vectors_using_supervised_pca
+from models.predict_model import run_inference_on_test_images
+from visualization.visualize import visualize_embedded_segment_patches
+
+
 rng = default_rng()
+
 
 
 class underwater_image:
