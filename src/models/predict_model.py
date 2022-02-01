@@ -2,6 +2,8 @@ from pathlib import Path
 import numpy as np
 from skimage.transform import resize, rescale
 
+from features.superpixel_generation import segment_image_and_extract_segment_features
+
 def run_inference_on_test_images(test_image_file_paths, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Run inference on test images and return results for plotting and visualizations
