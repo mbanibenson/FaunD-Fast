@@ -2,7 +2,7 @@ from pathlib import Path
 import numpy as np
 from skimage.transform import resize, rescale
 from .core_utils import merge_segmentation_patches_from_all_images
-from features.superpixel_generation import segment_image_and_extract_segment_features
+from .core_utils import segment_image_and_extract_segment_features
 
 
 def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, feature_extractor_module_url=None, resize_dimension=None):
