@@ -50,12 +50,12 @@ directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_imag
 
 
 ##Train the model
-(training_embeddings, original_feature_vectors, training_embedding_labels, training_embedding_patches, 
-optimization_results_object_for_finding_transformation_matrix, trained_pca) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
+(training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
+optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 
 ##Perform inference on the trained model
-combined_embeddings, combined_labels, combined_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca)
+outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector)
 
 
 ##Visualize the results
@@ -63,4 +63,4 @@ visualize_embedded_segment_patches(training_embeddings, training_embedding_label
 
 visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8))
 
-visualize_embedded_segment_patches(combined_embeddings, combined_labels, combined_patches, figsize=(12,8))
+visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8))

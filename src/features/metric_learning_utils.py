@@ -59,7 +59,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     original_feature_vectors = combined_feature_vectors
     
-    return embedded_feature_vectors, original_feature_vectors, labels, combined_patches, optimization_results_object_for_finding_transformation_matrix, nca
+    background_feature_vectors = nca.transform(segmentation_feature_vectors)
+    
+    return embedded_feature_vectors, background_feature_vectors, labels, combined_patches, optimization_results_object_for_finding_transformation_matrix, nca
     
     #return embedded_feature_vectors, original_feature_vectors, labels, combined_patches, None, nca
 

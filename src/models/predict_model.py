@@ -4,9 +4,10 @@ import random
 from skimage.transform import resize, rescale
 from .core_utils import merge_segmentation_patches_from_all_images
 from .core_utils import segment_image_and_extract_segment_features
+from itertools import compress
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, feature_extractor_module_url=None, resize_dimension=None):
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
@@ -28,7 +29,18 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     combined_embeddings = np.concatenate([training_embeddings, test_embeddings], axis=0)
     
-    
     labels = np.concatenate([training_embedding_labels, segmentation_feature_vectors_labels])
     
-    return combined_embeddings, labels, combined_patches
+    
+    test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+    
+    selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == -1
+    
+    outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings)
+    
+    outlier_test_patches = compress(segment_patches, selector_for_outliers)
+    
+    outlier_test_labels = np.zeros(shape=(len(outlier_test_patches),))
+    
+    
+    return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
