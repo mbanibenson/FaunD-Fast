@@ -55,7 +55,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     nca.fit(combined_feature_vectors, labels)
     
-    embedded_feature_vectors = clf.transform(combined_feature_vectors)
+    embedded_feature_vectors = nca.transform(combined_feature_vectors)
     
     original_feature_vectors = combined_feature_vectors
     
