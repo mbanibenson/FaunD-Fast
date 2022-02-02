@@ -92,6 +92,10 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
         
         support_set_patches_in_this_subdirectory = [imread(fp) for fp in sub_directory.iterdir()]
         
+        random.shuffle(support_set_patches_in_this_subdirectory)
+        
+        support_set_patches_in_this_subdirectory = support_set_patches_in_this_subdirectory[:20]
+        
         labels_for_support_set_patches_in_this_subdirectory = [id_num] * len(support_set_patches_in_this_subdirectory)
         
         support_set_patches.extend(support_set_patches_in_this_subdirectory)
