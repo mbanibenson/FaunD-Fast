@@ -36,7 +36,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == -1
     
-    outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings)
+    outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings, axis=0)
     
     outlier_test_patches = list(compress(segment_patches, selector_for_outliers))
     
