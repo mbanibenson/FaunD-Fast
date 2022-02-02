@@ -24,11 +24,11 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     '''
     segmentation_feature_vectors, segment_patches = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
-    random_sample_indices = rng.integers(0, len(segmented_image_objects), size=100)
+#     random_sample_indices = rng.integers(0, len(segmented_image_objects), size=100)
     
-    segmentation_feature_vectors = segmentation_feature_vectors[random_sample_indices]
+#     segmentation_feature_vectors = segmentation_feature_vectors[random_sample_indices]
     
-    segment_patches = np.array(segment_patches)[random_sample_indices].tolist()
+#     segment_patches = np.array(segment_patches)[random_sample_indices].tolist()
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
     
