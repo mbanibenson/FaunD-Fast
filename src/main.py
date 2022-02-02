@@ -41,7 +41,10 @@ rng = default_rng()
 ## Set path to background images, support sets and test sets    
 directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-1_021-1_OFOS-02/')
 
-directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
+#directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
+
+directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_set_classified/')
+#/home/mbani/mardata/datasets/support_set_classified/
 
 directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
 
