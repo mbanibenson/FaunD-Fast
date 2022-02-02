@@ -33,6 +33,8 @@ from features.superpixel_generation import generate_superpixels_using_slic
 from features.superpixel_generation import extract_image_patches_corresponding_to_the_superpixels
 from features.feature_extraction_from_superpixels import extract_hand_engineered_hog_features_for_segmentation_patches
 
+from features.feature_extraction_from_superpixels import extract_convnet_features_for_segmentation_patches_using_keras_applications
+
 class underwater_image:
     '''
     Read an image and segment it
@@ -117,7 +119,9 @@ class underwater_image:
         '''
         list_of_segment_patches = self.segment_patches
 
-        self.segment_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches)
+        # self.segment_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches)
+        
+        self.segment_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
 
         return
     

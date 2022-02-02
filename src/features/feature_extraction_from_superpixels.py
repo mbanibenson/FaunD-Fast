@@ -67,6 +67,29 @@ def extract_convnet_features_for_segmentation_patches(feature_extractor_module_u
     return image_patches_feature_vectors
 
 
+def extract_convnet_features_for_segmentation_patches_using_keras_applications(image_patches, resize_dimension=(224,224,3)):
+    '''
+    Extract convnet features
+    
+    '''
+    
+    feature_extractor = tf.keras.applications.ResNet50(
+        include_top=False,
+        pooling='avg',
+    
+    )
+
+    resized_image_patches = [np.expand_dims(resize(patch, resize_dimension, anti_aliasing=True), axis=0) for patch in image_patches]
+
+    batch_of_images = np.concatenate(resized_image_patches, axis=0).astype(np.float32)
+    
+    batch_of_images = tf.keras.applications.resnet.preprocess_input(batch_of_images)
+    
+    matrix_of_feature_vectors = feature_extractor(batch_of_images)
+    
+    return matrix_of_feature_vectors
+
+
 def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets):
     '''
     Extract features from support set features contained within a directory
@@ -103,6 +126,10 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
         
         support_set_labels.extend(labels_for_support_set_patches_in_this_subdirectory)
     
-    support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
+    # support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
+    
+    support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
+    
+    
 
     return support_set_patches_feature_vectors, support_set_patches, support_set_labels
