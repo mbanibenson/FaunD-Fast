@@ -5,6 +5,7 @@ import numpy as np
 import tensorflow as tf
 from skimage.io import imread
 from pathlib import Path
+import random
 
 def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches):
     '''
