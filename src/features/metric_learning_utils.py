@@ -51,9 +51,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
 
 #     embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
     
-    clf = LinearDiscriminantAnalysis(n_components=2)
+    nca = LinearDiscriminantAnalysis(n_components=2)
     
-    clf.fit(combined_feature_vectors, labels)
+    nca.fit(combined_feature_vectors, labels)
     
     embedded_feature_vectors = clf.transform(combined_feature_vectors)
     
