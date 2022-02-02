@@ -104,9 +104,9 @@ def run_optimization_to_obtain_prior_transformation_matrix(original_feature_vect
     b = X_transformed
 
     #Enforce constraint to prevent the trivial non zero solution
-    #cons = ({'type': 'ineq', 'fun': lambda v:  np.count_nonzero(v) - len(v)})
+    cons = ({'type': 'ineq', 'fun': lambda v:  np.count_nonzero(v) - len(v)})
     
-    cons = ({'type': 'ineq', 'fun': lambda v:  np.sum(v)})
+    #cons = ({'type': 'ineq', 'fun': lambda v:  np.sum(v)})
     
     
     
