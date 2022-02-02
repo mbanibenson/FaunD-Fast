@@ -12,7 +12,11 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
     
     data_matrix = pd.DataFrame({'X':embedded_feature_vectors[:,0], 'Y':embedded_feature_vectors[:,1], 'Label':labels})
     
-    data_matrix['Label Names'] = data_matrix.Label.map({0:'Segment Patch', 1:'Support Set Patch', 2:'Test'})
+    #data_matrix['Label Names'] = data_matrix.Label.map({0:'Segment Patch', 1:'Support Set Patch', 2:'Test'})
+    
+    class_mappings = {**{0:'Background Patch'}, **{k, f'class_{k}' for k in sorted(labels)}} #Merge background and support sets
+    
+    data_matrix['Label Names'] = data_matrix.Label.map(class_mappings)
     
     #data_matrix = data_matrix.iloc[-4:]
     
