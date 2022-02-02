@@ -8,7 +8,7 @@ from features.metric_learning_utils import embedd_segment_feature_vectors_using_
 from features.feature_extraction_from_superpixels import extract_hand_engineered_hog_support_set_feature_vectors
 from pathlib import Path
 from scipy.spatial import ConvexHull
-from shapely.geometry import Point
+from shapely.geometry import Point, MultiPoint
 from shapely.geometry.polygon import Polygon
 
 def novelty_detector_using_bounding_envelope(background_embeddings):
