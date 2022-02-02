@@ -10,7 +10,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 
 
-def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches):
+def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
     '''
     Process test points to determine outliers
     
@@ -33,7 +33,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
     return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, feature_extractor_module_url=None, resize_dimension=None):
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, hull=None, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
