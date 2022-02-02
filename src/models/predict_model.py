@@ -74,7 +74,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     
     
-    outlier_test_embeddings, outlier_test_labels, outlier_test_patches = novelty_detector_using_bounding_envelope(background_embeddings, test_embeddings, test_patches)
+    # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = novelty_detector_using_bounding_envelope(background_embeddings, test_embeddings, test_patches)
     
     
     return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
