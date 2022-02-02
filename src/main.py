@@ -51,7 +51,7 @@ directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_imag
 
 ##Train the model
 (training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
-optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
+optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector, hull) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 
 ##Perform inference on the trained model
