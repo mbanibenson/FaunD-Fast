@@ -14,7 +14,9 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
     
     #data_matrix['Label Names'] = data_matrix.Label.map({0:'Segment Patch', 1:'Support Set Patch', 2:'Test'})
     
-    class_mappings = {**{0:'Background Patch'}, **{k, f'class_{k}' for k in sorted(labels)}} #Merge background and support sets
+    support_set_mappings =  {k, f'class_{k}' for k in sorted(labels)} #Merge background and support sets
+    
+    class_mappings = {**{0:'Background Patch'}, **support_set_mappings}
     
     data_matrix['Label Names'] = data_matrix.Label.map(class_mappings)
     
