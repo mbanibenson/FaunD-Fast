@@ -14,7 +14,7 @@ def fit_one_class_svm(inlier_embeddings):
     Fit a one-class-svm novelty detector
     
     '''
-    novelty_detector = OneClassSVM(kernel='rbf').fit(inlier_embeddings)
+    novelty_detector = OneClassSVM(nu=0.1, kernel="rbf", gamma=0.1).fit(inlier_embeddings)
     
     return novelty_detector
 
