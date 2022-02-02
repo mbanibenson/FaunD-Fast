@@ -28,7 +28,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     segmentation_feature_vectors = segmentation_feature_vectors[random_sample_indices]
     
-    segment_patches = np.array(segment_patches)[segment_patches].tolist()
+    segment_patches = np.array(segment_patches)[random_sample_indices].tolist()
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
     
