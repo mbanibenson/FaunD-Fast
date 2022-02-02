@@ -8,6 +8,7 @@ from scipy.optimize import nnls
 from scipy.optimize import minimize
 from numpy.random import default_rng
 from sklearn.decomposition import KernelPCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 rng = default_rng()
 
@@ -46,16 +47,15 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
 
-    nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix)
-    
-    #nca = NeighborhoodComponentsAnalysis(n_components=2)
+#     nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix)
 
-    embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
+#     embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
     
+    clf = LinearDiscriminantAnalysis(n_components=2)
     
-    #nca = NeighborhoodComponentsAnalysis(n_components=2)
+    clf.fit(combined_feature_vectors, labels)
     
-    #embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
+    embedded_feature_vectors = clf.transform(combined_feature_vectors)
     
     original_feature_vectors = combined_feature_vectors
     
