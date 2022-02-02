@@ -44,6 +44,6 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     
     novelty_detector = None #fit_one_class_svm(embedded_background_feature_vectors)
     
-    hull = novelty_detector_using_bounding_envelope(background_embeddings)
+    hull = novelty_detector_using_bounding_envelope(embedded_background_feature_vectors)
     
     return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector, hull
