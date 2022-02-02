@@ -17,7 +17,7 @@ from models.core_utils import merge_segmentation_patches_from_all_images
     
     
 
-def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, support_set_feature_vectors, support_set_patches):
+def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, support_set_feature_vectors, support_set_patches, support_set_labels):
     '''
     Embedd feature vectors to 2D manifold
     
@@ -26,7 +26,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
     
-    support_set_feature_vectors_labels = np.ones(shape=(len(support_set_feature_vectors),))
+    support_set_feature_vectors_labels = support_set_labels
     
     combined_patches = segment_patches + support_set_patches
     
