@@ -125,7 +125,7 @@ def run_optimization_to_obtain_prior_transformation_matrix(original_feature_vect
     #Loop indefinately until convergence
     while True:
 
-        optimization_results_object_for_finding_transformation_matrix = minimize(fun = find_transformation_matrix, x0=A, args=(x, b, design_matrix_shape),  options={'disp':True})
+        optimization_results_object_for_finding_transformation_matrix = minimize(fun = find_transformation_matrix, x0=A, args=(x, b, design_matrix_shape), options={'disp':True})
         
         res_x = optimization_results_object_for_finding_transformation_matrix.x
 
