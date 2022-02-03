@@ -144,19 +144,19 @@ def segment_image_and_extract_segment_features(file_path, feature_extractor_modu
     
     #print(f'Processing image {file_path.name}', end='\r')
     
-    print('Creating segmentation object ...', end='\r', flush=True)
+    print('Creating segmentation object ...')
     underwater_image_of_ccz = underwater_image(file_path) #ccz is the working area in the pacific
     
-    print('Reading image to array ...', end='\r', flush=True)
+    print('Reading image to array ...')
     underwater_image_of_ccz.read_image()
     
-    print('Segmenting the image ...', end='\r', flush=True)
+    print('Segmenting the image ...')
     underwater_image_of_ccz.segment_image()
     
-    print('Converting segment patches to ndarrays ...', end='\r', flush=True)
+    print('Converting segment patches to ndarrays ...')
     underwater_image_of_ccz.extract_segmentation_patches_to_batch_of_ndarrays()
     
-    print('Extract Features from the segments ...', end='\r', flush=True)
+    print('Extract Features from the segments ...')
     underwater_image_of_ccz.extract_features_from_segmentation_patches(feature_extractor_module_url, resize_dimension)
     
     

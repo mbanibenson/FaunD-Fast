@@ -43,7 +43,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     Run inference on test images and return results for plotting and visualizations
     
     '''
-    test_image_file_paths = random.sample(list(directory_containing_test_images.iterdir()), 30)
+    test_image_file_paths = list(directory_containing_test_images.iterdir())
+    #test_image_file_paths = random.sample(test_image_file_paths, 30)
     
     # segmented_image_objects = [segment_image_and_extract_segment_features(fp, feature_extractor_module_url=feature_extractor_module_url, resize_dimension=resize_dimension) for fp in test_image_file_paths]
     
