@@ -125,9 +125,9 @@ class underwater_image:
         '''
         list_of_segment_patches = self.segment_patches
 
-        self.segment_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches)
+        # self.segment_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches)
         
-        # self.segment_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(list_of_segment_patches, resize_dimension=(224,224,3))
+        self.segment_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(list_of_segment_patches, resize_dimension=(224,224,3))
 
         return
     
