@@ -60,17 +60,17 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     labels = np.concatenate([training_embedding_labels, segmentation_feature_vectors_labels])
     
     
-#     test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+    test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
     
-#     selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == -1
+    selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == 1
     
-#     outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings, axis=0)
+    outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings, axis=0)
     
-#     outlier_test_patches = list(compress(segment_patches, selector_for_outliers))
+    outlier_test_patches = list(compress(segment_patches, selector_for_outliers))
     
-#     outlier_test_labels = np.zeros(shape=(len(outlier_test_patches),))
+    outlier_test_labels = np.zeros(shape=(len(outlier_test_patches),))
 
-    outlier_test_embeddings, outlier_test_labels, outlier_test_patches = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
+    # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
     
     
