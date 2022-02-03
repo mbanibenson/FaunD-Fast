@@ -10,6 +10,7 @@ from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
 from skimage.io import imsave
 import shutil
+from skimage.util import img_as_ubyte
 
 
 def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
@@ -100,7 +101,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     print('Saving patches for positive detections ...')
     
-    [imsave(directory_to_save_patches / f'{patch_name}.png', patch) for patch_name, patch in zip(patch_names, patches)]
+    [imsave(directory_to_save_patches / f'{patch_name}.png', img_as_ubyte(patch)) for patch_name, patch in zip(patch_names, patches)]
     
     print('Finished saving patches for positive detections ...')
     

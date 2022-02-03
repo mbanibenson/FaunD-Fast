@@ -3,7 +3,7 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import pandas as pd
 import seaborn as sns
 
-def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combined_patches=None, figsize=(12,8)):
+def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combined_patches=None, figsize=(12,8), figname = None):
     '''
     Plot the embedding in 2D feature space
     
@@ -35,5 +35,7 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
             ab.set_zorder(0)
 
             ax.add_artist(ab)
+            
+    plt.savefig(figname, dpi=150, format='png', bbox_inches='tight')
     
     return 
