@@ -110,6 +110,9 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     test_image_file_paths = list(directory_containing_test_images.iterdir())
     #test_image_file_paths = random.sample(test_image_file_paths, 30)
     
+    shutil.rmtree(directory_to_save_patches_of_positive_detections, ignore_errors=True)
+    directory_to_save_patches_of_positive_detections.mkdir()
+    
     number_of_partitions = ceil(len(test_image_file_paths) / 20)
     
     test_image_file_paths_partitions = np.array_split(np.asarray(test_image_file_paths), number_of_partitions)
@@ -188,9 +191,6 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     '''
     directory_to_save_patches = Path(directory_to_save_patches)
-    
-    shutil.rmtree(directory_to_save_patches, ignore_errors=True)
-    directory_to_save_patches.mkdir()
     
     print('Saving patches for positive detections ...')
     
