@@ -111,7 +111,7 @@ class underwater_image:
 
         self.segment_patches, self.segment_patch_bounding_boxes = extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb)
         
-        self.identifier_name_for_each_patch = [f'{self.image_path.stem}_{patch_id}' for patch_id in range(len(self.segment_patches))]
+        self.identifier_name_for_each_patch = [f'{self.image_path.stem}#{patch_id}' for patch_id in range(len(self.segment_patches))]
 
         return
     

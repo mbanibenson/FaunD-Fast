@@ -119,7 +119,7 @@ def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bbo
     '''
     detections_summary = pd.DataFrame({'patch_name':patch_names, 'pca_1':patch_embeddings[:,0], 'pca_2':patch_embeddings[:,1], 'bbox':patch_bboxes})
     
-    detections_summary['parent_image_name'] = detections_summary.patch_name.map(lambda x: x.split('_')[0])
+    detections_summary['parent_image_name'] = detections_summary.patch_name.map(lambda x: x.split('#')[0])
     
     detections_summary.to_csv(directory_to_save_summary_csv/'detections_summary_table.csv')
     
