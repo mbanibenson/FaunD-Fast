@@ -14,6 +14,7 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from concurrent.futures import ProcessPoolExecutor
+import random
 
 def novelty_detector_using_bounding_envelope(background_embeddings):
     '''
@@ -53,7 +54,11 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     Train a model to distinguish background from potential fauna superpixels
     
     '''
-    underwater_images_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())[:10]
+    
+    all_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())
+    
+    random.shuffle(all_file_paths)
+    underwater_images_file_paths = random.sample(all_file_paths, k=10)
 
     # underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths] ##TODO consider calling it process_segments
     

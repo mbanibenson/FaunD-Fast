@@ -39,7 +39,11 @@ rng = default_rng()
 #if __name__ == '__main__':
     
 ## Set path to background images, support sets and test sets    
-directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-1_021-1_OFOS-02/')
+# directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-1_021-1_OFOS-02/')
+
+directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/background_images_without_fauna/')
+
+
 
 #directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
 
