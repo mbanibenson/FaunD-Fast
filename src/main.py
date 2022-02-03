@@ -48,6 +48,8 @@ directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_s
 
 directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
 
+directory_to_save_patches_of_positive_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna')
+
 
 ##Train the model
 (training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
@@ -55,7 +57,7 @@ optimization_results_object_for_finding_transformation_matrix, trained_pca, nove
 
 
 ##Perform inference on the trained model
-outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, hull)
+outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
 
 
 ##Visualize the results

@@ -44,7 +44,7 @@ def extract_image_patches_corresponding_to_the_superpixels(segmented_image, imag
     slice_portions = [region_property.slice for region_property in region_properties]
 
     segment_patches = [image_as_rgb[slice_portion] for slice_portion in slice_portions]
-    
+        
     return segment_patches
 
 

@@ -23,7 +23,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     Embedd feature vectors to 2D manifold
     
     '''
-    segmentation_feature_vectors, segment_patches = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    segmentation_feature_vectors, segment_patches, _ = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
 #     random_sample_indices = rng.integers(0, len(segmented_image_objects), size=100)
     

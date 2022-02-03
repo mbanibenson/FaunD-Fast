@@ -8,6 +8,8 @@ from itertools import compress
 from scipy.spatial import ConvexHull
 from shapely.geometry import Point
 from shapely.geometry.polygon import Polygon
+from skimage.io import imsave
+import shutil
 
 
 def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
@@ -33,7 +35,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
     return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, hull=None, feature_extractor_module_url=None, resize_dimension=None):
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull=None, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
@@ -42,7 +44,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     segmented_image_objects = [segment_image_and_extract_segment_features(fp, feature_extractor_module_url=feature_extractor_module_url, resize_dimension=resize_dimension) for fp in test_image_file_paths]
     
-    segmentation_feature_vectors, segment_patches = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    segmentation_feature_vectors, segment_patches, names_for_each_segment_patch = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),)) + 2
 
@@ -69,6 +71,11 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     outlier_test_patches = list(compress(segment_patches, selector_for_outliers))
     
     outlier_test_labels = [2] * len(outlier_test_patches)
+    
+    outlier_test_patch_names = list(compress(names_for_each_segment_patch, selector_for_outliers))
+    
+    save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
+
 
     # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
@@ -77,4 +84,24 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = novelty_detector_using_bounding_envelope(background_embeddings, test_embeddings, test_patches)
     
     
+    
     return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
+
+
+def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
+    '''
+    Save detected pactches to disk
+    
+    '''
+    directory_to_save_patches = Path(directory_to_save_patches)
+    
+    shutil.rmtree(directory_to_save_patches, ignore_errors=True)
+    directory_to_save_patches.mkdir()
+    
+    print('Saving patches for positive detections ...')
+    
+    [imsave(directory_to_save_patches / f'{patch_name}.png', patch) for zip(patch_names, patches)]
+    
+    print('Finished saving patches for positive detections ...')
+    
+    return
