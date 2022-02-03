@@ -44,12 +44,12 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
     
-    optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = None, None #run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
+    optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
 
-#     nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix)
+     nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix)
 
-    nca = NeighborhoodComponentsAnalysis(n_components=2)
+    #nca = NeighborhoodComponentsAnalysis(n_components=2)
 
     embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
     
