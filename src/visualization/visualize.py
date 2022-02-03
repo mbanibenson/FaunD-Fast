@@ -37,6 +37,6 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
 
             ax.add_artist(ab)
             
-    plt.savefig(Path(directory_to_save_matplotlib_figures) / figname, dpi=150, format='png', bbox_inches='tight')
+    plt.savefig(Path(directory_to_save_matplotlib_figures) / f'{figname}.png', dpi=150, bbox_inches='tight')
     
     return 
