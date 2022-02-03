@@ -103,6 +103,8 @@ def run_optimization_to_obtain_prior_transformation_matrix(original_feature_vect
     
     #These are the coordinates in the embedding purely based on label similarity
     X_transformed = transformer.fit_transform(pre_computed_kernel)
+    
+    X_transformed = np.vstack([np.array([-1,0]) if int(label) == 0 else np.array([-1,0]) for label in labels])
 
     
     #We define the parameters of the optimization
