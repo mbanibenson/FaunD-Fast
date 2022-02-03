@@ -100,7 +100,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     print('Saving patches for positive detections ...')
     
-    [imsave(directory_to_save_patches / f'{patch_name}.png', patch) for patch_name, patch  zip(patch_names, patches)]
+    [imsave(directory_to_save_patches / f'{patch_name}.png', patch) for patch_name, patch in zip(patch_names, patches)]
     
     print('Finished saving patches for positive detections ...')
     
