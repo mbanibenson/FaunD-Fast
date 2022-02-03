@@ -50,6 +50,8 @@ directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_imag
 
 directory_to_save_patches_of_positive_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna')
 
+directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
+
 
 ##Train the model
 (training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
@@ -61,8 +63,8 @@ outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inferen
 
 
 ##Visualize the results
-visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails')
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures)
 
-visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails')
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures)
 
-visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails')
+visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures)
