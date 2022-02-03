@@ -44,7 +44,12 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     '''
     test_image_file_paths = random.sample(list(directory_containing_test_images.iterdir()), 30)
     
-    segmented_image_objects = [segment_image_and_extract_segment_features(fp, feature_extractor_module_url=feature_extractor_module_url, resize_dimension=resize_dimension) for fp in test_image_file_paths]
+    # segmented_image_objects = [segment_image_and_extract_segment_features(fp, feature_extractor_module_url=feature_extractor_module_url, resize_dimension=resize_dimension) for fp in test_image_file_paths]
+    
+    with ProcessPoolExecutor(14) as executor:
+        
+        segmented_image_objects = list(executor.map(segment_image_and_extract_segment_features, test_image_file_paths))
+        
     
     segmentation_feature_vectors, segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
