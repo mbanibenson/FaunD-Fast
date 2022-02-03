@@ -68,7 +68,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     outlier_test_patches = list(compress(segment_patches, selector_for_outliers))
     
-    outlier_test_labels = np.zeros(shape=(len(outlier_test_patches),))
+    outlier_test_labels = [2] * len(outlier_test_patches)
 
     # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
