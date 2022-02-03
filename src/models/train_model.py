@@ -13,6 +13,7 @@ from shapely.geometry.polygon import Polygon
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
+from concurrent.futures import ProcessPoolExecutor
 
 def novelty_detector_using_bounding_envelope(background_embeddings):
     '''
@@ -54,7 +55,11 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     '''
     underwater_images_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())[:10]
 
-    underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths] ##TODO consider calling it process_segments
+    # underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths] ##TODO consider calling it process_segments
+    
+    with ThreadPoolExecutor(14) as executor:
+        
+        underwater_images_of_ccz = list(executor.map(segment_image_and_extract_segment_features, underwater_images_file_paths))
 
 
     support_set_feature_vectors, support_set_patches, support_set_labels = extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets) ##TODO consider calling it process_support_sets
