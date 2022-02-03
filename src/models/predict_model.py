@@ -45,7 +45,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     segmented_image_objects = [segment_image_and_extract_segment_features(fp, feature_extractor_module_url=feature_extractor_module_url, resize_dimension=resize_dimension) for fp in test_image_file_paths]
     
-    segmentation_feature_vectors, segment_patches, names_for_each_segment_patch = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    segmentation_feature_vectors, segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),)) + 2
 
@@ -74,6 +74,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     outlier_test_labels = [2] * len(outlier_test_patches)
     
     outlier_test_patch_names = list(compress(names_for_each_segment_patch, selector_for_outliers))
+    
+    outlier_test_patch_bboxes = list(compress(segment_patch_bboxes, selector_for_outliers))
     
     save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
 

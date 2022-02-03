@@ -54,6 +54,8 @@ class underwater_image:
         
         self.segment_patch_centroids = None
         
+        self.segment_patch_bounding_boxes = None
+        
         self.identifier_name_for_each_patch = None
         
         self.georeferenced_coordinates_for_the_image = None
@@ -107,7 +109,7 @@ class underwater_image:
         
         image_as_rgb=self.rgb_image
 
-        self.segment_patches = extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb)
+        self.segment_patches, self.segment_patch_bounding_boxes = extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb)
         
         self.identifier_name_for_each_patch = [f'{self.image_path.stem}_{patch_id}' for patch_id in range(len(self.segment_patches))]
 
@@ -173,6 +175,8 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     
     segment_patch_names = list(chain.from_iterable(segmented_image_object.identifier_name_for_each_patch for segmented_image_object in segmented_image_objects))
     
+    segment_patch_bboxes = list(chain.from_iterable(segmented_image_object.segment_patch_bounding_boxes for segmented_image_object in segmented_image_objects))
+    
     assert len(segment_patch_names) == len(segment_patches), 'Number of patches does not match their labels'
     
-    return feature_vectors, segment_patches, segment_patch_names
+    return feature_vectors, segment_patches, segment_patch_names, segment_patch_bboxes
