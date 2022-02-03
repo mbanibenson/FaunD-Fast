@@ -12,6 +12,7 @@ from skimage.io import imsave
 import shutil
 from skimage.util import img_as_ubyte
 import pandas as pd
+from concurrent.futures import ProcessPoolExecutor
 
 
 def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
