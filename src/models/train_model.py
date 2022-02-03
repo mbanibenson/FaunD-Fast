@@ -57,7 +57,7 @@ def train_non_background_detection_model(directory_containing_underwater_images_
 
     # underwater_images_of_ccz = [segment_image_and_extract_segment_features(file_path) for file_path in underwater_images_file_paths] ##TODO consider calling it process_segments
     
-    with ThreadPoolExecutor(14) as executor:
+    with ProcessPoolExecutor(14) as executor:
         
         underwater_images_of_ccz = list(executor.map(segment_image_and_extract_segment_features, underwater_images_file_paths))
 
