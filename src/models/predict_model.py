@@ -11,6 +11,7 @@ from shapely.geometry.polygon import Polygon
 from skimage.io import imsave
 import shutil
 from skimage.util import img_as_ubyte
+import pandas as pd
 
 
 def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
@@ -78,6 +79,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     outlier_test_patch_bboxes = list(compress(segment_patch_bboxes, selector_for_outliers))
     
     save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
+    
+    generate_csv_summarizing_detections(outlier_test_patch_names, outlier_test_embeddings, outlier_test_patch_bboxes, directory_to_save_patches_of_positive_detections)
 
 
     # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
@@ -106,5 +109,16 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     [imsave(directory_to_save_patches / f'{patch_name}.png', img_as_ubyte(patch)) for patch_name, patch in zip(patch_names, patches)]
     
     print('Finished saving patches for positive detections ...')
+    
+    return
+
+def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, directory_to_save_summary_csv):
+    '''
+    Summarize the detections into a csv file
+    
+    '''
+    detections_summary = pd.DataFrame({'Name':patch_names, 'PCA 1':patch_embeddings[:,0], 'PCA 2':patch_embeddings[:,1], 'Bbox':patch_bboxes})
+    
+    detections_summary.to_csv(directory_to_save_summary_csv/'detections_summary_table.csv')
     
     return
