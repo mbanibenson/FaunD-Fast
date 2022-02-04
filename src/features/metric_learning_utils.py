@@ -192,7 +192,7 @@ def return_objective_function_for_finding_initial_transformation_matrix_for_nca(
 
     transformed_embeddings = initialization_matrix_A @ embeddings.T
     
-    clustering_labels = KMeans(n_clusters=2).fit(transformed_embeddings).labels_
+    clustering_labels = KMeans(n_clusters=2).fit(transformed_embeddings.T).labels_
     
     clustering_metric = homogeneity_score(clustering_labels, labels) - 0.5
     
