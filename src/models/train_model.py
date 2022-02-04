@@ -42,7 +42,7 @@ def novelty_detector_using_binary_kernel_svm(training_embeddings, labels_for_tra
     
     y = [1 if int(val) > 0 else int(val) for val in labels_for_training_embeddings]
     
-    clf = make_pipeline(StandardScaler(), SVC(gamma='auto'))
+    clf = make_pipeline(StandardScaler(), SVC(gamma='auto', probability=True))
     
     clf.fit(X, y)
     
