@@ -65,7 +65,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     original_feature_vectors = combined_feature_vectors
     
-    background_feature_vectors = nca.transform(segmentation_feature_vectors)
+    # background_feature_vectors = nca.transform(segmentation_feature_vectors)
+    
+    background_feature_vectors = (initial_transformation_matrix @ segmentation_feature_vectors.T).T
     
     labels_with_support_set_as_one_class = np.concatenate([segmentation_feature_vectors_labels, np.asarray([1]*len(support_set_feature_vectors_labels))])
     
