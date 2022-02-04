@@ -44,9 +44,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     combined_feature_vectors = np.concatenate([segmentation_feature_vectors, support_set_feature_vectors], axis=0)
     
-    #labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
+    labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
     
-    labels = np.concatenate([segmentation_feature_vectors_labels, [1]*len(support_set_feature_vectors_labels)])
+    #labels = np.concatenate([segmentation_feature_vectors_labels, [1]*len(support_set_feature_vectors_labels)])
     
     optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
@@ -196,6 +196,6 @@ def return_objective_function_for_finding_initial_transformation_matrix_for_nca(
     
     clustering_labels = KMeans(n_clusters=2).fit(transformed_embeddings.T).labels_
     
-    clustering_metric = homogeneity_score(clustering_labels, labels) - 0.3
+    clustering_metric = homogeneity_score(clustering_labels, labels) - 0.4
     
     return clustering_metric
