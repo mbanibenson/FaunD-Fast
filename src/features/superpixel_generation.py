@@ -1,5 +1,9 @@
 from skimage.segmentation import slic
 from skimage.measure import regionprops
+import numpy as np
+from numpy.random import default_rng
+
+rng = default_rng()
 
 def generate_superpixels_using_slic(image_as_rgb, number_of_segments, compactness):
     '''
@@ -46,7 +50,15 @@ def extract_image_patches_corresponding_to_the_superpixels(segmented_image, imag
     segment_patches = [image_as_rgb[slice_portion] for slice_portion in slice_portions]
     
     segment_patch_bounding_boxes = [region_property.bbox for region_property in region_properties]
+    
+    number_of_patches = len(segment_patches)
+    
+    indices_of_sampled_patches = rng.integers(0, number_of_patches, size=20)
+    
+    sampled_segment_patches = np.asarray(segment_patches)[indices_of_sampled_patches].tolist()
+    
+    sampled_segment_patch_bounding_boxes = np.asarray(segment_patch_bounding_boxes)[indices_of_sampled_patches].tolist()
         
-    return segment_patches, segment_patch_bounding_boxes
+    return sampled_segment_patches, sampled_segment_patch_bounding_boxes
 
 
