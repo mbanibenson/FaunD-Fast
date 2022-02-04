@@ -51,9 +51,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
 
-    nca = None #NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2)
+    nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2)
 
-#     embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
+    embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
     
 #     nca = LinearDiscriminantAnalysis(n_components=2)
     
@@ -65,7 +65,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     original_feature_vectors = combined_feature_vectors
     
-    # background_feature_vectors = nca.transform(segmentation_feature_vectors)
+    background_feature_vectors = nca.transform(segmentation_feature_vectors)
     
     background_feature_vectors = (initial_transformation_matrix @ segmentation_feature_vectors.T).T
     

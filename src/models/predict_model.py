@@ -155,7 +155,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         selector_for_classification = test_embeddings_outlier_or_inlier_prediction == 1 
         
-        selector_for_probability = test_embeddings_classification_probabilities > 0.5
+        selector_for_probability = test_embeddings_classification_probabilities > 0.8
         
         selector_for_outliers = np.logical_and(selector_for_classification, selector_for_probability)
         
