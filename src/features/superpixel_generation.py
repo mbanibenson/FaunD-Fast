@@ -27,7 +27,7 @@ def generate_superpixels_using_slic(image_as_rgb, number_of_segments, compactnes
     return segmented_image
 
 
-def extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb):
+def extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb, training_mode=True):
     '''
     Given a set of superpixels, extract the image patches within their bounding boxes
     
@@ -57,9 +57,18 @@ def extract_image_patches_corresponding_to_the_superpixels(segmented_image, imag
     
     #sampled_segment_patches = np.asarray(segment_patches)[indices_of_sampled_patches].tolist()
     
-    sampled_segment_patches = [segment_patches[i] for i in indices_of_sampled_patches]
+    if training_mode:
     
-    sampled_segment_patch_bounding_boxes = [segment_patch_bounding_boxes[i] for i in indices_of_sampled_patches]
+        sampled_segment_patches = [segment_patches[i] for i in indices_of_sampled_patches]
+    
+        sampled_segment_patch_bounding_boxes = [segment_patch_bounding_boxes[i] for i in indices_of_sampled_patches]
+        
+    else:
+        
+        sampled_segment_patches = segment_patches
+    
+        sampled_segment_patch_bounding_boxes = segment_patch_bounding_boxes
+    
         
     return sampled_segment_patches, sampled_segment_patch_bounding_boxes
 

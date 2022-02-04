@@ -15,6 +15,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from concurrent.futures import ProcessPoolExecutor
 import random
+from functools import partial
 
 def novelty_detector_using_bounding_envelope(background_embeddings):
     '''
@@ -64,7 +65,9 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     
     with ProcessPoolExecutor(14) as executor:
         
-        underwater_images_of_ccz = list(executor.map(segment_image_and_extract_segment_features, underwater_images_file_paths))
+        _segment_image_and_extract_segment_features = partial(segment_image_and_extract_segment_features, training_mode=True)
+        
+        underwater_images_of_ccz = list(executor.map(_segment_image_and_extract_segment_features, underwater_images_file_paths))
 
 
     support_set_feature_vectors, support_set_patches, support_set_labels = extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets) ##TODO consider calling it process_support_sets

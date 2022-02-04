@@ -97,7 +97,7 @@ class underwater_image:
         return
     
     
-    def extract_segmentation_patches_to_batch_of_ndarrays(self):
+    def extract_segmentation_patches_to_batch_of_ndarrays(self, training_mode):
         '''
         Extract segment patches to numpy ndarray
         
@@ -109,7 +109,7 @@ class underwater_image:
         
         image_as_rgb=self.rgb_image
 
-        self.segment_patches, self.segment_patch_bounding_boxes = extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb)
+        self.segment_patches, self.segment_patch_bounding_boxes = extract_image_patches_corresponding_to_the_superpixels(segmented_image, image_as_rgb, training_mode)
         
         self.identifier_name_for_each_patch = [f'{self.image_path.stem}#{patch_id}' for patch_id in range(len(self.segment_patches))]
 
@@ -136,7 +136,7 @@ class underwater_image:
     
     
 
-def segment_image_and_extract_segment_features(file_path, feature_extractor_module_url=None, resize_dimension=None):
+def segment_image_and_extract_segment_features(file_path, training_mode, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Create an instance of underwater, segment it and extract features from its superpixels
     
@@ -154,7 +154,7 @@ def segment_image_and_extract_segment_features(file_path, feature_extractor_modu
     underwater_image_of_ccz.segment_image()
     
     print('Converting segment patches to ndarrays ...')
-    underwater_image_of_ccz.extract_segmentation_patches_to_batch_of_ndarrays()
+    underwater_image_of_ccz.extract_segmentation_patches_to_batch_of_ndarrays(training_mode)
     
     print('Extract Features from the segments ...')
     underwater_image_of_ccz.extract_features_from_segmentation_patches(feature_extractor_module_url, resize_dimension)

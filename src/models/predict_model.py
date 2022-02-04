@@ -14,6 +14,7 @@ from skimage.util import img_as_ubyte
 import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
 from math import ceil
+from functools import partial
 
 
 def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
@@ -130,8 +131,10 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         print(f'[INFO] Processing partition {partition_id} / {number_of_partitions} ...')
     
         with ProcessPoolExecutor(14) as executor:
+            
+            _segment_image_and_extract_segment_features = partial(segment_image_and_extract_segment_features, training_mode=False)
 
-            segmented_image_objects = list(executor.map(segment_image_and_extract_segment_features, partition_of_file_paths))
+            segmented_image_objects = list(executor.map(_segment_image_and_extract_segment_features, partition_of_file_paths))
         
     
         segmentation_feature_vectors, segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
@@ -145,11 +148,11 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
         test_patches = segment_patches
 
-#         test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+        test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
         
-#         selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == 1
+        selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == 1
         
-        selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
+        # selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
         
     
