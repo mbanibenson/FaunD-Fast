@@ -163,17 +163,19 @@ def run_optimization_to_obtain_prior_transformation_matrix(original_feature_vect
     initialization_matrix_A = rng.random(size=design_matrix_shape).ravel()
 
     #Loop indefinately until convergence
-    while True:
+#     while True:
 
-        optimization_results_object_for_finding_transformation_matrix = minimize(fun = return_objective_function_for_finding_initial_transformation_matrix_for_nca, x0=initialization_matrix_A, args=(original_feature_vectors, labels), options={'disp':True})
+#         optimization_results_object_for_finding_transformation_matrix = minimize(fun = return_objective_function_for_finding_initial_transformation_matrix_for_nca, x0=initialization_matrix_A, args=(original_feature_vectors, labels), options={'disp':True})
         
-        res_x = optimization_results_object_for_finding_transformation_matrix.x
+#         res_x = optimization_results_object_for_finding_transformation_matrix.x
 
-        x_is_vector_of_zeros = np.allclose(res_x, np.zeros(res_x.shape))
+#         x_is_vector_of_zeros = np.allclose(res_x, np.zeros(res_x.shape))
         
-        if optimization_results_object_for_finding_transformation_matrix.success and not(x_is_vector_of_zeros):
+#         if optimization_results_object_for_finding_transformation_matrix.success and not(x_is_vector_of_zeros):
             
-            break
+#             break
+
+    optimization_results_object_for_finding_transformation_matrix = minimize(fun = return_objective_function_for_finding_initial_transformation_matrix_for_nca, x0=initialization_matrix_A, args=(original_feature_vectors, labels), options={'disp':True})
     
     #We get A as a one-dim vector, so we reshape it and transpose it as sklearn expects
     initial_transformation_matrix = optimization_results_object_for_finding_transformation_matrix.x.reshape(design_matrix_shape)
