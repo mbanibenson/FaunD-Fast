@@ -55,9 +55,11 @@ def extract_image_patches_corresponding_to_the_superpixels(segmented_image, imag
     
     indices_of_sampled_patches = rng.integers(0, number_of_patches, size=20)
     
-    sampled_segment_patches = np.asarray(segment_patches)[indices_of_sampled_patches].tolist()
+    #sampled_segment_patches = np.asarray(segment_patches)[indices_of_sampled_patches].tolist()
     
-    sampled_segment_patch_bounding_boxes = np.asarray(segment_patch_bounding_boxes)[indices_of_sampled_patches].tolist()
+    sampled_segment_patches = [segment_patches[i] for i in indices_of_sampled_patches]
+    
+    sampled_segment_patch_bounding_boxes = [segment_patch_bounding_boxes[i] for i in indices_of_sampled_patches]
         
     return sampled_segment_patches, sampled_segment_patch_bounding_boxes
 
