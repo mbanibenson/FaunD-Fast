@@ -65,7 +65,7 @@ optimization_results_object_for_finding_transformation_matrix, trained_pca, nove
 
 
 ##Perform inference on the trained model
-outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
+# outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
 
 
 ##Visualize the results
