@@ -36,7 +36,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
     
     outlier_test_labels = np.zeros(shape=(len(outlier_test_patches),))
     
-    return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
+    return selector_for_outliers
 
 
 # def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull=None, feature_extractor_module_url=None, resize_dimension=None):
@@ -145,9 +145,13 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
         test_patches = segment_patches
 
-        test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+#         test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+        
+#         selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == 1
+        
+        selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
-        selector_for_outliers = test_embeddings_outlier_or_inlier_prediction == 1
+        
     
         outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings, axis=0)
     

@@ -72,7 +72,9 @@ def train_non_background_detection_model(directory_containing_underwater_images_
 
     embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_pca = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, support_set_feature_vectors, support_set_patches, support_set_labels)
     
-    novelty_detector = novelty_detector_using_binary_kernel_svm(embedded_feature_vectors, labels) #fit_one_class_svm(embedded_background_feature_vectors)
+    novelty_detector = novelty_detector_using_binary_kernel_svm(embedded_feature_vectors, labels) 
+    
+    #novelty_detector = fit_one_class_svm(embedded_background_feature_vectors)
     
     hull = novelty_detector_using_bounding_envelope(embedded_background_feature_vectors)
     
