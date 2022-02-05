@@ -24,6 +24,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from scipy.linalg import norm
 from scipy.optimize import nnls
 from scipy.optimize import minimize
+import shutil
 
 #Modules
 from models.core_utils import segment_image_and_extract_segment_features
