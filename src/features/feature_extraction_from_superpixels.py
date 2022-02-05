@@ -96,7 +96,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     
     matrix_of_feature_vectors = []
     
-    for batch, _ in zip(datagen.flow(x_train, None, batch_size=32, shuffle=False), range(number_of_batches)):
+    for batch, _ in zip(datagen.flow(batch_of_all_images, None, batch_size=32, shuffle=False), range(number_of_batches)):
         
         this_batch_of_images = tf.keras.applications.resnet.preprocess_input(batch)
     
