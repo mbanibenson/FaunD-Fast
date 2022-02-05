@@ -87,6 +87,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
         featurewise_std_normalization=True,
     )
     
+    
 
     resized_image_patches = [np.expand_dims(resize(patch, resize_dimension, anti_aliasing=True), axis=0) for patch in image_patches]
 
@@ -95,6 +96,8 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     number_of_batches = ceil(len(batch_of_all_images)/32)
     
     matrix_of_feature_vectors = []
+    
+    datagen.fit(batch_of_all_images)
     
     for batch, _ in zip(datagen.flow(batch_of_all_images, None, batch_size=32, shuffle=False), range(number_of_batches)):
         
