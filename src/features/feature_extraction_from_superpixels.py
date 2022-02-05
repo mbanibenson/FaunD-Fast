@@ -110,7 +110,13 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     
     matrix_of_feature_vectors = np.concatenate(matrix_of_feature_vectors, axis=0)
     
-    print(f'Finished extracting features. Resulting matrix is size {matrix_of_feature_vectors.shape}')
+    print(f'Finished extracting features. Resulting matrix is size {matrix_of_feature_vectors.shape}. Performing pca ...')
+    
+    pca = PCA(n_components=15, whiten=True)
+    
+    matrix_of_feature_vectors = pca.fit_transform(matrix_of_feature_vectors)
+    
+    print(f'Finished extracting pca. Resulting matrix is size {matrix_of_feature_vectors.shape}.')
     
     return matrix_of_feature_vectors
 
