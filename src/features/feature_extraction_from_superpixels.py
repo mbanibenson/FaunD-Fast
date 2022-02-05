@@ -84,8 +84,8 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     )
     
     datagen = ImageDataGenerator(
-        featurewise_center=True,
-        featurewise_std_normalization=True,
+        featurewise_center=False,
+        featurewise_std_normalization=False,
     )
     
     
@@ -98,7 +98,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     
     matrix_of_feature_vectors = []
     
-    datagen.fit(batch_of_all_images)
+    #datagen.fit(batch_of_all_images)
     
     for batch, _ in zip(datagen.flow(batch_of_all_images, None, batch_size=32, shuffle=False), range(number_of_batches)):
         
