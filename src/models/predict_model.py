@@ -210,7 +210,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     try:
     
-    [imsave(directory_to_save_patches / f'{patch_name}.png', img_as_ubyte(patch)) for patch_name, patch in zip(patch_names, patches)]
+        [imsave(directory_to_save_patches / f'{patch_name}.png', img_as_ubyte(patch)) for patch_name, patch in zip(patch_names, patches)]
     
     except:
         
