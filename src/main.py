@@ -50,13 +50,11 @@ directory_containing_underwater_images_with_background_only = Path('/home/mbani/
 directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_set_classified/')
 #/home/mbani/mardata/datasets/support_set_classified/
 
-directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives/')
+directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives')
 
 #directory_containing_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_100-1_OFOS-05/')
 
-directory_to_save_patches_of_positive_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna')
 
-directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
 
 
 ##Train the model
@@ -64,13 +62,23 @@ directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_det
 optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector, hull) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 
-#Perform inference on the trained model
-outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
+for subdirectory in directory_containing_test_images.iterdir():
+    
+    assert subdirectory.is_dir(), 'Please organize images into subdirectories'
+    
+    subdirectory_name = subdirectory.name
+    
+    directory_to_save_patches_of_positive_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna') / subdirectory_name
+
+    directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
+
+    #Perform inference on the trained model
+    outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
 
 
-##Visualize the results
-visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    ##Visualize the results
+    visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
 
-visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
 
-visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
