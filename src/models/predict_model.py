@@ -208,7 +208,13 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     print('Saving patches for positive detections ...')
     
+    try:
+    
     [imsave(directory_to_save_patches / f'{patch_name}.png', img_as_ubyte(patch)) for patch_name, patch in zip(patch_names, patches)]
+    
+    except:
+        
+        pass
     
     print('Finished saving patches for positive detections ...')
     
