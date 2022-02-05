@@ -8,6 +8,7 @@ from pathlib import Path
 import random
 from math import ceil
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.decomposition import PCA
 
 
 def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches):
