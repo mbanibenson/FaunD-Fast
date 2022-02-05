@@ -7,7 +7,7 @@ from skimage.io import imread
 from pathlib import Path
 import random
 from math import ceil
-from tf.keras.preprocessing.image import ImageDataGenerator
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
 def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches):
