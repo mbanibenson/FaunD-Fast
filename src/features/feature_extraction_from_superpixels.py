@@ -9,6 +9,7 @@ import random
 from math import ceil
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.decomposition import PCA
+from concurrent.futures import ProcessPoolExecutor
 
 
 def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches):
@@ -30,9 +31,13 @@ def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segmen
     print('Resizing images)')
 
     list_of_resized_ndarrays = [resize(im, (64,64)) for im in list_of_segment_patches]
-
+    
     print('Extracting hog features ...')
-    matrix_of_feature_vectors = np.vstack([model(image_array) for image_array in list_of_resized_ndarrays])
+    with ProcessPoolExecutor(14) as executor:
+        
+        feature_vectors = list(executor.map(model, list_of_resized_ndarrays))
+
+    matrix_of_feature_vectors = np.vstack(feature_vectors)
     
     return matrix_of_feature_vectors
 
@@ -158,11 +163,11 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
         
         support_set_labels.extend(labels_for_support_set_patches_in_this_subdirectory)
     
-    # support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
+    support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
     
     #support_set_labels = [1] * len(support_set_labels)
     
-    support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
+    # support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
     
     
 
