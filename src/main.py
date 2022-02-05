@@ -50,7 +50,7 @@ directory_containing_underwater_images_with_background_only = Path('/home/mbani/
 directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_set_classified/')
 #/home/mbani/mardata/datasets/support_set_classified/
 
-directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives')
+directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives')
 
 #directory_containing_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_100-1_OFOS-05/')
 
@@ -62,11 +62,11 @@ directory_containing_test_images = Path('/home/mbani/mardata/datasets/fauna_imag
 optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector, hull) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 
-for subdirectory in directory_containing_test_images.iterdir():
+for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
     
-    assert subdirectory.is_dir(), 'Please organize images into subdirectories'
+    assert directory_containing_test_images.is_dir(), 'Please organize images into subdirectories'
     
-    subdirectory_name = subdirectory.name
+    subdirectory_name = directory_containing_test_images.name
     
     directory_to_save_patches_of_positive_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna') / subdirectory_name
 
