@@ -125,7 +125,7 @@ class underwater_image:
         '''
         list_of_segment_patches = self.segment_patches
 
-        self.segment_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches)
+        # self.segment_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches)
         
         # self.segment_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(list_of_segment_patches, resize_dimension=(224,224,3))
 
@@ -156,8 +156,8 @@ def segment_image_and_extract_segment_features(file_path, training_mode, feature
     print('Converting segment patches to ndarrays ...')
     underwater_image_of_ccz.extract_segmentation_patches_to_batch_of_ndarrays(training_mode)
     
-    print('Extract Features from the segments ...')
-    underwater_image_of_ccz.extract_features_from_segmentation_patches(feature_extractor_module_url, resize_dimension)
+    # print('Extract Features from the segments ...')
+    # underwater_image_of_ccz.extract_features_from_segmentation_patches(feature_extractor_module_url, resize_dimension)
     
     
     return underwater_image_of_ccz
@@ -169,14 +169,16 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     Gather all feature vectors from all instances of segmented images
     
     '''
-    feature_vectors = np.concatenate([segmented_image_object.segment_patches_feature_vectors for segmented_image_object in segmented_image_objects], axis=0)
+    # feature_vectors = np.concatenate([segmented_image_object.segment_patches_feature_vectors for segmented_image_object in segmented_image_objects], axis=0)
     
     segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
+    
+    feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
     
     segment_patch_names = list(chain.from_iterable(segmented_image_object.identifier_name_for_each_patch for segmented_image_object in segmented_image_objects))
     
     segment_patch_bboxes = list(chain.from_iterable(segmented_image_object.segment_patch_bounding_boxes for segmented_image_object in segmented_image_objects))
     
-    assert len(segment_patch_names) == len(segment_patches), 'Number of patches does not match their labels'
+    assert len(segment_patch_names) == len(feature_vectors), 'Number of patches does not match number of feature vectors'
     
     return feature_vectors, segment_patches, segment_patch_names, segment_patch_bboxes
