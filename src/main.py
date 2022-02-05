@@ -52,7 +52,14 @@ directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_s
 
 directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives')
 
+directory_to_save_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna')
+
+shutil.rmtree(directory_to_save_detections, ignore_errors=True)
+
+directory_to_save_detections.mkdir()
+
 #directory_containing_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_100-1_OFOS-05/')
+
 
 
 
@@ -68,7 +75,7 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     subdirectory_name = directory_containing_test_images.name
     
-    directory_to_save_patches_of_positive_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna') / subdirectory_name
+    directory_to_save_patches_of_positive_detections = directory_to_save_detections / subdirectory_name
 
     directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
 
