@@ -25,7 +25,7 @@ def read_individual_rgb_image(file_path, scaling_factors=None):
     return rescaled_image
 
 
-def load_augmented_support_set_patches(directory_containing_support_sets, number_of_augmentations=200, target_size=(256,256)):
+def load_augmented_support_set_patches(directory_containing_support_sets, number_of_augmentations=200, target_size=(96,96)):
     '''
     Load augmented versions of support set patches
     
@@ -36,7 +36,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
     # Path(directory_to_save_augmented_copies).mkdir(exist_ok=True)
     
     generator_instance = ImageDataGenerator(
-        rotation_range=45,
+        #rotation_range=45,
         horizontal_flip=True,
         vertical_flip=True,
         #brightness_range=(0.1,0.9),
