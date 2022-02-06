@@ -64,7 +64,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
         #save_to_dir=directory_to_save_augmented_copies,
         save_prefix='augmented',
         save_format='jpg',
-        classes=subdirectories[0]
+        classes=subdirectory
         
         )
         
