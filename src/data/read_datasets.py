@@ -55,6 +55,8 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
     
     for i, subdirectory in enumerate(subdirectories, start=1):
         
+        print(f'Class being augmented {subdirectory}')
+        
         support_set_data_generator = generator_instance.flow_from_directory(
         directory=directory_containing_support_sets,
         target_size=target_size,
@@ -62,9 +64,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
         class_mode='sparse',
         batch_size=number_of_augmentations,
         #save_to_dir=directory_to_save_augmented_copies,
-        save_prefix='augmented',
-        save_format='jpg',
-        classes=subdirectory
+        classes=[subdirectory]
         
         )
         
