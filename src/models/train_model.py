@@ -16,6 +16,7 @@ from sklearn.svm import SVC
 from concurrent.futures import ProcessPoolExecutor
 import random
 from functools import partial
+from sklearn.neighbors import KNeighborsClassifier
 
 def novelty_detector_using_bounding_envelope(background_embeddings):
     '''
