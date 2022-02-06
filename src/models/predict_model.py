@@ -153,16 +153,16 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
         
         
-        selector_for_classification = test_embeddings_outlier_or_inlier_prediction == 1 
+#         selector_for_classification = test_embeddings_outlier_or_inlier_prediction == 1 
         
-        selector_for_outliers = selector_for_classification
+#         selector_for_outliers = selector_for_classification
         
         
 #         selector_for_probability = test_embeddings_classification_probabilities > 0.8
         
 #         selector_for_outliers = np.logical_and(selector_for_classification, selector_for_probability)
         
-        # selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
+        selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
         
     
