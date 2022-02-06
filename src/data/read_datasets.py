@@ -74,14 +74,18 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
 
             #print(f'Augmenting class ...')
             
-            support_set_patches.extend(augmented_batch.tolist())
+            support_set_patches.append(augmented_batch)
             
             support_set_labels.extend([i]*len(augmented_batch))
             
             number_of_items += len(augmented_batch)
             
             if number_of_items >= 200:
+                
+                print(f'Total number of augmented {subdirectory} is {number_of_items}')
 
                 break
-        
+                
+    support_set_patches = np.concatenate(support_set_patches, axis=0)    
+    
     return support_set_patches, support_set_labels
