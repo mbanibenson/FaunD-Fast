@@ -87,6 +87,8 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
 
                 break
                 
-    support_set_patches = np.concatenate(support_set_patches, axis=0)    
+    support_set_patches = np.concatenate(support_set_patches, axis=0)  
+    
+    support_set_patches = [arr for arr in support_set_patches]
     
     return support_set_patches, support_set_labels
