@@ -58,9 +58,9 @@ def novelty_detector_using_k_nearest_neighbors(training_embeddings, labels_for_t
     
     X = training_embeddings
     
-    y = [1 if int(val) > 0 else int(val) for val in labels_for_training_embeddings]
+    y = [val if int(val) == 0 else 1 for val in labels_for_training_embeddings]
     
-    knn = KNeighborsClassifier(n_neighbors=3)
+    knn = KNeighborsClassifier(n_neighbors=10, n_jobs=14)
     
     knn.fit(X, y)
     
