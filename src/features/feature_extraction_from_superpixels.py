@@ -11,6 +11,11 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.decomposition import PCA
 from concurrent.futures import ProcessPoolExecutor
 
+import sys
+sys.path.append('./')
+
+from data.read_datasets import load_augmented_support_set_patches
+
 
 def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segment_patches):
     '''
@@ -137,27 +142,31 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
     support_set_patches(ndarray): List of the image patches for the support sets
     
     '''
-    support_set_patches = []
+#     support_set_patches = []
     
-    support_set_labels = []
+#     support_set_labels = []
     
-    for id_num, sub_directory  in enumerate(Path(directory_containing_support_sets).iterdir(), start=1):
+#     for id_num, sub_directory  in enumerate(Path(directory_containing_support_sets).iterdir(), start=1):
         
-        support_set_patches_in_this_subdirectory = [imread(fp) for fp in sub_directory.iterdir()]
+#         support_set_patches_in_this_subdirectory = [imread(fp) for fp in sub_directory.iterdir()]
         
-        random.shuffle(support_set_patches_in_this_subdirectory)
+#         random.shuffle(support_set_patches_in_this_subdirectory)
         
-        support_set_patches_in_this_subdirectory = support_set_patches_in_this_subdirectory
+#         support_set_patches_in_this_subdirectory = support_set_patches_in_this_subdirectory
         
-        labels_for_support_set_patches_in_this_subdirectory = [id_num] * len(support_set_patches_in_this_subdirectory)
+#         labels_for_support_set_patches_in_this_subdirectory = [id_num] * len(support_set_patches_in_this_subdirectory)
         
-        support_set_patches.extend(support_set_patches_in_this_subdirectory)
+#         support_set_patches.extend(support_set_patches_in_this_subdirectory)
         
-        support_set_labels.extend(labels_for_support_set_patches_in_this_subdirectory)
+#         support_set_labels.extend(labels_for_support_set_patches_in_this_subdirectory)
+        
     
+    support_set_patches, support_set_labels = load_augmented_support_set_patches(directory_containing_support_sets)
+                                       
     #support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
     
     #support_set_labels = [1] * len(support_set_labels)
+    
     
     support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
     
