@@ -80,7 +80,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
             
             number_of_items += len(augmented_batch)
             
-            if number_of_items >= 200
+            if number_of_items >= 200:
 
                 break
         
