@@ -4,6 +4,7 @@ from pathlib import Path
 import shutil
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import random
+import numpy as np
 
 
 def read_individual_rgb_image(file_path, scaling_factors=None):
