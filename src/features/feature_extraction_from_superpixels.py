@@ -118,11 +118,8 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     
     print(f'Finished extracting features. Resulting matrix is size {matrix_of_feature_vectors.shape}. Performing pca ...')
     
-    pca = PCA(n_components=15, whiten=True)
     
-    matrix_of_feature_vectors = pca.fit_transform(matrix_of_feature_vectors)
     
-    print(f'Finished extracting pca. Resulting matrix is size {matrix_of_feature_vectors.shape}.')
     
     return matrix_of_feature_vectors
 
@@ -163,11 +160,11 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
         
         support_set_labels.extend(labels_for_support_set_patches_in_this_subdirectory)
     
-    support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
+    #support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
     
     #support_set_labels = [1] * len(support_set_labels)
     
-    # support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
+    support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches, resize_dimension=(224,224,3))
     
     
 

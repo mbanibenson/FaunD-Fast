@@ -67,30 +67,32 @@ directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata
 (training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
 optimization_results_object_for_finding_transformation_matrix, trained_pca, novelty_detector, hull) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
+##Visualize the results
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections)
 
-for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections)
+
+
+# for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
     
-    assert directory_containing_test_images.is_dir(), 'Please organize images into subdirectories'
+#     assert directory_containing_test_images.is_dir(), 'Please organize images into subdirectories'
     
-    subdirectory_name = directory_containing_test_images.name
+#     subdirectory_name = directory_containing_test_images.name
     
-    exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
+#     exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
     
-    if subdirectory_name in exclude_list:
+#     if subdirectory_name in exclude_list:
         
-        continue
+#         continue
     
-    directory_to_save_patches_of_positive_detections = directory_to_save_detections / subdirectory_name
+#     directory_to_save_patches_of_positive_detections = directory_to_save_detections / subdirectory_name
 
-    directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
+#     directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
 
-    #Perform inference on the trained model
-    outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
+#     #Perform inference on the trained model
+#     outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
 
 
-    ##Visualize the results
-    visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
 
-    visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
 
-    visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+#     visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
