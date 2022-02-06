@@ -36,7 +36,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
     # Path(directory_to_save_augmented_copies).mkdir(exist_ok=True)
     
     generator_instance = ImageDataGenerator(
-        #rotation_range=45,
+        rotation_range=45,
         horizontal_flip=True,
         vertical_flip=True,
         #brightness_range=(0.1,0.9),
