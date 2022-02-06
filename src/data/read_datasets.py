@@ -31,8 +31,8 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
     '''
     subdirectories = [fp.name for fp in Path(directory_containing_support_sets).iterdir() if fp.is_dir()]
     
-    shutil.rmtree(directory_to_save_augmented_copies, ignore_errors=True)
-    Path(directory_to_save_augmented_copies).mkdir(exist_ok=True)
+    # shutil.rmtree(directory_to_save_augmented_copies, ignore_errors=True)
+    # Path(directory_to_save_augmented_copies).mkdir(exist_ok=True)
     
     generator_instance = ImageDataGenerator(
         rotation_range=60,
