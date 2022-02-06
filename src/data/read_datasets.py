@@ -51,6 +51,8 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
     
     support_set_labels = []
     
+    print('Generating Augmentations ...')
+    
     for i, subdirectory in enumerate(subdirectories, start=1):
         
         support_set_data_generator = generator_instance.flow_from_directory(
@@ -65,15 +67,21 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
         classes=subdirectories[0]
         
         )
+        
+        number_of_items = 0
     
         for augmented_batch in support_set_data_generator:
 
-            print(f'Augmenting {random.sample(subdirectories)} class')
+            #print(f'Augmenting class ...')
             
             support_set_patches.extend(augmented_batch.tolist())
             
             support_set_labels.extend([i]*len(augmented_batch))
+            
+            number_of_items += len(augmented_batch)
+            
+            if number_of_items >= 200
 
-            break
+                break
         
     return support_set_patches, support_set_labels
