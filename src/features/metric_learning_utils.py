@@ -49,7 +49,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     pca = PCA(n_components=15, whiten=True)
     
-    combined_feature_vectors = pca.fit_transform(combined_feature_vectors)
+    pca.fit(combined_feature_vectors)
+    
+    combined_feature_vectors = pca.transform(combined_feature_vectors)
     
     print(f'Finished extracting pca. Resulting matrix is size {combined_feature_vectors.shape}.')
     
@@ -72,7 +74,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     original_feature_vectors = combined_feature_vectors
     
-    background_feature_vectors = nca.transform(segmentation_feature_vectors)
+    background_feature_vectors = nca.transform(pca.transform(segmentation_feature_vectors))
     
     # background_feature_vectors = (initial_transformation_matrix @ segmentation_feature_vectors.T).T
     
