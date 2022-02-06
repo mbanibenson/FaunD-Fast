@@ -103,7 +103,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
 #     return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull=None, feature_extractor_module_url=None, resize_dimension=None):
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull=None, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
@@ -144,20 +144,23 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
     
     
-        test_embeddings = trained_pca.transform(segmentation_feature_vectors)
+        test_embeddings = trained_nca.transform(pca.transform(segmentation_feature_vectors))
     
         test_patches = segment_patches
 
         test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
         
-        test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
+        # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
         
         
         selector_for_classification = test_embeddings_outlier_or_inlier_prediction == 1 
         
-        selector_for_probability = test_embeddings_classification_probabilities > 0.8
+        selector_for_outliers = selector_for_classification
         
-        selector_for_outliers = np.logical_and(selector_for_classification, selector_for_probability)
+        
+#         selector_for_probability = test_embeddings_classification_probabilities > 0.8
+        
+#         selector_for_outliers = np.logical_and(selector_for_classification, selector_for_probability)
         
         # selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
     
