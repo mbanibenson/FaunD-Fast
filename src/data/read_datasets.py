@@ -70,7 +70,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
         
         number_of_items = 0
     
-        for augmented_batch in support_set_data_generator:
+        for augmented_batch, _ in support_set_data_generator:
 
             #print(f'Augmenting class ...')
             
