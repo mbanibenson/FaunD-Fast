@@ -20,6 +20,8 @@ def zoom_and_save(file_path, scaling_factor, zoomed_images_directory):
     
     image = imread(file_path)
     
+    image_name = image.name
+    
     image_zoomed = zoom(image, [scaling_factor, scaling_factor, 1])
     
     imsave(zoomed_images_directory/image_name, image_zoomed.astype(np.uint8))
