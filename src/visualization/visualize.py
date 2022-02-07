@@ -4,6 +4,8 @@ import pandas as pd
 import seaborn as sns
 from pathlib import Path
 
+matplotlib.use('agg')
+
 def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combined_patches=None, figsize=(12,8), figname = None, directory_to_save_matplotlib_figures=None):
     '''
     Plot the embedding in 2D feature space
