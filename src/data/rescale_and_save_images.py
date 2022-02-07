@@ -56,6 +56,25 @@ def rescale_images( source_directory, scaling_factor=0.25):
 
 if __name__ == '__main__':
     
-    source_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_100-1_OFOS-05/')
+    directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset')
     
-    rescale_images(source_directory, scaling_factor=0.25)
+    for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
+    
+        assert directory_containing_test_images.is_dir(), 'Please organize images into subdirectories'
+
+        subdirectory_name = directory_containing_test_images.name
+
+        exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06', 'SO268-2_126-1_OFOS-07']
+
+        if subdirectory_name in exclude_list:
+
+            continue
+            
+        print(f'Scaling images in {subdirectory_name} directory ...')
+
+        #source_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_100-1_OFOS-05/')
+
+        rescale_images(directory_containing_test_images, scaling_factor=0.25)
+        
+    print('Finished.')
+    
