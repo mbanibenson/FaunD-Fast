@@ -1,10 +1,14 @@
+import matplotlib
+matplotlib.use('agg')
+
 import matplotlib.pyplot as plt
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
+
 import pandas as pd
 import seaborn as sns
 from pathlib import Path
 
-matplotlib.use('agg')
+
 
 def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combined_patches=None, figsize=(12,8), figname = None, directory_to_save_matplotlib_figures=None):
     '''
