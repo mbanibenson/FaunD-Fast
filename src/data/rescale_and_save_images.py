@@ -20,7 +20,7 @@ def zoom_and_save(file_path, scaling_factor, zoomed_images_directory):
     
     image = imread(file_path)
     
-    image_name = image.name
+    image_name = file_path.name
     
     image_zoomed = zoom(image, [scaling_factor, scaling_factor, 1])
     
@@ -48,7 +48,7 @@ def rescale_images( source_directory, scaling_factor=0.25):
     
     with ProcessPoolExecutor(14) as executor:
         
-        [executor.submit(scale_and_save, image_name) for image_name in source_directory.iterdir()]
+        [executor.submit(scale_and_save, file_path) for file_path in source_directory.iterdir()]
     
     print('Finished ...')
     
