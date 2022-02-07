@@ -62,9 +62,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
 
-    nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2)
+    nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2, max_iter=200)
     
-    #nca = NeighborhoodComponentsAnalysis(n_components=2, verbose=2, max_iter=100)
+    #nca = NeighborhoodComponentsAnalysis(n_components=2, verbose=2, max_iter=200)
 
     embedded_feature_vectors = nca.fit_transform(combined_feature_vectors, labels)
     
