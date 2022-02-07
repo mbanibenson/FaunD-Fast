@@ -59,7 +59,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
     
 #     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),)) + 2
 
-#     segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
+#     #segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
     
 #     combined_patches = training_embedding_patches + segment_patches
     
@@ -141,7 +141,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
         #segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),)) + 2
 
-        segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
+        #segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
     
     
         test_embeddings = trained_nca.transform(pca.transform(segmentation_feature_vectors))

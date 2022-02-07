@@ -41,7 +41,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     combined_patches = segment_patches + support_set_patches
     
-    combined_patches = [resize(patch, (96,96,3)) for patch in combined_patches]
+    #combined_patches = [resize(patch, (96,96,3)) for patch in combined_patches]
     
     
     combined_feature_vectors = np.concatenate([segmentation_feature_vectors, support_set_feature_vectors], axis=0)

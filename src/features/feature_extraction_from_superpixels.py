@@ -47,41 +47,41 @@ def extract_hand_engineered_hog_features_for_segmentation_patches(list_of_segmen
     return matrix_of_feature_vectors
 
 
-def extract_convnet_features_for_segmentation_patches(feature_extractor_module_url, image_patches, resize_dimension):
-    '''
-    Extract convnet features using a pre-trained model from tf hub given an nd-array of image patches
+# def extract_convnet_features_for_segmentation_patches(feature_extractor_module_url, image_patches, resize_dimension):
+#     '''
+#     Extract convnet features using a pre-trained model from tf hub given an nd-array of image patches
     
-    ARGUMENTS
-    ----------
-    feature_extractor_module_url(url): Path to feature extractor in tensorflow hub 
+#     ARGUMENTS
+#     ----------
+#     feature_extractor_module_url(url): Path to feature extractor in tensorflow hub 
     
-    image_patches(list): List of image patches from which to extract features 
+#     image_patches(list): List of image patches from which to extract features 
     
-    resize_dimension(tuple): Target image size expected by the feature extractor
+#     resize_dimension(tuple): Target image size expected by the feature extractor
     
     
-    RETURN
-    -------
-    image_patches_feature_vectors(ndarray): Matrix of feature vectors extracted from the images
+#     RETURN
+#     -------
+#     image_patches_feature_vectors(ndarray): Matrix of feature vectors extracted from the images
     
-    '''
-    #Resize to the dimension the tfhub module expects
-    resized_image_patches = [np.expand_dims(resize(patch, resize_dimension, anti_aliasing=True), axis=0) for patch in image_patches]
+#     '''
+#     #Resize to the dimension the tfhub module expects
+#     resized_image_patches = [np.expand_dims(resize(patch, resize_dimension, anti_aliasing=True), axis=0) for patch in image_patches]
 
-    batch_of_images = np.concatenate(resized_image_patches, axis=0).astype(np.float32) #/ 255.
+#     batch_of_images = np.concatenate(resized_image_patches, axis=0).astype(np.float32) #/ 255.
 
-    model = tf.keras.Sequential([
-    hub.KerasLayer(feature_extractor_module_url, trainable=False), # Can be True
-    tf.keras.layers.GlobalAveragePooling2D(),
-    ])
+#     model = tf.keras.Sequential([
+#     hub.KerasLayer(feature_extractor_module_url, trainable=False), # Can be True
+#     tf.keras.layers.GlobalAveragePooling2D(),
+#     ])
     
-    image_patches_feature_vectors = model(batch_of_images[:500])
+#     image_patches_feature_vectors = model(batch_of_images[:500])
     
     
-    return image_patches_feature_vectors
+#     return image_patches_feature_vectors
 
 
-def extract_convnet_features_for_segmentation_patches_using_keras_applications(image_patches, resize_dimension=(224,224,3)):
+def extract_convnet_features_for_segmentation_patches_using_keras_applications(image_patches, resize_dimension=(64,64,3)):
     '''
     Extract convnet features
     
@@ -90,6 +90,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     feature_extractor = tf.keras.applications.ResNet50(
         include_top=False,
         pooling='avg',
+        input_shape=(64,64,3)
     
     )
     
@@ -160,6 +161,8 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
         
         support_set_labels.extend(labels_for_support_set_patches_in_this_subdirectory)
         
+        
+    support_set_patches = [resize(patch, (64,64,3)) for patch in support_set_patches]
     
     #support_set_patches, support_set_labels = load_augmented_support_set_patches(directory_containing_support_sets)
                                        
