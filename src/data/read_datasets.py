@@ -20,7 +20,7 @@ def read_individual_rgb_image(file_path):
     '''
     img = imread(file_path)
 
-    return rescaled_image
+    return img
 
 
 def load_augmented_support_set_patches(directory_containing_support_sets, number_of_augmentations=200, target_size=(96,96)):
