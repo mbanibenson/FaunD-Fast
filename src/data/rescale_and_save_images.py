@@ -27,7 +27,7 @@ def zoom_and_save(file_path, scaling_factor, zoomed_images_directory):
     return
 
 
-def rescale_images(scaling_factor=0.25, source_directory):
+def rescale_images( source_directory, scaling_factor=0.25):
     '''
     Rescale images to the same scale
     
@@ -56,4 +56,4 @@ if __name__ == '__main__':
     
     source_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_126-1_OFOS-07')
     
-    rescale_images(scaling_factor=0.25, source_directory)
+    rescale_images(source_directory, scaling_factor=0.25)
