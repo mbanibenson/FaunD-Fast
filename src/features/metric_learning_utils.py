@@ -12,6 +12,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import homogeneity_score
 from sklearn.decomposition import PCA
+from sklearn.decomposition import KernelPCA
 
 rng = default_rng()
 
@@ -47,7 +48,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     #labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
     
-    pca = PCA(n_components=100, whiten=True)
+    pca = KernelPCA(n_components=100, kernel='rbf', n_jobs=8)
+    
+    #pca = PCA(n_components=100, whiten=True)
     
     pca.fit(combined_feature_vectors)
     
