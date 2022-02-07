@@ -71,7 +71,7 @@ class underwater_image:
         '''
         file_path = self.image_path
         
-        self.rgb_image = read_individual_rgb_image(file_path, scaling_factors=scaling_factors)
+        self.rgb_image = read_individual_rgb_image(file_path)
         
         return
     
