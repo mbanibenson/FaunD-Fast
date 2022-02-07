@@ -37,10 +37,8 @@ def rescale_images( source_directory, scaling_factor=0.25):
     
     assert source_directory.is_dir(), 'Please specify source images folder as a directory'
 
-    #zoomed_images_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection')  / source_directory.name
+    zoomed_images_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection')  / source_directory.name
     
-    zoomed_images_directory = Path('/home/mbani/mardata/datasets/background_images_without_fauna_resized')
-
     shutil.rmtree(zoomed_images_directory, ignore_errors=True)
     zoomed_images_directory.mkdir(parents=True, exist_ok=True)
 
@@ -58,6 +56,6 @@ def rescale_images( source_directory, scaling_factor=0.25):
 
 if __name__ == '__main__':
     
-    source_directory = Path('/home/mbani/mardata/datasets/background_images_without_fauna/')
+    source_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset/SO268-2_100-1_OFOS-05/')
     
     rescale_images(source_directory, scaling_factor=0.25)
