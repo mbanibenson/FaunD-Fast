@@ -163,12 +163,12 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
     
     #support_set_patches, support_set_labels = load_augmented_support_set_patches(directory_containing_support_sets)
                                        
-    support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
+    #support_set_patches_feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(support_set_patches)
     
     #support_set_labels = [1] * len(support_set_labels)
     
     
-    # support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches)
+    support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches)
     
     
 

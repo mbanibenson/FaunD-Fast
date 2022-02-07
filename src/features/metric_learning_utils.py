@@ -47,7 +47,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     #labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
     
-    pca = PCA(n_components=9, whiten=True)
+    pca = PCA(n_components=100, whiten=True)
     
     pca.fit(combined_feature_vectors)
     

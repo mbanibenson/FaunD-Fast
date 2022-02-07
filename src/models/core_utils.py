@@ -173,9 +173,9 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     
     segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
     
-    #feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
+    feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
     
-    feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(segment_patches)
+    #feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(segment_patches)
     
     segment_patch_names = list(chain.from_iterable(segmented_image_object.identifier_name_for_each_patch for segmented_image_object in segmented_image_objects))
     
