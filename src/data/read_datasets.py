@@ -7,7 +7,7 @@ import random
 import numpy as np
 
 
-def read_individual_rgb_image(file_path, scaling_factors=None):
+def read_individual_rgb_image(file_path):
     '''
     Load a single RGB image from disk, and optionally resize
     
@@ -19,8 +19,6 @@ def read_individual_rgb_image(file_path, scaling_factors=None):
     
     '''
     img = imread(file_path)
-        
-    rescaled_image = rescale(img, scaling_factors)
 
     return rescaled_image
 
