@@ -79,7 +79,7 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     subdirectory_name = directory_containing_test_images.name
     
-    exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06', 'SO268-2_147-1_OFOS-09']
+    exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06', 'SO268-2_147-1_OFOS-09', 'SO268-2_126-1_OFOS-07']
 
     if subdirectory_name in exclude_list:
         
