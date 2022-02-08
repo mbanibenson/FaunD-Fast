@@ -55,9 +55,9 @@ directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_s
 
 directory_to_save_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna')
 
-shutil.rmtree(directory_to_save_detections, ignore_errors=True)
+#shutil.rmtree(directory_to_save_detections, ignore_errors=True)
 
-directory_to_save_detections.mkdir()
+directory_to_save_detections.mkdir(exist_ok=True)
 
 directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection/')
 
