@@ -51,7 +51,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     #pca = KernelPCA(n_components=100, kernel='rbf', n_jobs=8)
     
-    pca = PCA(n_components=2000)
+    pca = PCA(n_components=100, whiten=True)
     
     pca.fit(combined_feature_vectors)
     
