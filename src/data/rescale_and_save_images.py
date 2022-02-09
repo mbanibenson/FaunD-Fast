@@ -37,7 +37,7 @@ def rescale_images( source_directory, scaling_factor=0.25):
     
     assert source_directory.is_dir(), 'Please specify source images folder as a directory'
 
-    zoomed_images_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection')  / source_directory.name
+    zoomed_images_directory = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_rescaled')  / source_directory.name
     
     shutil.rmtree(zoomed_images_directory, ignore_errors=True)
     zoomed_images_directory.mkdir(parents=True, exist_ok=True)
@@ -56,7 +56,7 @@ def rescale_images( source_directory, scaling_factor=0.25):
 
 if __name__ == '__main__':
     
-    directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset')
+    directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives')
     
     for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
     
