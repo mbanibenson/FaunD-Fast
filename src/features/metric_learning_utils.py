@@ -87,6 +87,17 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     labels_with_support_set_as_one_class = np.concatenate([segmentation_feature_vectors_labels, np.asarray([1]*len(support_set_feature_vectors_labels))])
     
+    
+    ### EXPERIMENTAL SECTION ###
+    field_columns = [f'X_{i}' for i in range(combined_feature_vectors.shape[1])]
+    
+    data_sheet = pd.DataFrame(data=combined_feature_vectors, columns=[field_columns])
+    
+    data_sheet['labels'] = labels
+    
+    data_sheet.to_csv('experimental_datasheet.csv')
+    ##############################
+    
     return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, optimization_results_object_for_finding_transformation_matrix, nca, pca
     
     #return embedded_feature_vectors, original_feature_vectors, labels, combined_patches, None, nca
