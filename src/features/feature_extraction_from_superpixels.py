@@ -104,7 +104,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
 
     resized_image_patches = [np.expand_dims(patch, axis=0) for patch in image_patches]
 
-    batch_of_all_images = np.concatenate(resized_image_patches, axis=0).astype(np.float32)
+    batch_of_all_images = np.concatenate(resized_image_patches, axis=0).astype('uint8')
     
     number_of_batches = ceil(len(batch_of_all_images)/32)
     
