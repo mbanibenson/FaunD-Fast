@@ -87,9 +87,9 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     
     '''
     
-    feature_extractor = tf.keras.applications.ResNet50(
+    feature_extractor = tf.keras.applications.resnet50.ResNet50(
         include_top=False,
-        pooling='max',
+        pooling='avg',
         weights="imagenet",
         input_shape=(64,64,3)
     
@@ -116,7 +116,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
         
         this_batch_of_images = tf.keras.applications.resnet50.preprocess_input(batch)
     
-        this_matrix_of_feature_vectors = feature_extractor(this_batch_of_images)
+        this_matrix_of_feature_vectors = feature_extractor.predict(this_batch_of_images)
         
         matrix_of_feature_vectors.append(this_matrix_of_feature_vectors)
     
