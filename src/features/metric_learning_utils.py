@@ -13,6 +13,7 @@ from sklearn.cluster import KMeans
 from sklearn.metrics.cluster import homogeneity_score
 from sklearn.decomposition import PCA
 from sklearn.decomposition import KernelPCA
+import pandas as pd
 
 rng = default_rng()
 
