@@ -37,7 +37,7 @@ def rescale_images( source_directory, scaling_factor=0.25):
     
     assert source_directory.is_dir(), 'Please specify source images folder as a directory'
 
-    zoomed_images_directory = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_rescaled')  / source_directory.name
+    zoomed_images_directory = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection')  / source_directory.name
     
     shutil.rmtree(zoomed_images_directory, ignore_errors=True)
     zoomed_images_directory.mkdir(parents=True, exist_ok=True)
@@ -56,7 +56,7 @@ def rescale_images( source_directory, scaling_factor=0.25):
 
 if __name__ == '__main__':
     
-    directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives')
+    directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset')
     
     for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
     
@@ -64,9 +64,9 @@ if __name__ == '__main__':
 
         subdirectory_name = directory_containing_test_images.name
 
-        exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06', 'SO268-2_126-1_OFOS-07']
+        exclude_list = ['SO268-2_126-1_OFOS-07']
 
-        if subdirectory_name in exclude_list:
+        if subdirectory_name not in exclude_list:
 
             continue
             
