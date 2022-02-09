@@ -25,6 +25,7 @@ from scipy.linalg import norm
 from scipy.optimize import nnls
 from scipy.optimize import minimize
 import shutil
+import time
 
 #Modules
 from models.core_utils import segment_image_and_extract_segment_features
@@ -88,6 +89,8 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     directory_to_save_patches_of_positive_detections = directory_to_save_detections / subdirectory_name
 
     directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
+    
+    tic = time.time()
 
     #Perform inference on the trained model
     outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
@@ -96,3 +99,11 @@ for directory_containing_test_images in directory_containing_subdirectories_with
 
 
     visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    
+    toc = time.time()
+    
+    processing_time = (toc - tic)/60
+    
+    with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
+    
+        print(f'Processing dive {subdirectory_name} took {processing_time} minutes', file=file)
