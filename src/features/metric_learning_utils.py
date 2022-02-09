@@ -51,7 +51,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     #pca = KernelPCA(n_components=100, kernel='rbf', n_jobs=8)
     
-    pca = PCA(n_components=100)
+    pca = PCA(n_components=500)
     
     pca.fit(combined_feature_vectors)
     
@@ -59,9 +59,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     print(f'Finished extracting pca. Resulting matrix is size {combined_feature_vectors.shape}.')
     
-    labels = np.concatenate([segmentation_feature_vectors_labels, [1]*len(support_set_feature_vectors_labels)])
+    #labels = np.concatenate([segmentation_feature_vectors_labels, [1]*len(support_set_feature_vectors_labels)])
     
-    #labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
+    labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
     
     optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = None, None #run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
