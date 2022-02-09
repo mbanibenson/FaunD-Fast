@@ -51,7 +51,7 @@ directory_containing_underwater_images_with_background_only = Path('/home/mbani/
 directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_set_classified/')
 #/home/mbani/mardata/datasets/support_set_classified/
 
-directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_resized')
+directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_rescaled')
 
 directory_to_save_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna_experimental')
 
