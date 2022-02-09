@@ -92,7 +92,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     ### EXPERIMENTAL SECTION ###
     field_columns = [f'X_{i}' for i in range(combined_feature_vectors.shape[1])]
     
-    data_sheet = pd.DataFrame(data=combined_feature_vectors, columns=[field_columns])
+    data_sheet = pd.DataFrame(data=combined_feature_vectors, columns=field_columns)
     
     data_sheet['labels'] = labels
     
