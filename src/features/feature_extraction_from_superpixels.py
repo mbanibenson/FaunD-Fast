@@ -89,7 +89,7 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     
     feature_extractor = tf.keras.applications.ResNet50(
         include_top=False,
-        pooling='avg',
+        pooling='max',
         weights="imagenet",
         input_shape=(64,64,3)
     
