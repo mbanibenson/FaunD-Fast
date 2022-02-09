@@ -23,7 +23,7 @@ def read_individual_rgb_image(file_path):
     return img
 
 
-def load_augmented_support_set_patches(directory_containing_support_sets, number_of_augmentations=200, target_size=(96,96)):
+def load_augmented_support_set_patches(directory_containing_support_sets, number_of_augmentations=200, target_size=(64,64)):
     '''
     Load augmented versions of support set patches
     
