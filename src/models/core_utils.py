@@ -35,6 +35,8 @@ from features.feature_extraction_from_superpixels import extract_hand_engineered
 
 from features.feature_extraction_from_superpixels import extract_convnet_features_for_segmentation_patches_using_keras_applications
 
+from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
+
 class underwater_image:
     '''
     Read an image and segment it
@@ -171,7 +173,11 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     
     segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
     
-    feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
+    # feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
+    
+    feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segment_patches)
+    
+    extract_SIFT_features_for_segmentation_patches_using_kornia
     
     #feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(segment_patches)
     

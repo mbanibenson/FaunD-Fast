@@ -10,6 +10,12 @@ from math import ceil
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from sklearn.decomposition import PCA
 from concurrent.futures import ProcessPoolExecutor
+from skimage.color import rgb2gray
+import kornia
+from numpy.random import default_rng
+from kornia.feature import SIFTDescriptor
+import torch
+import time
 
 import sys
 sys.path.append('./')
@@ -126,6 +132,39 @@ def extract_convnet_features_for_segmentation_patches_using_keras_applications(i
     return matrix_of_feature_vectors
 
 
+
+def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
+    '''
+    Extract KORNIA SIFT features
+    
+    '''
+    
+    tic = time.time()
+    
+    patch_size = 64
+    
+    grayscale_image_patches = [np.expand_dims(rgb2gray(patch), axis=0) for patch in image_patches]
+
+    batch_of_all_images = np.concatenate(grayscale_image_patches, axis=0).astype(np.uint8)
+    
+    batch_of_all_images = np.expand_dims(batch_of_all_images, axis=1)
+    
+    batch_of_all_images_as_tensor = torch.from_numpy(batch_of_all_images)
+    
+    SIFT = SIFTDescriptor(patch_size, 8, 4)
+
+    descriptors = SIFT(batch_of_all_images_as_tensor)
+
+    matrix_of_feature_vectors = descriptors.numpy()
+    
+    toc = time.time()
+    
+    print(f'Extracted SIFT data matrix of shape: {matrix_of_feature_vectors.shape} in {toc-tic: .2f} seconds')
+
+    return matrix_of_feature_vectors
+
+
+
 def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing_support_sets):
     '''
     Extract features from support set features contained within a directory
@@ -172,7 +211,9 @@ def extract_hand_engineered_hog_support_set_feature_vectors(directory_containing
     #support_set_labels = [1] * len(support_set_labels)
     
     
-    support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches)
+    # support_set_patches_feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(support_set_patches)
+    
+    support_set_patches_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(support_set_patches)
     
     
 
