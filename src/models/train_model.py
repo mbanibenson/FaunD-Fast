@@ -26,7 +26,9 @@ def novelty_detector_using_bounding_envelope(background_embeddings):
     
     #hull = ConvexHull(background_embeddings)
     
-    background_points = [Point(x,y) for x, y in background_embeddings[:,[0,1]]]
+    background_embeddings = background_embeddings[:,[0,1]]
+    
+    background_points = [Point(x,y) for x, y in background_embeddings]
     
     hull = MultiPoint(background_embeddings).convex_hull
     
