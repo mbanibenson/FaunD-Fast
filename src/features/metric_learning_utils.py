@@ -95,7 +95,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     
     ### EXPERIMENTAL SECTION ###
-    if combined_feature_vectors.shape[1] != 3:
+    if embedded_feature_vectors.shape[1] != 3:
         
         nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
     
@@ -105,7 +105,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
         
     else:
         
-        combined_feature_vectors_3d = combined_feature_vectors
+        combined_feature_vectors_3d = embedded_feature_vectors
     
     field_columns = [f'X_{i}' for i in range(combined_feature_vectors_3d.shape[1])]
     
