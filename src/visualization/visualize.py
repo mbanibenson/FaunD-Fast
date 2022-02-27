@@ -7,6 +7,7 @@ from matplotlib.offsetbox import OffsetImage, AnnotationBbox
 import pandas as pd
 import seaborn as sns
 from pathlib import Path
+from sklearn.decomposition import PCA
 
 
 
@@ -15,6 +16,10 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
     Plot the embedding in 2D feature space
     
     '''
+    if embedded_feature_vectors.shape[1] == 3:
+        
+        embedded_feature_vectors = PCA(2, whiten=True).fit_transform(embedded_feature_vectors)
+        
     fig, ax = plt.subplots(figsize=figsize)
     
     data_matrix = pd.DataFrame({'X':embedded_feature_vectors[:,0], 'Y':embedded_feature_vectors[:,1], 'Label':labels})
