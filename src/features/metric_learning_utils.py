@@ -68,8 +68,8 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
 
     #nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2, max_iter=200)
     
-    nca = LinearDiscriminantAnalysis(n_components=3)
-    #nca = NeighborhoodComponentsAnalysis(n_components=2, verbose=2, max_iter=200)
+    #nca = LinearDiscriminantAnalysis(n_components=3)
+    nca = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
     
     nca.fit(combined_feature_vectors, labels)
 
@@ -95,11 +95,17 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     
     ### EXPERIMENTAL SECTION ###
-    nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
+    if combined_feature_vectors.shape[1] != 3:
+        
+        nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
     
-    nca_for_viz.fit(combined_feature_vectors, labels)
+        nca_for_viz.fit(combined_feature_vectors, labels)
     
-    combined_feature_vectors_3d = nca_for_viz.transform(combined_feature_vectors)
+        combined_feature_vectors_3d = nca_for_viz.transform(combined_feature_vectors)
+        
+    else:
+        
+        combined_feature_vectors_3d = combined_feature_vectors
     
     field_columns = [f'X_{i}' for i in range(combined_feature_vectors_3d.shape[1])]
     
