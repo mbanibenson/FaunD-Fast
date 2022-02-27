@@ -16,7 +16,7 @@ from numpy.random import default_rng
 from kornia.feature import SIFTDescriptor
 import torch
 import time
-from skimage.exposure import equalize_adapthist
+from skimage.exposure import equalize_hist
 
 import sys
 sys.path.append('./')
