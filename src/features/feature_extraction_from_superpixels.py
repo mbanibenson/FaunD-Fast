@@ -146,7 +146,7 @@ def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
     
     #contrast_enhanced_image_patches = [rescale_intensity(patch.astype(np.float32)) for patch in image_patches]
     
-    grayscale_image_patches = [np.expand_dims(rescale_intensity(rgb2gray(patch)), axis=0) for patch in image_patches]
+    grayscale_image_patches = [np.expand_dims(equalize_adapthist(rgb2gray(patch)), axis=0) for patch in image_patches]
 
     batch_of_all_images = np.concatenate(grayscale_image_patches, axis=0).astype(np.float32)
     
