@@ -99,9 +99,11 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     nca_for_viz.fit(combined_feature_vectors, labels)
     
-    field_columns = [f'X_{i}' for i in range(combined_feature_vectors.shape[1])]
+    combined_feature_vectors_3d = nca_for_viz.transform(combined_feature_vectors)
     
-    data_sheet = pd.DataFrame(data=combined_feature_vectors, columns=field_columns)
+    field_columns = [f'X_{i}' for i in range(combined_feature_vectors_3d.shape[1])]
+    
+    data_sheet = pd.DataFrame(data=combined_feature_vectors_3d, columns=field_columns)
     
     data_sheet['labels'] = labels
     
