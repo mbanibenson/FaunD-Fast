@@ -69,7 +69,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2, max_iter=200)
     
     #nca = LinearDiscriminantAnalysis(n_components=3)
-    nca = NeighborhoodComponentsAnalysis(n_components=10, verbose=2, max_iter=200)
+    nca = NeighborhoodComponentsAnalysis(n_components=4, verbose=2, max_iter=200)
     
     nca.fit(combined_feature_vectors, labels)
 
