@@ -16,7 +16,7 @@ from numpy.random import default_rng
 from kornia.feature import SIFTDescriptor
 import torch
 import time
-from skimage.exposure import equalize_hist, equalize_adapthist
+from skimage.exposure import equalize_hist, equalize_adapthist, rescale_intensity
 
 import sys
 sys.path.append('./')
@@ -144,7 +144,9 @@ def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
     
     patch_size = 64
     
-    grayscale_image_patches = [np.expand_dims(rgb2gray(equalize_adapthist(patch)), axis=0) for patch in image_patches]
+    contrast_enhanced_image_patches = [rescale_intensity(patch.astype(np.uint8)) for patch in image_patches]
+    
+    grayscale_image_patches = [np.expand_dims(rgb2gray(contrast_enhanced_image_patch), axis=0) for contrast_enhanced_image_patch in contrast_enhanced_image_patches]
 
     batch_of_all_images = np.concatenate(grayscale_image_patches, axis=0).astype(np.float32)
     
