@@ -31,7 +31,7 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
     
     #data_matrix = data_matrix.iloc[-4:]
     
-    temp = sns.scatterplot(x='X', y='Y', hue='Label Names', data=data_matrix, ax=ax)
+    temp = sns.scatterplot(x='X', y='Y', hue='Label Names', data=data_matrix, ax=ax, s=5)
     
     if combined_patches:
         

@@ -106,4 +106,4 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
     
-        print(f'Processing dive {subdirectory_name} took {processing_time} minutes', file=file)
+        print(f'Processing dive {subdirectory_name} took {processing_time: .2f} minutes', file=file)
