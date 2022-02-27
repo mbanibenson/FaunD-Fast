@@ -95,6 +95,10 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     
     ### EXPERIMENTAL SECTION ###
+    nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
+    
+    nca_for_viz.fit(combined_feature_vectors, labels)
+    
     field_columns = [f'X_{i}' for i in range(combined_feature_vectors.shape[1])]
     
     data_sheet = pd.DataFrame(data=combined_feature_vectors, columns=field_columns)
