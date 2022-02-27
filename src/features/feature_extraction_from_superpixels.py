@@ -155,7 +155,7 @@ def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
 
     descriptors = SIFT(batch_of_all_images_as_tensor)
 
-    matrix_of_feature_vectors = descriptors.numpy()
+    matrix_of_feature_vectors = descriptors.detach().numpy()
     
     toc = time.time()
     
