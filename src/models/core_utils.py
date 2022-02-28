@@ -201,6 +201,6 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     
     segment_patch_bboxes = list(chain.from_iterable(segmented_image_object.segment_patch_bounding_boxes for segmented_image_object in segmented_image_objects))
     
-    assert len(segment_patch_names) == len(feature_vectors), 'Number of patches does not match number of feature vectors'
+    assert len(segment_patch_names) == len(segment_patch_bboxes), 'Number of patches does not match number of bboxes'
     
     return segment_patches, segment_patch_names, segment_patch_bboxes
