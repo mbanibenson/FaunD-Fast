@@ -104,4 +104,4 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     print('Fitting knn novelty detector ...')
     novelty_detector = novelty_detector_using_k_nearest_neighbors(embedded_feature_vectors, labels)
     
-    return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, trained_nca, novelty_detector, hull, scaler
+    return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, novelty_detector, hull, scaler
