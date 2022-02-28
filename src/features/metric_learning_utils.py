@@ -44,7 +44,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #Standardize them to zero mean unit variance
     scaler = StandardScaler()
     
-    scaler.fit(combined_patches_as_matrix)
+    scaler.fit(combined_patches_as_matrix[:len(segment_patches)])
     
     combined_patches_standardized = scaler.transform(combined_patches_as_matrix)
     
