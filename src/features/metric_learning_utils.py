@@ -45,7 +45,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     scaler.fit(combined_patches_as_matrix)
     
-    combined_patches_standardized = scalar.transform(combined_patches_as_matrix)
+    combined_patches_standardized = scaler.transform(combined_patches_as_matrix)
     
     
     #Reshape them back to original dimension
