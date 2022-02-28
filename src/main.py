@@ -52,7 +52,7 @@ directory_containing_underwater_images_with_background_only = Path('/home/mbani/
 directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_set_classified/')
 #/home/mbani/mardata/datasets/support_set_classified/
 
-directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_rescaled')
+# directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_rescaled')
 
 directory_to_save_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna_experimental')
 
@@ -60,7 +60,7 @@ shutil.rmtree(directory_to_save_detections, ignore_errors=True)
 
 directory_to_save_detections.mkdir(exist_ok=True)
 
-# directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection/')
+directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection/')
 
 
 
@@ -82,7 +82,7 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     exclude_list = ['SO268-2_126-1_OFOS-07']#'SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
 
-    if subdirectory_name in exclude_list:
+    if subdirectory_name not in exclude_list:
         
         continue
     
