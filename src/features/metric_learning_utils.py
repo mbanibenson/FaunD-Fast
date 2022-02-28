@@ -107,7 +107,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     data_sheet.to_csv('experimental_datasheet.csv', index=False)
     ##############################
     
-    return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, nca, scaler
+    return embedded_feature_vectors, background_feature_vectors, labels, combined_patches, nca, scaler
     
     
 
