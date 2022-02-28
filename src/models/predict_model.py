@@ -204,7 +204,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
 
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, novelty_detector, directory_to_save_patches_of_positive_detections, scalar, hull=None):
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, novelty_detector, directory_to_save_patches_of_positive_detections, scaler, hull=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
