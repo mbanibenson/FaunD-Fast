@@ -74,36 +74,36 @@ visualize_embedded_segment_patches(training_embeddings, training_embedding_label
 visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections)
 
 
-# for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
+for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
     
-#     assert directory_containing_test_images.is_dir(), 'Please organize images into subdirectories'
+    assert directory_containing_test_images.is_dir(), 'Please organize images into subdirectories'
     
-#     subdirectory_name = directory_containing_test_images.name
+    subdirectory_name = directory_containing_test_images.name
     
-#     exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
+    exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
 
-#     if subdirectory_name in exclude_list:
+    if subdirectory_name in exclude_list:
         
-#         continue
+        continue
     
-#     directory_to_save_patches_of_positive_detections = directory_to_save_detections / subdirectory_name
+    directory_to_save_patches_of_positive_detections = directory_to_save_detections / subdirectory_name
 
-#     directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
+    directory_to_save_matplotlib_figures = directory_to_save_patches_of_positive_detections
     
-#     tic = time.time()
+    tic = time.time()
 
-#     #Perform inference on the trained model
-#     outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull)
-
-
+    #Perform inference on the trained model
+    outlier_test_embeddings, outlier_test_labels, outlier_test_patches = run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, novelty_detector, directory_to_save_patches_of_positive_detections, scaler, hull)
 
 
-#     visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+
+
+    visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
     
-#     toc = time.time()
+    toc = time.time()
     
-#     processing_time = (toc - tic)/60
+    processing_time = (toc - tic)/60
     
-#     with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
+    with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
     
-#         print(f'Processing dive {subdirectory_name} took {processing_time: .2f} minutes', file=file)
+        print(f'Processing dive {subdirectory_name} took {processing_time: .2f} minutes', file=file)

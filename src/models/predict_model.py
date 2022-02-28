@@ -15,6 +15,7 @@ import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
 from math import ceil
 from functools import partial
+from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
 
 
 def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull):
@@ -103,7 +104,107 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
 #     return outlier_test_embeddings, outlier_test_labels, outlier_test_patches
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull=None, feature_extractor_module_url=None, resize_dimension=None):
+# def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, pca, novelty_detector, directory_to_save_patches_of_positive_detections, hull=None, feature_extractor_module_url=None, resize_dimension=None):
+#     '''
+#     Run inference on test images and return results for plotting and visualizations
+    
+#     '''
+#     test_image_file_paths = list(directory_containing_test_images.iterdir())
+#     #test_image_file_paths = random.sample(test_image_file_paths, 30)
+    
+#     shutil.rmtree(directory_to_save_patches_of_positive_detections, ignore_errors=True)
+#     directory_to_save_patches_of_positive_detections.mkdir()
+    
+#     number_of_partitions = ceil(len(test_image_file_paths) / 20)
+    
+#     test_image_file_paths_partitions = np.array_split(np.asarray(test_image_file_paths), number_of_partitions)
+    
+#     outlier_test_patch_names_for_all_partitions = [] 
+    
+#     outlier_test_embeddings_for_all_partitions = []
+    
+#     outlier_test_patch_bboxes_for_all_partitions = []
+    
+#     outlier_test_patches_for_all_partitions = []
+    
+#     for partition_id, partition_of_file_paths in enumerate(test_image_file_paths_partitions):
+        
+#         print(f'[INFO] Processing partition {partition_id} / {number_of_partitions} ...')
+    
+#         with ProcessPoolExecutor(14) as executor:
+            
+#             _segment_image_and_extract_segment_features = partial(segment_image_and_extract_segment_features, training_mode=False)
+
+#             segmented_image_objects = list(executor.map(_segment_image_and_extract_segment_features, partition_of_file_paths))
+        
+    
+#         segmentation_feature_vectors, segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    
+#         #segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),)) + 2
+
+#         #segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
+    
+    
+#         test_embeddings = trained_nca.transform(pca.transform(segmentation_feature_vectors))
+    
+#         test_patches = segment_patches
+
+#         test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+        
+# #         # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
+        
+        
+#         selector_for_classification = test_embeddings_outlier_or_inlier_prediction == 1 
+        
+#         selector_for_outliers = selector_for_classification
+        
+        
+# #         selector_for_probability = test_embeddings_classification_probabilities > 0.8
+        
+# #         selector_for_outliers = np.logical_and(selector_for_classification, selector_for_probability)
+        
+#         # selector_for_outliers = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
+    
+        
+    
+#         outlier_test_embeddings = np.compress(selector_for_outliers, test_embeddings, axis=0)
+    
+#         outlier_test_patches = list(compress(segment_patches, selector_for_outliers))
+    
+#         outlier_test_patch_names = list(compress(names_for_each_segment_patch, selector_for_outliers))
+    
+#         outlier_test_patch_bboxes = list(compress(segment_patch_bboxes, selector_for_outliers))
+    
+#         save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
+        
+#         outlier_test_patch_names_for_all_partitions.extend(outlier_test_patch_names)
+        
+#         outlier_test_patch_bboxes_for_all_partitions.extend(outlier_test_patch_bboxes)
+        
+#         outlier_test_embeddings_for_all_partitions.append(outlier_test_embeddings)
+        
+#         outlier_test_patches_for_all_partitions.extend(outlier_test_patches)
+        
+#     outlier_test_embeddings_for_all_partitions = np.concatenate(outlier_test_embeddings_for_all_partitions, axis=0)
+    
+#     generate_csv_summarizing_detections(outlier_test_patch_names_for_all_partitions, outlier_test_embeddings_for_all_partitions, outlier_test_patch_bboxes_for_all_partitions, directory_to_save_patches_of_positive_detections)
+    
+#     outlier_test_labels_for_all_partitions = [2] * len(outlier_test_patches_for_all_partitions)
+
+
+#     # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings, test_patches, hull)
+    
+    
+    
+#     # outlier_test_embeddings, outlier_test_labels, outlier_test_patches = novelty_detector_using_bounding_envelope(background_embeddings, test_embeddings, test_patches)
+    
+    
+    
+#     return outlier_test_embeddings_for_all_partitions, outlier_test_labels_for_all_partitions, outlier_test_patches_for_all_partitions
+
+
+
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, novelty_detector, directory_to_save_patches_of_positive_detections, scalar, hull=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
@@ -137,14 +238,19 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
             segmented_image_objects = list(executor.map(_segment_image_and_extract_segment_features, partition_of_file_paths))
         
     
-        segmentation_feature_vectors, segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
-    
-        #segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),)) + 2
+        segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
+        
+        segment_patches_as_matrix = np.vstack([patch.ravel() for patch in segment_patches])
 
-        #segment_patches = [resize(patch, (96,96,3)) for patch in segment_patches]
-    
-    
-        test_embeddings = trained_nca.transform(pca.transform(segmentation_feature_vectors))
+        segment_patches_standardized = scaler.transform(segment_patches_as_matrix)
+
+
+        #Reshape them back to original dimension
+        segment_patches_standardized = [flattened_patch.reshape((64,64,3)) for flattened_patch in segment_patches_standardized]
+        
+        segmentation_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
+
+        test_embeddings = trained_nca.transform(segmentation_feature_vectors)
     
         test_patches = segment_patches
 
