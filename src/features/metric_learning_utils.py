@@ -22,6 +22,7 @@ import sys
 sys.path.append('./')
 from models.core_utils import merge_segmentation_patches_from_all_images
 from data.read_datasets import load_augmented_support_set_patches
+from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
 
 
 def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, directory_containing_support_sets):
@@ -55,7 +56,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #Retrieve segment patches separetly for feature extraction
     segmentation_patches_standardized = combined_patches_standardized[:len(segment_patches)]
     
-    segmentation_feature_vectors = feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
+    segmentation_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
     
