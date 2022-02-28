@@ -80,9 +80,9 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     subdirectory_name = directory_containing_test_images.name
     
-    exclude_list = ['SO268-2_126-1_OFOS-07']#'SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
+    exclude_list = ['SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
 
-    if subdirectory_name not in exclude_list:
+    if subdirectory_name in exclude_list:
         
         continue
     
@@ -106,4 +106,4 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
     
-        print(f'Processing dive {subdirectory_name} took {processing_time: .2f} minutes', file=file)
+        print(f'Processing dive {subdirectory_name} with {len(list(directory_containing_test_images.iterdir()))} images took {processing_time: .2f} minutes', file=file)
