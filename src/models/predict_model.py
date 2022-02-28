@@ -259,7 +259,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
 #         # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
         
         
-        selector_for_classification = np.where(test_embeddings_outlier_or_inlier_prediction != 0, True, False)
+        selector_for_classification = np.where(test_embeddings_outlier_or_inlier_prediction != 0, False, True)
         
         selector_for_outliers = selector_for_classification
         
