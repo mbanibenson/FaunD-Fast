@@ -62,7 +62,7 @@ def novelty_detector_using_k_nearest_neighbors(training_embeddings, labels_for_t
     
     y = [val if int(val) == 0 else 1 for val in labels_for_training_embeddings]
     
-    knn = KNeighborsClassifier(n_neighbors=3, n_jobs=14)
+    knn = KNeighborsClassifier(n_neighbors=5, n_jobs=14)
     
     knn.fit(X, y)
     
@@ -95,15 +95,15 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     print('Running optimization ...')
     embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_nca, pca = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, support_set_feature_vectors, support_set_patches, support_set_labels)
     
-    print('Fitting svm novelty detector ...')
-    novelty_detector = novelty_detector_using_binary_kernel_svm(embedded_feature_vectors, labels) 
+    # print('Fitting svm novelty detector ...')
+    # novelty_detector = novelty_detector_using_binary_kernel_svm(embedded_feature_vectors, labels) 
     
     #novelty_detector = fit_one_class_svm(embedded_background_feature_vectors)
     
     print('Fitting hull-based novelty detector ...')
     hull = novelty_detector_using_bounding_envelope(embedded_background_feature_vectors)
     
-    #print('Fitting knn novelty detector ...')
-    #novelty_detector = novelty_detector_using_k_nearest_neighbors(embedded_feature_vectors, labels)
+    print('Fitting knn novelty detector ...')
+    novelty_detector = novelty_detector_using_k_nearest_neighbors(embedded_feature_vectors, labels)
     
     return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, optimization_results_object_for_finding_transformation_matrix, trained_nca, novelty_detector, hull, pca
