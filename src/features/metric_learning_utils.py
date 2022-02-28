@@ -14,83 +14,73 @@ from sklearn.metrics.cluster import homogeneity_score
 from sklearn.decomposition import PCA
 from sklearn.decomposition import KernelPCA
 import pandas as pd
+from sklearn.preprocessing import StandardScaler
 
 rng = default_rng()
 
 import sys
 sys.path.append('./')
 from models.core_utils import merge_segmentation_patches_from_all_images
-    
-    
+from data.read_datasets import load_augmented_support_set_patches
 
-def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, support_set_feature_vectors, support_set_patches, support_set_labels):
+
+def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, directory_containing_support_sets):
     '''
     Embedd feature vectors to 2D manifold
     
     '''
-    segmentation_feature_vectors, segment_patches, _ , _ = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    #Gather segment patches and support sets
+    segment_patches, _ , _ = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
-#     random_sample_indices = rng.integers(0, len(segmented_image_objects), size=100)
+    support_set_patches, support_set_labels = load_augmented_support_set_patches(directory_containing_support_sets)
     
-#     segmentation_feature_vectors = segmentation_feature_vectors[random_sample_indices]
     
-#     segment_patches = np.array(segment_patches)[random_sample_indices].tolist()
+    #Combine and flatten them to form a matrix
+    combined_patches = segment_patches + support_set_patches
+    
+    combined_patches_as_matrix = np.concatenate([patch.ravel() for patch in combined_patches], axis=0)
+    
+    #Standardize them to zero mean unit variance
+    scaler = StandardScaler()
+    
+    scaler.fit(combined_patches_as_matrix)
+    
+    combined_patches_standardized = scalar.transform(combined_patches_as_matrix)
+    
+    
+    #Reshape them back to original dimension
+    combined_patches_standardized = [flattened_patch.reshape((64,64,3)) for flattened_patch in combined_patches_standardized]
+    
+    
+    #Retrieve segment patches separetly for feature extraction
+    segmentation_patches_standardized = combined_patches_standardized[:len(segment_patches)]
+    
+    segmentation_feature_vectors = feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
     
-    support_set_feature_vectors_labels = support_set_labels
     
-    combined_patches = segment_patches + support_set_patches
+    #Retrieve support sets separetly for feature extraction
+    support_set_patches_standardized = combined_patches_standardized[len(segment_patches):]
+    support_set_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(support_set_patches_standardized)
+
     
-    #combined_patches = [resize(patch, (96,96,3)) for patch in combined_patches]
-    
-    
+    #merge the extracted features to form a data matrix
     combined_feature_vectors = np.concatenate([segmentation_feature_vectors, support_set_feature_vectors], axis=0)
-    
-    #labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
-    
-    #pca = KernelPCA(n_components=100, kernel='rbf', n_jobs=8)
-    
-    pca = PCA(n_components=128, whiten=True)
-    
-    pca.fit(combined_feature_vectors)
-    
-    combined_feature_vectors = pca.transform(combined_feature_vectors)
-    
-    print(f'Finished extracting pca. Resulting matrix is size {combined_feature_vectors.shape}.')
-    
-    # labels = np.concatenate([segmentation_feature_vectors_labels, [1]*len(support_set_feature_vectors_labels)])
-    
+
     labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
     
-    optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = None, None #run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
 
-
-    #nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2, max_iter=200)
-    
-    #nca = LinearDiscriminantAnalysis(n_components=3)
+    #Perform supervised pca
     nca = NeighborhoodComponentsAnalysis(n_components=2, verbose=2, max_iter=200)
     
     nca.fit(combined_feature_vectors, labels)
 
     embedded_feature_vectors = nca.transform(combined_feature_vectors)
     
-#     nca = LinearDiscriminantAnalysis(n_components=2)
-    
-#     nca.fit(combined_feature_vectors, labels)
-    
-#     embedded_feature_vectors = nca.transform(combined_feature_vectors)
+    #Perform supervised pca for only background for later visualization
+    background_feature_vectors = nca.transform(segmentation_feature_vectors)
 
-    # embedded_feature_vectors = (initial_transformation_matrix @ combined_feature_vectors.T).T
-    
-    original_feature_vectors = combined_feature_vectors
-    
-    background_feature_vectors = nca.transform(pca.transform(segmentation_feature_vectors))
-    
-    # background_feature_vectors = nca.transform(segmentation_feature_vectors)
-    
-    # background_feature_vectors = (initial_transformation_matrix @ segmentation_feature_vectors.T).T
-    
     labels_with_support_set_as_one_class = np.concatenate([segmentation_feature_vectors_labels, np.asarray([1]*len(support_set_feature_vectors_labels))])
     
     
@@ -116,7 +106,104 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     data_sheet.to_csv('experimental_datasheet.csv', index=False)
     ##############################
     
-    return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, optimization_results_object_for_finding_transformation_matrix, nca, pca
+    return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, nca, scaler
+    
+    
+
+# def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, support_set_feature_vectors, support_set_patches, support_set_labels):
+#     '''
+#     Embedd feature vectors to 2D manifold
+    
+#     '''
+#     segmentation_feature_vectors, segment_patches, _ , _ = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    
+# #     random_sample_indices = rng.integers(0, len(segmented_image_objects), size=100)
+    
+# #     segmentation_feature_vectors = segmentation_feature_vectors[random_sample_indices]
+    
+# #     segment_patches = np.array(segment_patches)[random_sample_indices].tolist()
+    
+#     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
+    
+#     support_set_feature_vectors_labels = support_set_labels
+    
+#     combined_patches = segment_patches + support_set_patches
+    
+#     #combined_patches = [resize(patch, (96,96,3)) for patch in combined_patches]
+    
+    
+#     combined_feature_vectors = np.concatenate([segmentation_feature_vectors, support_set_feature_vectors], axis=0)
+    
+#     #labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
+    
+#     #pca = KernelPCA(n_components=100, kernel='rbf', n_jobs=8)
+    
+#     pca = PCA(n_components=128, whiten=True)
+    
+#     pca.fit(combined_feature_vectors)
+    
+#     combined_feature_vectors = pca.transform(combined_feature_vectors)
+    
+#     print(f'Finished extracting pca. Resulting matrix is size {combined_feature_vectors.shape}.')
+    
+#     # labels = np.concatenate([segmentation_feature_vectors_labels, [1]*len(support_set_feature_vectors_labels)])
+    
+#     labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
+    
+#     optimization_results_object_for_finding_transformation_matrix, initial_transformation_matrix = None, None #run_optimization_to_obtain_prior_transformation_matrix(combined_feature_vectors, labels)
+
+
+#     #nca = NeighborhoodComponentsAnalysis(n_components=2, init=initial_transformation_matrix, verbose=2, max_iter=200)
+    
+#     #nca = LinearDiscriminantAnalysis(n_components=3)
+#     nca = NeighborhoodComponentsAnalysis(n_components=2, verbose=2, max_iter=200)
+    
+#     nca.fit(combined_feature_vectors, labels)
+
+#     embedded_feature_vectors = nca.transform(combined_feature_vectors)
+    
+# #     nca = LinearDiscriminantAnalysis(n_components=2)
+    
+# #     nca.fit(combined_feature_vectors, labels)
+    
+# #     embedded_feature_vectors = nca.transform(combined_feature_vectors)
+
+#     # embedded_feature_vectors = (initial_transformation_matrix @ combined_feature_vectors.T).T
+    
+#     original_feature_vectors = combined_feature_vectors
+    
+#     background_feature_vectors = nca.transform(pca.transform(segmentation_feature_vectors))
+    
+#     # background_feature_vectors = nca.transform(segmentation_feature_vectors)
+    
+#     # background_feature_vectors = (initial_transformation_matrix @ segmentation_feature_vectors.T).T
+    
+#     labels_with_support_set_as_one_class = np.concatenate([segmentation_feature_vectors_labels, np.asarray([1]*len(support_set_feature_vectors_labels))])
+    
+    
+#     ### EXPERIMENTAL SECTION ###
+#     if embedded_feature_vectors.shape[1] != 3:
+        
+#         nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
+    
+#         nca_for_viz.fit(combined_feature_vectors, labels)
+    
+#         combined_feature_vectors_3d = nca_for_viz.transform(combined_feature_vectors)
+        
+#     else:
+        
+#         combined_feature_vectors_3d = embedded_feature_vectors
+    
+#     field_columns = [f'X_{i}' for i in range(combined_feature_vectors_3d.shape[1])]
+    
+#     data_sheet = pd.DataFrame(data=combined_feature_vectors_3d, columns=field_columns)
+    
+#     data_sheet['labels'] = labels
+    
+#     data_sheet.to_csv('experimental_datasheet.csv', index=False)
+#     ##############################
+    
+#     return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, optimization_results_object_for_finding_transformation_matrix, nca, pca
     
     #return embedded_feature_vectors, original_feature_vectors, labels, combined_patches, None, nca
 

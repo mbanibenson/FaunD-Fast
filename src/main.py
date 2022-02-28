@@ -66,7 +66,7 @@ directory_to_save_detections.mkdir(exist_ok=True)
 
 ##Train the model
 (training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
-optimization_results_object_for_finding_transformation_matrix, trained_nca, novelty_detector, hull, pca) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
+ trained_nca, novelty_detector, hull, scaler) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 ##Visualize the results
 visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections)

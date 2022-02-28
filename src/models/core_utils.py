@@ -164,22 +164,38 @@ def segment_image_and_extract_segment_features(file_path, training_mode, feature
 
 
 
+# def merge_segmentation_patches_from_all_images(segmented_image_objects):
+#     '''
+#     Gather all feature vectors from all instances of segmented images
+    
+#     '''
+#     # feature_vectors = np.concatenate([segmented_image_object.segment_patches_feature_vectors for segmented_image_object in segmented_image_objects], axis=0)
+    
+#     segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
+    
+#     # feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
+    
+#     feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segment_patches)
+    
+#     extract_SIFT_features_for_segmentation_patches_using_kornia
+    
+#     #feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(segment_patches)
+    
+#     segment_patch_names = list(chain.from_iterable(segmented_image_object.identifier_name_for_each_patch for segmented_image_object in segmented_image_objects))
+    
+#     segment_patch_bboxes = list(chain.from_iterable(segmented_image_object.segment_patch_bounding_boxes for segmented_image_object in segmented_image_objects))
+    
+#     assert len(segment_patch_names) == len(feature_vectors), 'Number of patches does not match number of feature vectors'
+    
+#     return feature_vectors, segment_patches, segment_patch_names, segment_patch_bboxes
+
+
 def merge_segmentation_patches_from_all_images(segmented_image_objects):
     '''
     Gather all feature vectors from all instances of segmented images
     
     '''
-    # feature_vectors = np.concatenate([segmented_image_object.segment_patches_feature_vectors for segmented_image_object in segmented_image_objects], axis=0)
-    
     segment_patches = list(chain.from_iterable(segmented_image_object.segment_patches for segmented_image_object in segmented_image_objects))
-    
-    # feature_vectors = extract_convnet_features_for_segmentation_patches_using_keras_applications(segment_patches)
-    
-    feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segment_patches)
-    
-    extract_SIFT_features_for_segmentation_patches_using_kornia
-    
-    #feature_vectors = extract_hand_engineered_hog_features_for_segmentation_patches(segment_patches)
     
     segment_patch_names = list(chain.from_iterable(segmented_image_object.identifier_name_for_each_patch for segmented_image_object in segmented_image_objects))
     
@@ -187,4 +203,4 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     
     assert len(segment_patch_names) == len(feature_vectors), 'Number of patches does not match number of feature vectors'
     
-    return feature_vectors, segment_patches, segment_patch_names, segment_patch_bboxes
+    return segment_patches, segment_patch_names, segment_patch_bboxes
