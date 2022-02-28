@@ -69,7 +69,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #merge the extracted features to form a data matrix
     combined_feature_vectors = np.concatenate([segmentation_feature_vectors, support_set_feature_vectors], axis=0)
 
-    labels = np.concatenate([segmentation_feature_vectors_labels, support_set_feature_vectors_labels])
+    labels = np.concatenate([segmentation_feature_vectors_labels, support_set_labels])
     
 
     #Perform supervised pca
@@ -82,7 +82,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #Perform supervised pca for only background for later visualization
     background_feature_vectors = nca.transform(segmentation_feature_vectors)
 
-    labels_with_support_set_as_one_class = np.concatenate([segmentation_feature_vectors_labels, np.asarray([1]*len(support_set_feature_vectors_labels))])
+    labels_with_support_set_as_one_class = np.concatenate([segmentation_feature_vectors_labels, np.asarray([1]*len(support_set_labels))])
     
     
     ### EXPERIMENTAL SECTION ###
