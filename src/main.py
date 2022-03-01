@@ -35,6 +35,8 @@ from models.predict_model import run_inference_on_test_images
 from visualization.visualize import visualize_embedded_segment_patches
 from models.train_model import train_non_background_detection_model
 from models.evaluate_model import count_detections_per_image
+from visualization.visualize import visualize_absolute_count_of_detections_per_image
+from visualization.visualize import visualize_distribution_over_count_of_detections_per_dive
 
 
 rng = default_rng()
