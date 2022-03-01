@@ -66,7 +66,7 @@ def visualize_average_detections_per_image(path_to_csv_with_detection_counts_per
     
     column_colors = [] 
     
-    fig, ax = plt.subplots(figsize=(12,6))
+    fig, ax = plt.subplots(figsize=(20,6))
     
     df_with_detection_counts_per_image.plot.line(y='detection_counts')
     
