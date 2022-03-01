@@ -14,7 +14,7 @@ def extract_time_from_image_file_name(series_with_file_names):
 
         return image_time
     
-    series_with_acquisition_time_as_string = series_with_file_names.map(extract_time_from_image_file_name)
+    series_with_acquisition_time_as_string = series_with_file_names.map(split_file_name_to_extract_time_components)
     
     series_with_acquisition_time_as_date_format = pd.to_datetime(series_with_acquisition_time_as_string, format='%Y%m%d_%H%M%S')
     
