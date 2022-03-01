@@ -21,7 +21,7 @@ def extract_time_from_image_file_name(series_with_file_names):
     return series_with_acquisition_time_as_date_format
 
 
-def count_detections_per_image(directory_containing_detections):
+def count_detections_per_image(directory_containing_detections, directory_to_save_metrics):
     '''
     
     Tabulate the number of superpixels flagged as positive detections.
@@ -50,7 +50,7 @@ def count_detections_per_image(directory_containing_detections):
     
     master_table_with_counts_per_image['acquisition_time'] = master_table_with_counts_per_image['parent_image_name'].transform(extract_time_from_image_file_name)
     
-    master_table_with_counts_per_image.to_csv(directory_containing_detections/'table_with_detection_counts_per_image.csv', index=True)
+    master_table_with_counts_per_image.to_csv(directory_to_save_metrics/'table_with_detection_counts_per_image.csv', index=True)
     
     return
 
@@ -58,7 +58,11 @@ if __name__ == '__main__':
     
     directory_containing_detections = '/home/mbani/mardata/datasets/positively_detected_fauna_experimental'
     
-    count_detections_per_image(directory_containing_detections)
+    directory_to_save_metrics = directory_containing_detections / 'detection_metrics'
+    
+    directory_to_save_metrics.mkdir(exist_ok=True)
+    
+    count_detections_per_image(directory_containing_detections, directory_to_save_metrics)
     
     
     
