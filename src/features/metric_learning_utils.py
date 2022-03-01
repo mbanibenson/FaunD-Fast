@@ -73,7 +73,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
 
     #Perform supervised pca
-    nca = NeighborhoodComponentsAnalysis(n_components=10, verbose=2, max_iter=200)
+    components = 5
+    
+    nca = NeighborhoodComponentsAnalysis(n_components=components, verbose=2, max_iter=200)
     
     nca.fit(combined_feature_vectors, labels)
 
@@ -86,7 +88,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     
     ### EXPERIMENTAL SECTION ###
-    if embedded_feature_vectors.shape[1] != 10:
+    if embedded_feature_vectors.shape[1] != components:
         
         nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
     
