@@ -108,6 +108,20 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
     
         print(f'Processing dive {subdirectory_name} with {len(list(directory_containing_test_images.iterdir()))} images took {processing_time: .2f} minutes', file=file)
-        
-        
-count_detections_per_image(directory_containing_subdirectories_with_test_images)
+    
+    
+    
+#Evaluate qualitative performance of detections        
+try:        
+    
+    count_detections_per_image(directory_containing_subdirectories_with_test_images)
+
+    path_to_csv_with_detection_counts_per_image = directory_containing_subdirectories_with_test_images/'table_with_detection_counts_per_image.csv'
+
+    visualize_absolute_count_of_detections_per_image(path_to_csv_with_detection_counts_per_image)
+
+    visualize_distribution_over_count_of_detections_per_dive(path_to_csv_with_detection_counts_per_image)
+    
+except:
+    
+    print('Could not create visualizations for counts of detections')
