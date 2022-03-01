@@ -70,7 +70,7 @@ def visualize_average_detections_per_image(path_to_csv_with_detection_counts_per
     
     df_with_detection_counts_per_image.plot.line(y='detection_counts')
     
-    plt.savefig(path_to_csv_with_detection_counts_per_image.parents[0]/'counts_per_detection.svg', dpi=300)
+    plt.savefig(path_to_csv_with_detection_counts_per_image.parents[0]/'counts_per_detection.png', dpi=300)
     
     return
 
