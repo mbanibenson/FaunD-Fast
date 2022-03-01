@@ -48,7 +48,7 @@ def count_detections_per_image(directory_containing_detections):
     master_table_with_counts_per_image['dive'] = master_table_with_counts_per_image['parent_image_name'].map(lambda x: x.split('_')[1])
     
     
-    master_table_with_counts_per_image['acquisition_time'] = apply(extract_time_from_image_file_name(master_table_with_counts_per_image['parent_image_name']))
+    master_table_with_counts_per_image['acquisition_time'] = extract_time_from_image_file_name(master_table_with_counts_per_image['parent_image_name'])
     
     master_table_with_counts_per_image.to_csv(directory_containing_detections/'table_with_detection_counts_per_image.csv', index=True)
     
