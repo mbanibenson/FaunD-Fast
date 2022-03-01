@@ -112,11 +112,15 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     
 #Evaluate qualitative performance of detections        
-try:        
+try:
     
-    count_detections_per_image(directory_containing_subdirectories_with_test_images)
+    directory_to_save_metrics = directory_to_save_detections / 'detection_metrics'
+    
+    directory_to_save_metrics.mkdir(exist_ok=True)
+    
+    count_detections_per_image(directory_containing_subdirectories_with_test_images, directory_to_save_metrics)
 
-    path_to_csv_with_detection_counts_per_image = directory_containing_subdirectories_with_test_images/'table_with_detection_counts_per_image.csv'
+    path_to_csv_with_detection_counts_per_image = directory_to_save_metrics/'table_with_detection_counts_per_image.csv'
 
     visualize_absolute_count_of_detections_per_image(path_to_csv_with_detection_counts_per_image)
 
