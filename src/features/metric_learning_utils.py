@@ -86,7 +86,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     
     ### EXPERIMENTAL SECTION ###
-    if embedded_feature_vectors.shape[1] != 3:
+    if embedded_feature_vectors.shape[1] != 10:
         
         nca_for_viz = NeighborhoodComponentsAnalysis(n_components=3, verbose=2, max_iter=200)
     
