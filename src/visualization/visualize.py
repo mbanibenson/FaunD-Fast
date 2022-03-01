@@ -112,7 +112,7 @@ def visualize_distribution_over_count_of_detections_per_dive(path_to_csv_with_de
 
 if __name__ == '__main__':
     
-    path_to_csv_with_detection_counts_per_image = '/home/mbani/mardata/datasets/positively_detected_fauna_experimental/table_with_detection_counts_per_image.csv'
+    path_to_csv_with_detection_counts_per_image = Path('/home/mbani/mardata/datasets/positively_detected_fauna_experimental/detection_metrics/table_with_detection_counts_per_image.csv')
     
     visualize_absolute_count_of_detections_per_image(path_to_csv_with_detection_counts_per_image)
     
