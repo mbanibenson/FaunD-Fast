@@ -73,7 +73,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
 
     #Perform supervised pca
-    components = 5
+    components = 10
     
     nca = NeighborhoodComponentsAnalysis(n_components=components, verbose=2, max_iter=200)
     
