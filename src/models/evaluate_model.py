@@ -33,7 +33,7 @@ def count_detections_per_image(directory_containing_detections, directory_to_sav
     
     for directory in directory_containing_detections.iterdir():
         
-        if (directory.is_dir() and directory.name.startswith('SO268')):
+        if (directory.is_dir() and (directory.name.startswith('SO268') or directory.name.startswith('test'))):
             
             detections_file_name = directory/'detections_summary_table.csv'
             
