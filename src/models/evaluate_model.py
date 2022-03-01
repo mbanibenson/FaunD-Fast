@@ -56,7 +56,7 @@ def count_detections_per_image(directory_containing_detections, directory_to_sav
 
 if __name__ == '__main__':
     
-    directory_containing_detections = '/home/mbani/mardata/datasets/positively_detected_fauna_experimental'
+    directory_containing_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna_experimental')
     
     directory_to_save_metrics = directory_containing_detections / 'detection_metrics'
     
