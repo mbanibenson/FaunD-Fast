@@ -74,9 +74,9 @@ def visualize_average_detections_per_image(path_to_csv_with_detection_counts_per
     
         sub_df.plot.line(y='detection_counts', ax=ax, label=f'{dive_number}')
         
-    ax.set_xlabel('Image acquisition time')
+    ax.set_xlabel('Time of Image Acquisition')
     
-    ax.set_ylabel('Number of detections')
+    ax.set_ylabel('Number of Detections')
     
     plt.legend() 
         
