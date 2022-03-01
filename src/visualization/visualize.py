@@ -18,9 +18,9 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
     '''
     if embedded_feature_vectors.shape[1] > 2:
         
-        #embedded_feature_vectors = PCA(2, whiten=True).fit_transform(embedded_feature_vectors)
+        embedded_feature_vectors = PCA(2, whiten=True).fit_transform(embedded_feature_vectors)
         
-        embedded_feature_vectors = KernelPCA(2, kernel='rbf', n_jobs=14).fit_transform(embedded_feature_vectors)
+        # embedded_feature_vectors = KernelPCA(2, kernel='rbf', n_jobs=14).fit_transform(embedded_feature_vectors)
         
     fig, ax = plt.subplots(figsize=figsize)
     
