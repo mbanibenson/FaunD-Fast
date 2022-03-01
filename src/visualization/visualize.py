@@ -101,11 +101,9 @@ def visualize_distribution_over_count_of_detections_per_dive(path_to_csv_with_de
     
     #fig, ax = plt.subplots(figsize=(20,8))
     
-    ax = sns.displot(data=df_with_detection_counts_per_image, x='detection_counts', hue='dive')
+    g = sns.displot(data=df_with_detection_counts_per_image, x='detection_counts', hue='dive')
             
-    ax.set_xlabel('Number of Detections')
-    
-    ax.set_ylabel('Density')
+    g.set_axes_labels('Number of Detections', 'Density')
 
     plt.savefig(path_to_csv_with_detection_counts_per_image.parents[0]/'distribution_over_counts_per_detection.png', dpi=300)
     
