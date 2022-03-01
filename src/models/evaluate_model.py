@@ -31,7 +31,7 @@ def count_detections_per_image(directory_containing_detections):
     
     tables_summarizing_detections = []
     
-    for directory in directory_containing_detections:
+    for directory in directory_containing_detections.iterdir():
         
         if (directory.is_dir() and directory.name.startswith('SO268')):
             
