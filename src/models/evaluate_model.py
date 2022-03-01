@@ -43,7 +43,7 @@ def count_detections_per_image(directory_containing_detections):
             
     master_table_summarizing_detections = pd.concat(tables_summarizing_detections)
     
-    master_table_with_counts_per_image = master_table_summarizing_detections.groupby('parent_image_name').size().reset_index().to_frame(name='detection_counts')
+    master_table_with_counts_per_image = master_table_summarizing_detections.groupby('parent_image_name').size().to_frame(name='detection_counts').reset_index()
     
     master_table_with_counts_per_image['dive'] = master_table_with_counts_per_image['parent_image_name'].map(lambda x: x.split('_')[1])
     
