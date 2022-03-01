@@ -34,6 +34,7 @@ from features.metric_learning_utils import embedd_segment_feature_vectors_using_
 from models.predict_model import run_inference_on_test_images
 from visualization.visualize import visualize_embedded_segment_patches
 from models.train_model import train_non_background_detection_model
+from models.evaluate_model import count_detections_per_image
 
 
 rng = default_rng()
@@ -54,7 +55,7 @@ directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support_s
 
 # directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/fauna_images_from_all_dives_rescaled')
 
-directory_to_save_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna_experimental')
+directory_to_save_detections = Path('/home/mbani/mardata/datasets/positively_detected_fauna_experimental_v1')
 
 shutil.rmtree(directory_to_save_detections, ignore_errors=True)
 
@@ -107,3 +108,6 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     with open(directory_to_save_patches_of_positive_detections/'processing_time.txt', 'w') as file:
     
         print(f'Processing dive {subdirectory_name} with {len(list(directory_containing_test_images.iterdir()))} images took {processing_time: .2f} minutes', file=file)
+        
+        
+count_detections_per_image(directory_containing_subdirectories_with_test_images)
