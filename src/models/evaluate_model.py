@@ -56,7 +56,7 @@ def count_detections_per_image(directory_containing_detections):
 
 if __name__ == '__main__':
     
-    directory_containing_detections = '/home/mbani/mardata/datasets/positively_detected_fauna_experimental/SO268-1_021-1_OFOS-02/'
+    directory_containing_detections = '/home/mbani/mardata/datasets/positively_detected_fauna_experimental'
     
     count_detections_per_image(directory_containing_detections)
     
