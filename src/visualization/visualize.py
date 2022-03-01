@@ -52,7 +52,7 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
     
     return 
 
-def visualize_average_detections_per_image(path_to_csv_with_detection_counts_per_image):
+def visualize_absolute_count_of_detections_per_image(path_to_csv_with_detection_counts_per_image):
     '''
     Given the csv tabulating counts of detections per image, show shome visualizations
     
@@ -85,11 +85,42 @@ def visualize_average_detections_per_image(path_to_csv_with_detection_counts_per
     return
 
 
+def visualize_distribution_over_count_of_detections_per_dive(path_to_csv_with_detection_counts_per_image):
+    '''
+    Given the csv tabulating counts of detections per image, show shome visualizations
+    
+    '''
+    
+    path_to_csv_with_detection_counts_per_image = Path(path_to_csv_with_detection_counts_per_image)
+    
+    COLORS = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928']
+    
+    df_with_detection_counts_per_image = pd.read_csv(path_to_csv_with_detection_counts_per_image, parse_dates=['acquisition_time']).set_index('acquisition_time')
+    
+    column_colors = [] 
+    
+    fig, ax = plt.subplots(figsize=(20,8))
+    
+    sns.displot(data=df_with_detection_counts_per_image, x='detection_counts', hue='dive')
+            
+    ax.set_xlabel('Number of Netections')
+    
+    ax.set_ylabel('Number of Detections')
+    
+    plt.legend() 
+        
+    plt.savefig(path_to_csv_with_detection_counts_per_image.parents[0]/'distribution_over_counts_per_detection.png', dpi=300)
+    
+    return
+
+
 if __name__ == '__main__':
     
     path_to_csv_with_detection_counts_per_image = '/home/mbani/mardata/datasets/positively_detected_fauna_experimental/table_with_detection_counts_per_image.csv'
     
-    visualize_average_detections_per_image(path_to_csv_with_detection_counts_per_image)
+    visualize_absolute_count_of_detections_per_image(path_to_csv_with_detection_counts_per_image)
+    
+    visualize_distribution_over_count_of_detections_per_dive(path_to_csv_with_detection_counts_per_image)
     
     
     
