@@ -68,6 +68,10 @@ def visualize_average_detections_per_image(path_to_csv_with_detection_counts_per
     
     fig, ax = plt.subplots(figsize=(20,6))
     
+    ax.set_xlabel('Image acquisition time')
+    
+    ax.set_ylabel('Number of detections')
+    
     for dive_number, sub_df in df_with_detection_counts_per_image.groupby('dive'):
     
         sub_df.plot.line(y='detection_counts', ax=ax, label=f'{dive_number}')
