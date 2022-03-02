@@ -26,11 +26,12 @@ from features.feature_extraction_from_superpixels import extract_SIFT_features_f
 from features.VAE_feature_extractor import extract_features_using_VAE
 
 
-def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, directory_containing_support_sets, path_to_trained_VAE_model=None):
+def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, directory_containing_support_sets):
     '''
     Embedd feature vectors to 2D manifold
     
     '''
+    path_to_trained_VAE_model = Path.cwd() / 'vae_model.h5'
     
         
     #Gather segment patches and support sets

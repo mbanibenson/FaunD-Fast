@@ -14,8 +14,9 @@ class Sampling(layers.Layer):
         epsilon = tf.keras.backend.random_normal(shape=(batch, dim))
         return z_mean + tf.exp(0.5 * z_log_var) * epsilon
 
+dim = 128
 
-def encoder(latent_dim, input_shape=(64, 64, 3)):
+def encoder(latent_dim=dim, input_shape=(64, 64, 3)):
     '''
     
     Define the encoder architecture
@@ -35,7 +36,7 @@ def encoder(latent_dim, input_shape=(64, 64, 3)):
     return encoder
 
 
-def decoder(latent_dim):
+def decoder(latent_dim=dim):
     '''
     
     Define the encoder architecture
@@ -119,7 +120,7 @@ def train_VAE_model(list_of_image_patches, path_to_save_trained_model, epochs=30
     
     vae = VAE(encoder, decoder)
     vae.compile(optimizer=keras.optimizers.Adam())
-    vae.fit(batch_of_all_images, epochs=30, batch_size=128)
+    vae.fit(batch_of_all_images, epochs=epochs, batch_size=batch_size)
     
     vae.save(path_to_save_trained_model)
     
