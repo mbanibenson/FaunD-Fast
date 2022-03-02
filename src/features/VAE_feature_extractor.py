@@ -121,7 +121,7 @@ def train_VAE_model(list_of_image_patches, path_to_save_trained_model, latent_di
     vae.compile(optimizer=keras.optimizers.Adam())
     vae.fit(batch_of_all_images, epochs=epochs, batch_size=batch_size)
     
-    vae.save_weights(path_to_save_trained_model, save_format="tf")
+    vae.save(path_to_save_trained_model, save_format="tf")
     
 
 def extract_features_using_VAE(list_of_image_patches, path_to_trained_model, train_model=True):
@@ -133,7 +133,7 @@ def extract_features_using_VAE(list_of_image_patches, path_to_trained_model, tra
         
         train_VAE_model(list_of_image_patches, path_to_trained_model, epochs=30, batch_size=128)
         
-    model = keras.models.load_weights(path_to_trained_model)
+    model = keras.models.load_model(path_to_trained_model)
     
     batch_of_all_images = given_a_list_of_images_return_a_batch(list_of_image_patches)
     
