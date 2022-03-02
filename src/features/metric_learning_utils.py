@@ -24,7 +24,6 @@ sys.path.append('./')
 from models.core_utils import merge_segmentation_patches_from_all_images
 from data.read_datasets import load_augmented_support_set_patches
 from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
-from features.VAE_feature_extractor import extract_features_using_VAE
 
 
 def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects, directory_containing_support_sets):
@@ -62,18 +61,14 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     segmentation_patches_standardized = combined_patches_standardized[:len(segment_patches)]
     
     
-    # segmentation_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
-    
-    segmentation_feature_vectors = extract_features_using_VAE(segmentation_patches_standardized, path_to_trained_VAE_model, train_model=True)
+    segmentation_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
     
     segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
     
     
     #Retrieve support sets separetly for feature extraction
     support_set_patches_standardized = combined_patches_standardized[len(segment_patches):]
-    # support_set_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(support_set_patches_standardized)
-    
-    support_set_feature_vectors = extract_features_using_VAE(support_set_patches_standardized, path_to_trained_VAE_model, train_model=False)
+    support_set_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(support_set_patches_standardized)
 
     
     #merge the extracted features to form a data matrix
