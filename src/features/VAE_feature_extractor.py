@@ -14,9 +14,8 @@ class Sampling(layers.Layer):
         epsilon = tf.keras.backend.random_normal(shape=(batch, dim))
         return z_mean + tf.exp(0.5 * z_log_var) * epsilon
 
-dim = 128
 
-def encoder(latent_dim=dim, input_shape=(64, 64, 3)):
+def encoder(latent_dim, input_shape=(64, 64, 3)):
     '''
     
     Define the encoder architecture
@@ -36,7 +35,7 @@ def encoder(latent_dim=dim, input_shape=(64, 64, 3)):
     return encoder
 
 
-def decoder(latent_dim=dim):
+def decoder(latent_dim):
     '''
     
     Define the encoder architecture
@@ -56,10 +55,10 @@ def decoder(latent_dim=dim):
 
 
 class VAE(keras.Model):
-    def __init__(self, encoder, decoder, **kwargs):
+    def __init__(self, encoder, decoder,latent_dim, **kwargs):
         super(VAE, self).__init__(**kwargs)
-        self.encoder = encoder
-        self.decoder = decoder
+        self.encoder = encoder(latent_dim)
+        self.decoder = decoder(latent_dim)
         self.total_loss_tracker = keras.metrics.Mean(name="total_loss")
         self.reconstruction_loss_tracker = keras.metrics.Mean(
             name="reconstruction_loss"
@@ -110,7 +109,7 @@ def given_a_list_of_images_return_a_batch(list_of_image_patches):
     return batch_of_all_images
     
     
-def train_VAE_model(list_of_image_patches, path_to_save_trained_model, epochs=30, batch_size=128):
+def train_VAE_model(list_of_image_patches, path_to_save_trained_model, latent_dim=128, epochs=30, batch_size=128):
     '''
     Train VAE to learn a feature extractor from the image patches
     
@@ -118,7 +117,7 @@ def train_VAE_model(list_of_image_patches, path_to_save_trained_model, epochs=30
     
     batch_of_all_images = given_a_list_of_images_return_a_batch(list_of_image_patches)
     
-    vae = VAE(encoder, decoder)
+    vae = VAE(encoder, decoder, latent_dim)
     vae.compile(optimizer=keras.optimizers.Adam())
     vae.fit(batch_of_all_images, epochs=epochs, batch_size=batch_size)
     
