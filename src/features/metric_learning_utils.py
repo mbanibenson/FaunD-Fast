@@ -32,7 +32,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     Embedd feature vectors to 2D manifold
     
     '''
-    path_to_trained_VAE_model = Path.cwd() / 'vae_model.h5'
+    path_to_trained_VAE_model = Path.cwd() / 'vae_model'
     
         
     #Gather segment patches and support sets
