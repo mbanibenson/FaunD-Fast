@@ -73,7 +73,7 @@ class VAE(keras.Model):
             self.kl_loss_tracker,
         ]
 
-    def call(self, data):
+    def train_step(self, data):
         with tf.GradientTape() as tape:
             z_mean, z_log_var, z = self.encoder(data)
             reconstruction = self.decoder(z)
