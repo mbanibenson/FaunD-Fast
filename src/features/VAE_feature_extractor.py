@@ -137,7 +137,7 @@ def extract_features_using_VAE(list_of_image_patches, path_to_trained_model, tra
     
     batch_of_all_images = given_a_list_of_images_return_a_batch(list_of_image_patches)
     
-    z_mean, z_log_var, z = = vae.encoder.predict(data)
+    z_mean, z_log_var, z = vae.encoder.predict(data)
     
     matrix_of_feature_vectors = z_mean
     
