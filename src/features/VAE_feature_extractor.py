@@ -121,6 +121,8 @@ def train_VAE_model(list_of_image_patches, path_to_save_trained_model, latent_di
     vae.compile(optimizer=keras.optimizers.Adam())
     vae.fit(batch_of_all_images, epochs=epochs, batch_size=batch_size)
     
+    vae.compute_output_shape(input_shape=(None, 64,64,3))
+    
     vae.save(path_to_save_trained_model, save_format="tf")
     
 
@@ -137,7 +139,7 @@ def extract_features_using_VAE(list_of_image_patches, path_to_trained_model, tra
     
     batch_of_all_images = given_a_list_of_images_return_a_batch(list_of_image_patches)
     
-    z_mean, z_log_var, z = vae.encoder.predict(data)
+    z_mean, z_log_var, z = model.encoder.predict(batch_of_all_images)
     
     matrix_of_feature_vectors = z_mean
     
