@@ -13,7 +13,7 @@ from concurrent.futures import ProcessPoolExecutor
 from skimage.color import rgb2gray
 import kornia
 from numpy.random import default_rng
-from kornia.feature import SIFTDescriptor
+from kornia.feature import SIFTDescriptor, MKDDescriptor
 import torch
 import time
 from skimage.exposure import equalize_hist, equalize_adapthist, rescale_intensity
@@ -157,9 +157,22 @@ def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
     
     batch_of_all_images_as_tensor = torch.from_numpy(batch_of_all_images)
     
-    SIFT = SIFTDescriptor(patch_size, 8, 4)
+#     SIFT = SIFTDescriptor(patch_size, 8, 4)
 
-    descriptors = SIFT(batch_of_all_images_as_tensor)
+#     descriptors = SIFT(batch_of_all_images_as_tensor)
+
+
+    mkd = MKDDescriptor(patch_size=64,
+
+                    kernel_type='concat',
+
+                    whitening='pcawt',
+
+                    training_set='liberty',
+
+                    output_dims=128)
+
+    descriptors = mkd(batch_of_all_images_as_tensor) # 23x128
 
     matrix_of_feature_vectors = descriptors.detach().numpy()
     
