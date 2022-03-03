@@ -334,7 +334,15 @@ def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bbo
     Summarize the detections into a csv file
     
     '''
-    detections_summary = pd.DataFrame({'patch_name':patch_names, 'pca_1':patch_embeddings[:,0], 'pca_2':patch_embeddings[:,1], 'bbox':patch_bboxes})
+    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes}
+    
+    for i in range(patch_embeddings.shape[1]):
+        
+        dataframe_contents[f'nca_{i}'] = patch_embeddings[:,i]
+                          
+    #detections_summary = pd.DataFrame({'patch_name':patch_names, 'pca_1':patch_embeddings[:,0], 'pca_2':patch_embeddings[:,1], 'bbox':patch_bboxes})
+    
+    detections_summary = pd.DataFrame(dataframe_contents)
     
     detections_summary['parent_image_name'] = detections_summary.patch_name.map(lambda x: x.split('#')[0])
     
