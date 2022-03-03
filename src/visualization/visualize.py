@@ -44,7 +44,7 @@ def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combine
         
         for x0, y0, patch in zip(data_matrix.X.values, data_matrix.Y.values, combined_patches):
 
-            ab = AnnotationBbox(OffsetImage(patch, zoom=0.5), (x0, y0), frameon=False)
+            ab = AnnotationBbox(OffsetImage(patch, zoom=0.7), (x0, y0), frameon=False)
 
             ab.set_zorder(0)
 
