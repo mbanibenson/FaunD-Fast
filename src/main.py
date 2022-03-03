@@ -69,12 +69,12 @@ directory_to_save_detections.mkdir(exist_ok=True)
 
 ##Train the model
 (training_embeddings, embedded_background_feature_vectors, training_embedding_labels, training_embedding_patches, 
- trained_nca, novelty_detector, hull, scaler) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
+ trained_nca, novelty_detector, hull, scaler, pca_for_visualization) = train_non_background_detection_model(directory_containing_underwater_images_with_background_only, directory_containing_support_sets)
 
 ##Visualize the results
-visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections)
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, figsize=(12,8), figname = 'training_embeddings_without_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections, pca_for_visualization=pca_for_visualization)
 
-visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections)
+visualize_embedded_segment_patches(training_embeddings, training_embedding_labels, training_embedding_patches, figsize=(12,8), figname = 'training_embeddings_with_thumbnails', directory_to_save_matplotlib_figures=directory_to_save_detections, pca_for_visualization=pca_for_visualization)
 
 
 for directory_containing_test_images in directory_containing_subdirectories_with_test_images.iterdir():
@@ -101,7 +101,7 @@ for directory_containing_test_images in directory_containing_subdirectories_with
 
 
 
-    visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    visualize_embedded_segment_patches(outlier_test_embeddings, outlier_test_labels, outlier_test_patches, figsize=(12,8), figname = 'detected_test_embeddings_with_thumbnails',directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, pca_for_visualization=pca_for_visualization)
     
     toc = time.time()
     

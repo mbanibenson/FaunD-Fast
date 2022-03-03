@@ -17,6 +17,7 @@ from concurrent.futures import ProcessPoolExecutor
 import random
 from functools import partial
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.decomposition import PCA
 
 def novelty_detector_using_bounding_envelope(background_embeddings):
     '''
@@ -104,4 +105,7 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     print('Fitting knn novelty detector ...')
     novelty_detector = novelty_detector_using_k_nearest_neighbors(embedded_feature_vectors, labels)
     
-    return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, novelty_detector, hull, scaler
+    print('Fitting PCA for mapping embeddings ...')
+    pca_for_visualization = PCA(2, whiten=True).fit(embedded_feature_vectors)
+    
+    return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, novelty_detector, hull, scaler, pca_for_visualization

@@ -11,14 +11,16 @@ from sklearn.decomposition import PCA, KernelPCA
 
 
 
-def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combined_patches=None, figsize=(12,8), figname = None, directory_to_save_matplotlib_figures=None):
+def visualize_embedded_segment_patches(embedded_feature_vectors, labels, combined_patches=None, figsize=(12,8), figname = None, directory_to_save_matplotlib_figures=None, pca_for_visualization=None):
     '''
     Plot the embedding in 2D feature space
     
     '''
     if embedded_feature_vectors.shape[1] > 2:
         
-        embedded_feature_vectors = PCA(2, whiten=True).fit_transform(embedded_feature_vectors)
+        assert pca_for_visualization is not None, 'Please supply a fit pca object to be used for dimensionality reduction'
+        
+        embedded_feature_vectors = pca_for_visualization.transform(embedded_feature_vectors)
         
         # embedded_feature_vectors = KernelPCA(2, kernel='rbf', n_jobs=14).fit_transform(embedded_feature_vectors)
         
