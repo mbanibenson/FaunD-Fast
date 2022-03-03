@@ -70,7 +70,7 @@ def extract_image_patches_corresponding_to_the_superpixels(segmented_image, imag
     
         sampled_segment_patch_bounding_boxes = segment_patch_bounding_boxes
     
-    sampled_segment_patches =  [resize(patch, (64,64,3)) for patch in sampled_segment_patches]
+    sampled_segment_patches =  [resize(patch, (32,32,3)) for patch in sampled_segment_patches]
     
     return sampled_segment_patches, sampled_segment_patch_bounding_boxes
 

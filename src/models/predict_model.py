@@ -246,7 +246,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
 
 
         #Reshape them back to original dimension
-        segment_patches_standardized = [flattened_patch.reshape((64,64,3)) for flattened_patch in segment_patches_standardized]
+        segment_patches_standardized = [flattened_patch.reshape((32,32,3)) for flattened_patch in segment_patches_standardized]
         
         segmentation_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segment_patches_standardized)
 

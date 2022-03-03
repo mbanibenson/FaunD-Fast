@@ -143,7 +143,7 @@ def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
     
     tic = time.time()
     
-    patch_size = 64
+    patch_size = 32
     
     #contrast_enhanced_image_patches = [rescale_intensity(patch.astype(np.float32)) for patch in image_patches]
     
@@ -157,22 +157,22 @@ def extract_SIFT_features_for_segmentation_patches_using_kornia(image_patches):
     
     batch_of_all_images_as_tensor = torch.from_numpy(batch_of_all_images)
     
-#     SIFT = SIFTDescriptor(patch_size, 8, 4)
+    SIFT = SIFTDescriptor(patch_size, 8, 4, rootsift=False)
 
-#     descriptors = SIFT(batch_of_all_images_as_tensor)
+    descriptors = SIFT(batch_of_all_images_as_tensor)
 
 
-    mkd = MKDDescriptor(patch_size=64,
+#     mkd = MKDDescriptor(patch_size=64,
 
-                    kernel_type='concat',
+#                     kernel_type='concat',
 
-                    whitening='pcawt',
+#                     whitening='pcawt',
 
-                    training_set='liberty',
+#                     training_set='liberty',
 
-                    output_dims=128)
+#                     output_dims=128)
 
-    descriptors = mkd(batch_of_all_images_as_tensor) # 23x128
+#     descriptors = mkd(batch_of_all_images_as_tensor) # 23x128
 
     matrix_of_feature_vectors = descriptors.detach().numpy()
     

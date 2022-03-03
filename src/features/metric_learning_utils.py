@@ -54,7 +54,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     
     #Reshape them back to original dimension
-    combined_patches_standardized = [flattened_patch.reshape((64,64,3)) for flattened_patch in combined_patches_standardized]
+    combined_patches_standardized = [flattened_patch.reshape((32,32,3)) for flattened_patch in combined_patches_standardized]
     
     
     #Retrieve segment patches separetly for feature extraction
