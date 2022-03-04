@@ -46,7 +46,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     combined_patches_as_matrix = np.vstack([patch.ravel() for patch in combined_patches])
     
     #Standardize them to zero mean unit variance
-    scaler = StandardScaler(with_std=False)
+    scaler = StandardScaler(with_std=True)
     
     scaler.fit(combined_patches_as_matrix[:len(segment_patches)])
     
