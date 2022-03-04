@@ -50,9 +50,33 @@ def count_detections_per_image(directory_containing_detections, directory_to_sav
     
     master_table_with_counts_per_image['acquisition_time'] = master_table_with_counts_per_image['parent_image_name'].transform(extract_time_from_image_file_name)
     
-    master_table_with_counts_per_image.to_csv(directory_to_save_metrics/'table_with_detection_counts_per_image.csv', index=True)
+    master_table_with_counts_per_image.to_csv(directory_to_save_metrics/'table_with_detection_counts_per_image.csv', index=False)
     
     return
+
+
+def merge_all_detection_summaries_to_master_csv(directory_containing_detections, directory_to_save_master_csv):
+    '''
+    Gather all the detection summary csvs from the dive by dive detections to one mega csv
+    
+    '''
+    directory_containing_detections = Path(directory_containing_detections)
+    
+    tables_summarizing_detections = []
+    
+    for directory in directory_containing_detections.iterdir():
+        
+        if (directory.is_dir() and (directory.name.startswith('SO268') or directory.name.startswith('test'))):
+            
+            detections_file_name = directory/'detections_summary_table.csv'
+            
+            table_summarizing_detections = pd.read_csv(detections_file_name)
+            
+            tables_summarizing_detections.append(table_summarizing_detections)
+            
+    master_table_summarizing_detections = pd.concat(tables_summarizing_detections)
+    
+    master_table_summarizing_detections.to_csv(directory_to_save_master_csv/'master_detections_summary_table.csv', index=False)
 
 # if __name__ == '__main__':
     

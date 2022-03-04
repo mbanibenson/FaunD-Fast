@@ -37,6 +37,7 @@ from models.train_model import train_non_background_detection_model
 from models.evaluate_model import count_detections_per_image
 from visualization.visualize import visualize_absolute_count_of_detections_per_image
 from visualization.visualize import visualize_distribution_over_count_of_detections_per_dive
+from models.evaluate_model import merge_all_detection_summaries_to_master_csv
 
 
 rng = default_rng()
@@ -120,7 +121,15 @@ try:
     
     directory_to_save_metrics.mkdir(exist_ok=True)
     
+    
+    directory_to_save_master_csv = directory_to_save_detections / 'detection_output_csv_tables'
+    directory_to_save_master_csv.mkdir(exist_ok=True)
+    
+    
     count_detections_per_image(directory_to_save_detections, directory_to_save_metrics)
+    
+    merge_all_detection_summaries_to_master_csv(directory_to_save_detections, directory_to_save_master_csv)
+    
 
     path_to_csv_with_detection_counts_per_image = directory_to_save_metrics/'table_with_detection_counts_per_image.csv'
 
