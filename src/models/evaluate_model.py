@@ -87,7 +87,7 @@ def append_geospatial_coordinates_to_master_detection_summary_table(master_dataf
     Append geospatial coordinates to master dataframe summarizing detections before saving to disk
     
     '''
-    path_to_table_with_georeferenced_coords_for_all_photos = Path.cwd().parents[0]/'data/external/georeferenced_photo_coordinates.zip'
+    path_to_table_with_georeferenced_coords_for_all_photos = Path.cwd().parents[0]/'reports/auxilliary_data/georeferenced_photo_coordinates.zip'
     
     with ZipFile(path_to_table_with_georeferenced_coords_for_all_photos) as myzip:
         
