@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+from zipfile import ZipFile
 
 def extract_time_from_image_file_name(series_with_file_names):
     '''
@@ -76,7 +77,33 @@ def merge_all_detection_summaries_to_master_csv(directory_containing_detections,
             
     master_table_summarizing_detections = pd.concat(tables_summarizing_detections)
     
-    master_table_summarizing_detections.to_csv(directory_to_save_master_csv/'master_detections_summary_table.csv', index=False)
+    georeferenced_master_dataframe_summarizing_detections = append_geospatial_coordinates_to_master_detection_summary_table(master_dataframe_summarizing_detections)
+    
+    georeferenced_master_dataframe_summarizing_detections.to_csv(directory_to_save_master_csv/'master_detections_summary_table.csv', index=False)
+    
+    
+def append_geospatial_coordinates_to_master_detection_summary_table(master_dataframe_summarizing_detections):
+    '''
+    Append geospatial coordinates to master dataframe summarizing detections before saving to disk
+    
+    '''
+    path_to_table_with_georeferenced_coords_for_all_photos = Path.cwd().parents[0]/'data/external/georeferenced_photo_coordinates.zip'
+    
+    with ZipFile(path_to_table_with_georeferenced_coords_for_all_photos) as myzip:
+        
+        with myzip.open('georeferenced_photo_coordinates.csv') as myfile:
+            
+            table_with_georeferenced_coords_for_all_photos = pd.read_csv(myfile)
+            
+    table_with_georeferenced_coords_for_all_photos['parent_image_name'] = table_with_georeferenced_coords_for_all_photos.Name.map(lambda x: x.split('.')[0])
+            
+    georeferenced_master_dataframe_summarizing_detections = pd.merge(master_dataframe_summarizing_detections, table_with_georeferenced_coords_for_all_photos, how='left', on='parent_image_name')
+    
+    return georeferenced_master_dataframe_summarizing_detections
+            
+            
+    
+     
 
 # if __name__ == '__main__':
     
