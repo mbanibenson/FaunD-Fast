@@ -77,7 +77,7 @@ def merge_all_detection_summaries_to_master_csv(directory_containing_detections,
             
     master_table_summarizing_detections = pd.concat(tables_summarizing_detections)
     
-    georeferenced_master_dataframe_summarizing_detections = append_geospatial_coordinates_to_master_detection_summary_table(master_dataframe_summarizing_detections)
+    georeferenced_master_dataframe_summarizing_detections = append_geospatial_coordinates_to_master_detection_summary_table(master_table_summarizing_detections)
     
     georeferenced_master_dataframe_summarizing_detections.to_csv(directory_to_save_master_csv/'master_detections_summary_table.csv', index=False)
     
