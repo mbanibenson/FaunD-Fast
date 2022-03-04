@@ -352,6 +352,6 @@ def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bbo
     
     detections_summary['parent_image_name'] = detections_summary.patch_name.map(lambda x: x.split('#')[0])
     
-    detections_summary.to_csv(directory_to_save_summary_csv/'detections_summary_table.csv')
+    detections_summary.to_csv(directory_to_save_summary_csv/'detections_summary_table.csv', index=False)
     
     return
