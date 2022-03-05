@@ -64,7 +64,7 @@ shutil.rmtree(directory_to_save_detections, ignore_errors=True)
 
 directory_to_save_detections.mkdir(exist_ok=True)
 
-# directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection/')
+directory_containing_subdirectories_with_test_images = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection/')
 
 
 
@@ -86,7 +86,7 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     exclude_list = ['SO268-2_100-1_OFOS-05']#/'SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
 
-    if subdirectory_name in exclude_list:
+    if subdirectory_name not in exclude_list:
         
         continue
     
