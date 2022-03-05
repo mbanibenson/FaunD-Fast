@@ -87,6 +87,8 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     labels = le.transform(labels_as_strings)
     
+    assert len(combined_feature_vectors) == len(labels), f'Inconsistent shapes - Embeddings:({len(combined_feature_vectors)}) , labels:({len(labels)})'
+    
 
     #Perform supervised pca
     components = 10
