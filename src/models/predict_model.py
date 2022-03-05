@@ -256,7 +256,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
 
         test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
         
-        test_embeddings_outlier_or_inlier_prediction = label_encoder.transform(test_embeddings_outlier_or_inlier_prediction)
+        test_embeddings_outlier_or_inlier_prediction = label_encoder.inverse_transform(test_embeddings_outlier_or_inlier_prediction)
         
         selector_for_classification = [False if prediction.startswith('background') else True for prediction in test_embeddings_outlier_or_inlier_prediction]
         
