@@ -209,4 +209,6 @@ def merge_segmentation_patches_from_all_images(segmented_image_objects):
     
     assert len(segment_patch_names) == len(segment_patch_bboxes), 'Number of patches does not match number of bboxes'
     
+    assert len(segment_patch_names) == len(segment_patch_class_labels), 'Number of patches does not match number of class labels'
+    
     return segment_patches, segment_patch_names, segment_patch_bboxes, segment_patch_class_labels
