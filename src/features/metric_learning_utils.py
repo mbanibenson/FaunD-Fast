@@ -81,6 +81,8 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
 
     labels_as_strings = np.concatenate([segmentation_feature_vectors_labels, support_set_labels])
     
+    print(f'Existing labels are : {set(labels_as_strings)}')
+    
     label_encoder = preprocessing.LabelEncoder()
     
     label_encoder.fit(labels_as_strings)
