@@ -258,7 +258,9 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         test_embeddings_outlier_or_inlier_prediction = label_encoder.inverse_transform(test_embeddings_outlier_or_inlier_prediction)
         
-        selector_for_classification = [False if prediction.startswith('background') else True for prediction in test_embeddings_outlier_or_inlier_prediction]
+        selector_for_classification = ~np.asarray([prediction.startswith('background') for prediction in test_embeddings_outlier_or_inlier_prediction])
+        
+        selector_for_classification = selector_for_classification.tolist()
         
 #         # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
         
