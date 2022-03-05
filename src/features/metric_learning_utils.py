@@ -68,6 +68,8 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     segmentation_feature_vectors_labels = segment_patch_class_labels
     
+    assert len(segmentation_feature_vectors) == len(segmentation_feature_vectors_labels), f'Inconsistent shapes - Embeddings:({len(segmentation_feature_vectors)} , labels:({len(segmentation_feature_vectors_labels)}'
+    
     
     #Retrieve support sets separetly for feature extraction
     support_set_patches_standardized = combined_patches_standardized[len(segment_patches):]
