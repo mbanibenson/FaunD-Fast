@@ -23,7 +23,7 @@ def generate_superpixels_using_slic(image_as_rgb, number_of_segments, compactnes
     segmented_image(ndarray): A segmented image
     
     '''
-    segmented_image = slic(image_as_rgb, n_segments=number_of_segments, start_label=1, compactness=compactness, channel_axis=-1)
+    segmented_image = slic(image_as_rgb, n_segments=number_of_segments, start_label=1, compactness=compactness, channel_axis=-1, enforce_connectivity=True)
     
     return segmented_image
 
