@@ -115,7 +115,7 @@ class underwater_image:
         
         self.identifier_name_for_each_patch = [f'{self.image_path.stem}#{patch_id}' for patch_id in range(len(self.segment_patches))]
         
-        self.class_label_for_each_patch = [f'{self.image_path.parents[0].name}']*len(self.identifier_name_for_each_patch)
+        self.class_label_for_each_patch = [f'{self.image_path.parents[0].name}']*len(self.segment_patches)
 
         return
     
