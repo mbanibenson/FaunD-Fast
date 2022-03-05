@@ -77,7 +77,9 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     
     '''
     
-    all_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())
+    #all_file_paths = list(directory_containing_underwater_images_with_background_only.iterdir())
+    
+    all_file_paths = list(directory_containing_underwater_images_with_background_only.rglob('*.JPG'))
     
     random.shuffle(all_file_paths)
     underwater_images_file_paths = all_file_paths #random.sample(all_file_paths, k=10)

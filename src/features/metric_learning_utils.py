@@ -16,6 +16,7 @@ from sklearn.decomposition import KernelPCA
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from pathlib import Path
+from sklearn import preprocessing
 
 rng = default_rng()
 
@@ -35,7 +36,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
         
     #Gather segment patches and support sets
-    segment_patches, _ , _ = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    segment_patches, segment_patch_names, segment_patch_bboxes, segment_patch_class_labels = merge_segmentation_patches_from_all_images(segmented_image_objects)
     
     support_set_patches, support_set_labels = load_augmented_support_set_patches(directory_containing_support_sets)
     
@@ -63,7 +64,9 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     segmentation_feature_vectors = extract_SIFT_features_for_segmentation_patches_using_kornia(segmentation_patches_standardized)
     
-    segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
+    #segmentation_feature_vectors_labels = np.zeros(shape=(len(segmentation_feature_vectors),))
+    
+    segmentation_feature_vectors_labels = segment_patch_class_labels
     
     
     #Retrieve support sets separetly for feature extraction
@@ -74,7 +77,13 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     #merge the extracted features to form a data matrix
     combined_feature_vectors = np.concatenate([segmentation_feature_vectors, support_set_feature_vectors], axis=0)
 
-    labels = np.concatenate([segmentation_feature_vectors_labels, support_set_labels])
+    labels_as_strings = np.concatenate([segmentation_feature_vectors_labels, support_set_labels])
+    
+    le = preprocessing.LabelEncoder()
+    
+    le.fit(labels_as_strings)
+    
+    labels = le.transform(labels_as_strings)
     
 
     #Perform supervised pca
