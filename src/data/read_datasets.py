@@ -77,7 +77,7 @@ def load_augmented_support_set_patches(directory_containing_support_sets, number
             
             #support_set_labels.extend([i]*len(augmented_batch))
             
-            support_set_labels.extend(subdirectory*len(augmented_batch))
+            support_set_labels.extend([subdirectory]*len(augmented_batch))
             
             number_of_items += len(augmented_batch)
             
