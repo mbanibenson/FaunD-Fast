@@ -238,7 +238,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
             segmented_image_objects = list(executor.map(_segment_image_and_extract_segment_features, partition_of_file_paths))
         
     
-        segment_patches, names_for_each_segment_patch, segment_patch_bboxes = merge_segmentation_patches_from_all_images(segmented_image_objects)
+        segment_patches, names_for_each_segment_patch, segment_patch_bboxes, _ = merge_segmentation_patches_from_all_images(segmented_image_objects)
         
         segment_patches_as_matrix = np.vstack([patch.ravel() for patch in segment_patches])
 
