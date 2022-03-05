@@ -254,11 +254,11 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
         test_patches = segment_patches
 
-        test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
+        test_embeddings_predictions_as_integers = novelty_detector.predict(test_embeddings)
         
-        test_embeddings_outlier_or_inlier_prediction = label_encoder.inverse_transform(test_embeddings_outlier_or_inlier_prediction)
+        test_embeddings_predictions_with_class_names = label_encoder.inverse_transform(test_embeddings_predictions_as_integers)
         
-        selector_for_classification = ~np.asarray([prediction.startswith('background') for prediction in test_embeddings_outlier_or_inlier_prediction])
+        selector_for_classification = np.asarray([str(prediction).startswith('background') for prediction in test_embeddings_predictions_with_class_names])
         
         selector_for_classification = selector_for_classification.tolist()
         
