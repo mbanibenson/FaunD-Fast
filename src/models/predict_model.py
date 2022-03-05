@@ -204,7 +204,7 @@ def test_embeddings_and_return_outliers_using_bounding_envelope(test_embeddings,
 
 
 
-def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, novelty_detector, directory_to_save_patches_of_positive_detections, scaler, pca_for_visualization, hull=None):
+def run_inference_on_test_images(directory_containing_test_images, training_embeddings, training_embedding_labels, training_embedding_patches, trained_nca, novelty_detector, directory_to_save_patches_of_positive_detections, scaler, pca_for_visualization,label_encoder, hull=None):
     '''
     Run inference on test images and return results for plotting and visualizations
     
@@ -256,10 +256,14 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
 
         test_embeddings_outlier_or_inlier_prediction = novelty_detector.predict(test_embeddings)
         
+        test_embeddings_outlier_or_inlier_prediction = label_encoder.transform(test_embeddings_outlier_or_inlier_prediction)
+        
+        selector_for_classification = = [False if prediction.startswith('background') else True for prediction in test_embeddings_outlier_or_inlier_prediction]
+        
 #         # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
         
         
-        selector_for_classification = np.where(test_embeddings_outlier_or_inlier_prediction != 0, True, False)
+        # selector_for_classification = np.where(test_embeddings_outlier_or_inlier_prediction != 0, True, False)
         
         selector_for_outliers = selector_for_classification
         

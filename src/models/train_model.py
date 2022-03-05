@@ -94,7 +94,7 @@ def train_non_background_detection_model(directory_containing_underwater_images_
 
 
     print('Running optimization ...')
-    embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, scaler = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, directory_containing_support_sets)
+    embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, scaler, label_encoder = embedd_segment_feature_vectors_using_supervised_pca(underwater_images_of_ccz, directory_containing_support_sets)
     
     # print('Fitting svm novelty detector ...')
     # novelty_detector = novelty_detector_using_binary_kernel_svm(embedded_feature_vectors, labels) 
@@ -110,4 +110,4 @@ def train_non_background_detection_model(directory_containing_underwater_images_
     print('Fitting PCA for mapping embeddings ...')
     pca_for_visualization = PCA(2, whiten=True).fit(embedded_feature_vectors)
     
-    return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, novelty_detector, hull, scaler, pca_for_visualization
+    return embedded_feature_vectors, embedded_background_feature_vectors, labels, patches, nca, novelty_detector, hull, scaler, pca_for_visualization, label_encoder

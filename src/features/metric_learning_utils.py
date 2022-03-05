@@ -81,11 +81,11 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
 
     labels_as_strings = np.concatenate([segmentation_feature_vectors_labels, support_set_labels])
     
-    le = preprocessing.LabelEncoder()
+    label_encoder = preprocessing.LabelEncoder()
     
-    le.fit(labels_as_strings)
+    label_encoder.fit(labels_as_strings)
     
-    labels = le.transform(labels_as_strings)
+    labels = label_encoder.transform(labels_as_strings)
     
     assert len(combined_feature_vectors) == len(labels), f'Inconsistent shapes - Embeddings:({len(combined_feature_vectors)}) , labels:({len(labels)})'
     
@@ -127,7 +127,7 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     data_sheet.to_csv('experimental_datasheet.csv', index=False)
     ##############################
     
-    return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, nca, scaler
+    return embedded_feature_vectors, background_feature_vectors, labels_with_support_set_as_one_class, combined_patches, nca, scaler, label_encoder
     
     
 
