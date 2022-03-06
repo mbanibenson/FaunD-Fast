@@ -18,6 +18,7 @@ from math import ceil
 from functools import partial
 from scipy.ndimage import zoom
 from concurrent.futures import ProcessPoolExecutor
+from skimage.exposure import rescale_intensity
 from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
 
 
