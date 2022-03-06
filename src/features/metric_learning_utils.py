@@ -17,6 +17,8 @@ import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from pathlib import Path
 from sklearn import preprocessing
+from skimage.exposure import rescale_intensity
+from skimage.util import img_as_ubyte
 
 rng = default_rng()
 
@@ -43,6 +45,8 @@ def embedd_segment_feature_vectors_using_supervised_pca(segmented_image_objects,
     
     #Combine and flatten them to form a matrix
     combined_patches = segment_patches + support_set_patches
+    
+    combined_patches = [rescale_intensity(img_as_ubyte(patch)) for patch in combined_patches]
     
     combined_patches_as_matrix = np.vstack([patch.ravel() for patch in combined_patches])
     
