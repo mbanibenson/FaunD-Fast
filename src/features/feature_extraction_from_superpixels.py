@@ -18,6 +18,7 @@ import torch
 import time
 from skimage.exposure import equalize_hist, equalize_adapthist, rescale_intensity
 from skimage.color import rgb2hsv
+from skimage.util import img_as_ubyte
 
 import sys
 sys.path.append('./')
