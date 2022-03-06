@@ -295,7 +295,7 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         test_embeddings_predictions_probabilities = list(compress(test_embeddings_predictions_probabilities, selector_for_outliers))
     
-        save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
+        save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names, outlier_test_patch_class_labels)
         
         outlier_test_patch_names_for_all_partitions.extend(outlier_test_patch_names)
         
@@ -330,18 +330,25 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     return outlier_test_embeddings_for_all_partitions_in_2d, outlier_test_labels_for_all_partitions, outlier_test_patches_for_all_partitions
 
 
-def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
+def save_patches_to_directory(directory_to_save_patches, patches, patch_names, patch_class_labels):
     '''
     Save detected pactches to disk
     
     '''
     directory_to_save_patches = Path(directory_to_save_patches)
     
+    #Create subdirectories for each class
+    for class_name in set(patch_class_labels):
+        
+        subdirectory_path = directory_to_save_patches / f'{class_name}'
+        
+        subdirectory_path.mkdir()
+    
     print('Saving patches for positive detections ...')
     
     try:
     
-        [imsave(directory_to_save_patches / f'{patch_name}.png', img_as_ubyte(patch)) for patch_name, patch in zip(patch_names, patches)]
+        [imsave(directory_to_save_patches / f'{patch_class}/{patch_name}.png', img_as_ubyte(patch)) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
     
     except:
         
