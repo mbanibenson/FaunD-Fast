@@ -16,6 +16,7 @@ import pandas as pd
 from concurrent.futures import ProcessPoolExecutor
 from math import ceil
 from functools import partial
+from scipy.ndimage import zoom
 from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
 
 
