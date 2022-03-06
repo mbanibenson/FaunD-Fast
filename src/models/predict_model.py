@@ -1,5 +1,6 @@
 from pathlib import Path
 import numpy as np
+import pandas as pd
 import random
 from skimage.transform import resize, rescale
 from .core_utils import merge_segmentation_patches_from_all_images
@@ -260,7 +261,9 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         test_embeddings_predictions_with_class_names = label_encoder.inverse_transform(test_embeddings_predictions_as_integers)
         
-        selector_for_classification = ~np.asarray([str(prediction).startswith('back') for prediction in test_embeddings_predictions_with_class_names])
+        # selector_for_classification = ~np.asarray([str(prediction).startswith('back') for prediction in test_embeddings_predictions_with_class_names])
+        
+        selector_for_classification = ~pd.Series(test_embeddings_predictions_with_class_names).str.startswith('back')
         
         selector_for_classification = selector_for_classification.tolist()
         
