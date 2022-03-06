@@ -292,6 +292,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         outlier_test_patch_bboxes = list(compress(segment_patch_bboxes, selector_for_outliers))
         
         outlier_test_patch_class_labels = list(compress(test_embeddings_predictions_with_class_names, selector_for_outliers))
+        
+        test_embeddings_predictions_probabilities = list(compress(test_embeddings_predictions_probabilities, selector_for_outliers))
     
         save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
         
