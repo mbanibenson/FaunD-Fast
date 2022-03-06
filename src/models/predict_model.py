@@ -337,7 +337,7 @@ def patch_save_utility(directory_to_save, patch_class_name, patch_file_name, pat
     Utility function for saving patch names
     
     '''
-    imsave(directory_to_save / f'{patch_class_name}/{patch_file_name}.png', zoom(rescale_intensity(img_as_ubyte(patch_array),(3,3,1))))
+    imsave(directory_to_save / f'{patch_class_name}/{patch_file_name}.png', zoom(rescale_intensity(img_as_ubyte(patch_array)),(3,3,1)))
     
 
 def save_patches_to_directory(directory_to_save_patches, patches, patch_names, patch_class_labels):
