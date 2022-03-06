@@ -17,6 +17,7 @@ from concurrent.futures import ProcessPoolExecutor
 from math import ceil
 from functools import partial
 from scipy.ndimage import zoom
+from concurrent.futures import ProcessPoolExecutor
 from features.feature_extraction_from_superpixels import extract_SIFT_features_for_segmentation_patches_using_kornia
 
 
@@ -330,6 +331,13 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     return outlier_test_embeddings_for_all_partitions_in_2d, outlier_test_labels_for_all_partitions, outlier_test_patches_for_all_partitions
 
+def patch_save_utility(directory_to_save, patch_class_name, patch_file_name, patch_array):
+    '''
+    Utility function for saving patch names
+    
+    '''
+    imsave(directory_to_save / f'{patch_class_name}/{patch_file_name}.png', zoom(img_as_ubyte(patch_array),(3,3,1)))
+    
 
 def save_patches_to_directory(directory_to_save_patches, patches, patch_names, patch_class_labels):
     '''
@@ -351,7 +359,10 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
     
     try:
     
-        [imsave(directory_to_save_patches / f'{patch_class}/{patch_name}.png', zoom(img_as_ubyte(patch),(3,3,1))) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
+        #[imsave(directory_to_save_patches / f'{patch_class}/{patch_name}.png', zoom(img_as_ubyte(patch),(3,3,1))) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
+        with ProcessPoolExecutor(14) as executor:
+            
+            [executor.submit(patch_save_utility, subdirectory_path, patch_class, patch_name, patch) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
     
     except:
         
