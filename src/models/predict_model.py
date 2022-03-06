@@ -342,7 +342,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
         
         subdirectory_path = directory_to_save_patches / f'{class_name}'
         
-        subdirectory_path.mkdir()
+        subdirectory_path.mkdir(exist_ok=True)
     
     print('Saving patches for positive detections ...')
     
