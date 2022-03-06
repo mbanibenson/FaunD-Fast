@@ -336,7 +336,9 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
     Save detected pactches to disk
     
     '''
-    directory_to_save_patches = Path(directory_to_save_patches)
+    directory_to_save_patches = Path(directory_to_save_patches) / 'patches'
+    
+    directory_to_save_patches.mkdir(exist_ok=True)
     
     #Create subdirectories for each class
     for class_name in set(patch_class_labels):
