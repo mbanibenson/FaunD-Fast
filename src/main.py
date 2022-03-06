@@ -49,6 +49,8 @@ rng = default_rng()
 
 directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/background_images_without_fauna_resized_and_classified/')
 
+directory_containing_underwater_images_with_background_only = Path('/home/mbani/mardata/datasets/background_images_without_fauna_resized/')
+
 
 
 #directory_containing_support_sets = Path('/home/mbani/mardata/datasets/support set/')
