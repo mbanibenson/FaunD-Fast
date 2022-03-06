@@ -230,6 +230,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     outlier_test_patch_class_labels_for_all_partitions = []
     
+    outlier_test_patch_prediction_probabilities_for_all_partitions = []
+    
     for partition_id, partition_of_file_paths in enumerate(test_image_file_paths_partitions):
         
         print(f'[INFO] Processing partition {partition_id} / {number_of_partitions} ...')
@@ -261,13 +263,11 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         test_embeddings_predictions_with_class_names = label_encoder.inverse_transform(test_embeddings_predictions_as_integers)
         
-        # selector_for_classification = ~np.asarray([str(prediction).startswith('back') for prediction in test_embeddings_predictions_with_class_names])
-        
         selector_for_classification = ~pd.Series(test_embeddings_predictions_with_class_names).str.startswith('back')
         
         selector_for_classification = selector_for_classification.tolist()
         
-#         # test_embeddings_classification_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
+        test_embeddings_predictions_probabilities = np.amax(novelty_detector.predict_proba(test_embeddings), axis=1)
         
         
         # selector_for_classification = np.where(test_embeddings_outlier_or_inlier_prediction != 0, True, False)
@@ -305,11 +305,14 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         outlier_test_patch_class_labels_for_all_partitions.extend(outlier_test_patch_class_labels)
         
+        outlier_test_patch_prediction_probabilities_for_all_partitions.extend(test_embeddings_predictions_probabilities)
+        
+        
     outlier_test_embeddings_for_all_partitions = np.concatenate(outlier_test_embeddings_for_all_partitions, axis=0)
     
     outlier_test_embeddings_for_all_partitions_in_2d = pca_for_visualization.transform(outlier_test_embeddings_for_all_partitions)
     
-    generate_csv_summarizing_detections(outlier_test_patch_names_for_all_partitions, outlier_test_embeddings_for_all_partitions, outlier_test_patch_bboxes_for_all_partitions, outlier_test_embeddings_for_all_partitions_in_2d, outlier_test_patch_class_labels_for_all_partitions, directory_to_save_patches_of_positive_detections)
+    generate_csv_summarizing_detections(outlier_test_patch_names_for_all_partitions, outlier_test_embeddings_for_all_partitions, outlier_test_patch_bboxes_for_all_partitions, outlier_test_embeddings_for_all_partitions_in_2d, outlier_test_patch_class_labels_for_all_partitions,outlier_test_patch_prediction_probabilities_for_all_partitions, directory_to_save_patches_of_positive_detections)
     
     outlier_test_labels_for_all_partitions = [2] * len(outlier_test_patches_for_all_partitions)
 
@@ -346,12 +349,12 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     return
 
-def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, outlier_test_embeddings_for_all_partitions_in_2d, patch_class_labels, directory_to_save_summary_csv):
+def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, outlier_test_embeddings_for_all_partitions_in_2d, patch_class_labels, patch_prediction_probabilities, directory_to_save_summary_csv):
     '''
     Summarize the detections into a csv file
     
     '''
-    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes, 'class_label':patch_class_labels}
+    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes, 'class_label':patch_class_labels, 'prediction_probability':np.asarray(patch_prediction_probabilities).round(2)}
     
     for i in range(patch_embeddings.shape[1]):
         
