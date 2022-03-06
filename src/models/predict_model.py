@@ -227,6 +227,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     outlier_test_patches_for_all_partitions = []
     
+    outlier_test_patch_class_labels_for_all_partitions = []
+    
     for partition_id, partition_of_file_paths in enumerate(test_image_file_paths_partitions):
         
         print(f'[INFO] Processing partition {partition_id} / {number_of_partitions} ...')
@@ -285,6 +287,8 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         outlier_test_patch_names = list(compress(names_for_each_segment_patch, selector_for_outliers))
     
         outlier_test_patch_bboxes = list(compress(segment_patch_bboxes, selector_for_outliers))
+        
+        outlier_test_patch_class_labels = list(compress(test_embeddings_predictions_with_class_names, selector_for_outliers))
     
         save_patches_to_directory(directory_to_save_patches_of_positive_detections, outlier_test_patches, outlier_test_patch_names)
         
@@ -296,11 +300,13 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
         
         outlier_test_patches_for_all_partitions.extend(outlier_test_patches)
         
+        outlier_test_patch_class_labels_for_all_partitions.extend(outlier_test_patch_class_labels)
+        
     outlier_test_embeddings_for_all_partitions = np.concatenate(outlier_test_embeddings_for_all_partitions, axis=0)
     
     outlier_test_embeddings_for_all_partitions_in_2d = pca_for_visualization.transform(outlier_test_embeddings_for_all_partitions)
     
-    generate_csv_summarizing_detections(outlier_test_patch_names_for_all_partitions, outlier_test_embeddings_for_all_partitions, outlier_test_patch_bboxes_for_all_partitions, outlier_test_embeddings_for_all_partitions_in_2d, directory_to_save_patches_of_positive_detections)
+    generate_csv_summarizing_detections(outlier_test_patch_names_for_all_partitions, outlier_test_embeddings_for_all_partitions, outlier_test_patch_bboxes_for_all_partitions, outlier_test_embeddings_for_all_partitions_in_2d, outlier_test_patch_class_labels_for_all_partitions, directory_to_save_patches_of_positive_detections)
     
     outlier_test_labels_for_all_partitions = [2] * len(outlier_test_patches_for_all_partitions)
 
@@ -337,12 +343,12 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     
     return
 
-def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, outlier_test_embeddings_for_all_partitions_in_2d, directory_to_save_summary_csv):
+def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, outlier_test_embeddings_for_all_partitions_in_2d, patch_class_labels, directory_to_save_summary_csv):
     '''
     Summarize the detections into a csv file
     
     '''
-    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes}
+    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes, 'class_label':patch_class_labels}
     
     for i in range(patch_embeddings.shape[1]):
         
