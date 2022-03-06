@@ -88,7 +88,7 @@ for directory_containing_test_images in directory_containing_subdirectories_with
     
     exclude_list = ['SO268-2_100-1_OFOS-05']#/'SO268-2_153-1_OFOS-10', 'SO268-2_117-1_OFOS-06']
 
-    if subdirectory_name not in exclude_list:
+    if subdirectory_name in exclude_list:
         
         continue
     
