@@ -362,7 +362,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
         #[imsave(directory_to_save_patches / f'{patch_class}/{patch_name}.png', zoom(img_as_ubyte(patch),(3,3,1))) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
         with ProcessPoolExecutor(14) as executor:
             
-            [executor.submit(patch_save_utility, subdirectory_path, patch_class, patch_name, patch) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
+            [executor.submit(patch_save_utility, directory_to_save_patches, patch_class, patch_name, patch) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
     
     except:
         
