@@ -697,7 +697,7 @@ if __name__ == '__main__':
     
     outputs_directory = working_directory / 'detection_outputs'
     
-    
+    shutil.rmtree(outputs_directory, ignore_errors=True)
     outputs_directory.mkdir(exist_ok=True)
     
     directory_to_save_patches_of_positive_detections = outputs_directory
