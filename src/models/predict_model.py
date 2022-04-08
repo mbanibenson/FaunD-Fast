@@ -388,15 +388,21 @@ def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bbo
     detections_summary['bbox'] = bbox_reformated
     
     detections_summary = detections_summary.loc[:,['patch_name', 'parent_image_name', 'anomaly_score', 'bbox', 'bbox_original_format']]
+    
+    additional_attributes = {}
         
     #Add the feature vectors
     for i in range(patch_embeddings.shape[1]):
         
-        detections_summary[f'feature_{i}'] = patch_embeddings[:,i]
+        additional_attributes[f'feature_{i}'] = patch_embeddings[:,i]
         
     for i in range(outlier_test_embeddings_for_all_partitions_in_2d.shape[1]):
         
-        detections_summary[f'pca_{i}'] = outlier_test_embeddings_for_all_partitions_in_2d[:,i]
+        additional_attributes[f'pca_{i}'] = outlier_test_embeddings_for_all_partitions_in_2d[:,i]
+        
+    additional_attributes_df = pd.DataFrame(additional_attributes)
+    
+    detections_summary = pd.concat([detections_summary, additional_attributes_df], axis=1)
                     
     #Sort by anomaly score
     detections_summary = detections_summary.sort_values(by='anomaly_score', ascending=True)
