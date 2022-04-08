@@ -381,7 +381,7 @@ def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bbo
     detections_summary['parent_image_name'] = detections_summary.patch_name.map(lambda x: x.split('#')[0])
     
     #Reformat bbox to agree with image viewer
-    bbox_reformated = detections_summary['bbox'].map(lambda x: x.strip('()').replace(', ', '-'))
+    bbox_reformated = detections_summary['bbox'].map(lambda x: str(x).strip('()').replace(', ', '-'))
     
     detections_summary['bbox_original_format'] = detections_summary['bbox']
 
