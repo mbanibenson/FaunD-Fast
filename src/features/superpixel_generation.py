@@ -1,4 +1,4 @@
-from skimage.segmentation import slic
+from skimage.segmentation import slic, felzenszwalb
 from skimage.measure import regionprops
 import numpy as np
 from numpy.random import default_rng
