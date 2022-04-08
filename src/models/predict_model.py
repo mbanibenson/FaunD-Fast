@@ -332,12 +332,12 @@ def run_inference_on_test_images(directory_containing_test_images, training_embe
     
     return outlier_test_embeddings_for_all_partitions_in_2d, outlier_test_labels_for_all_partitions, outlier_test_patches_for_all_partitions
 
-def patch_save_utility(directory_to_save, patch_class_name, patch_file_name, patch_array):
+def patch_save_utility(directory_to_save, patch_file_name, patch_array):
     '''
     Utility function for saving patch names
     
     '''
-    imsave(directory_to_save / f'{patch_class_name}/{patch_file_name}.png', zoom(img_as_ubyte(patch_array),(3,3,1)))
+    imsave(directory_to_save / f'{patch_file_name}.png', zoom(img_as_ubyte(patch_array),(3,3,1)))
     
 
 def save_patches_to_directory(directory_to_save_patches, patches, patch_names, patch_class_labels):
@@ -348,14 +348,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
     directory_to_save_patches = Path(directory_to_save_patches) / 'patches'
     
     directory_to_save_patches.mkdir(exist_ok=True)
-    
-    #Create subdirectories for each class
-    for class_name in set(patch_class_labels):
-        
-        subdirectory_path = directory_to_save_patches / f'{class_name}'
-        
-        subdirectory_path.mkdir(exist_ok=True)
-    
+       
     print('Saving patches for positive detections ...')
     
     try:
@@ -363,7 +356,7 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
         #[imsave(directory_to_save_patches / f'{patch_class}/{patch_name}.png', zoom(img_as_ubyte(patch),(3,3,1))) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
         with ProcessPoolExecutor(14) as executor:
             
-            [executor.submit(patch_save_utility, directory_to_save_patches, patch_class, patch_name, patch) for patch_class, patch_name, patch in zip(patch_class_labels, patch_names, patches)]
+            [executor.submit(patch_save_utility, directory_to_save_patches, patch_name, patch) for patch_name, patch in zip(patch_names, patches)]
     
     except:
         
@@ -373,27 +366,41 @@ def save_patches_to_directory(directory_to_save_patches, patches, patch_names, p
     
     return
 
-def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, outlier_test_embeddings_for_all_partitions_in_2d, patch_class_labels, patch_prediction_probabilities, directory_to_save_summary_csv):
+def generate_csv_summarizing_detections(patch_names, patch_embeddings, patch_bboxes, outlier_test_embeddings_for_all_partitions_in_2d, patch_prediction_probabilities, directory_to_save_summary_csv):
     '''
     Summarize the detections into a csv file
     
     '''
-    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes, 'class_label':patch_class_labels, 'prediction_probability':np.asarray(patch_prediction_probabilities).round(2)}
+    # dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes, 'class_label':patch_class_labels, 'prediction_probability':patch_prediction_probabilities}
     
-    for i in range(patch_embeddings.shape[1]):
+    dataframe_contents = {'patch_name':patch_names,'bbox':patch_bboxes, 'anomaly_score':patch_prediction_probabilities}
         
-        dataframe_contents[f'nca_{i}'] = patch_embeddings[:,i]
-        
-    for i in range(outlier_test_embeddings_for_all_partitions_in_2d.shape[1]):
-        
-        dataframe_contents[f'pca_{i}'] = outlier_test_embeddings_for_all_partitions_in_2d[:,i]
-                          
-    #detections_summary = pd.DataFrame({'patch_name':patch_names, 'pca_1':patch_embeddings[:,0], 'pca_2':patch_embeddings[:,1], 'bbox':patch_bboxes})
-    
     detections_summary = pd.DataFrame(dataframe_contents)
+    
     
     detections_summary['parent_image_name'] = detections_summary.patch_name.map(lambda x: x.split('#')[0])
     
+    #Reformat bbox to agree with image viewer
+    bbox_reformated = detections_summary['bbox'].map(lambda x: x.strip('()').replace(', ', '-'))
+    
+    detections_summary['bbox_original_format'] = detections_summary['bbox']
+
+    detections_summary['bbox'] = bbox_reformated
+    
+    detections_summary = detections_summary.loc[:,['patch_name', 'parent_image_name', 'anomaly_score', 'bbox', 'bbox_original_format']]
+        
+    #Add the feature vectors
+    for i in range(patch_embeddings.shape[1]):
+        
+        detections_summary[f'feature_{i}'] = patch_embeddings[:,i]
+        
+    for i in range(outlier_test_embeddings_for_all_partitions_in_2d.shape[1]):
+        
+        detections_summary[f'pca_{i}'] = outlier_test_embeddings_for_all_partitions_in_2d[:,i]
+                    
+    #Sort by anomaly score
+    detections_summary = detections_summary.sort_values(by='anomaly_score', ascending=True)
+        
     detections_summary.to_csv(directory_to_save_summary_csv/'detections_summary_table.csv', index=False)
     
     return
