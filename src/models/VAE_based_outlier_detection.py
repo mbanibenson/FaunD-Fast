@@ -689,9 +689,9 @@ if __name__ == '__main__':
     
     #Load patches into batched datasets
     
-    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/dive_21')
+    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_21')
     
-    directory_containing_training_images = directory_containing_training_images / 'training_data'
+    directory_containing_training_images = working_directory / 'training_data'
     
     directory_containing_test_images = working_directory / 'test_data'
     
