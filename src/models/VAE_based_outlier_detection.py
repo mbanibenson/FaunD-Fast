@@ -691,9 +691,9 @@ if __name__ == '__main__':
     
     working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_21')
     
-    directory_containing_training_images = working_directory / 'training_data'
+    directory_containing_training_images = working_directory / 'background_images'
     
-    directory_containing_test_images = working_directory / 'test_data'
+    directory_containing_test_images = working_directory / 'parent_images'
     
     outputs_directory = working_directory / 'detection_outputs'
     
