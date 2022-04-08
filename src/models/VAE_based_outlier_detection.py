@@ -529,7 +529,7 @@ def detect_outliers_using_trained_VAE(trained_VAE,
         test_outlier_scores.extend(test_outlier_scores_for_this_partition.tolist())
         
         #Save the patches as you go
-        save_patches_to_directory(directory_to_save_patches_of_positive_detections, test_outliers_patches_for_this_partition, test_patch_names_for_this_partition, test_patch_class_labels_for_this_partition)
+        save_patches_to_directory(directory_to_save_patches_of_positive_detections, test_outliers_patches_for_this_partition, test_patch_names_for_this_partition)
         
         K.clear_session()
         

@@ -340,7 +340,7 @@ def patch_save_utility(directory_to_save, patch_file_name, patch_array):
     imsave(directory_to_save / f'{patch_file_name}.png', zoom(img_as_ubyte(patch_array),(3,3,1)))
     
 
-def save_patches_to_directory(directory_to_save_patches, patches, patch_names, patch_class_labels):
+def save_patches_to_directory(directory_to_save_patches, patches, patch_names):
     '''
     Save detected pactches to disk
     
