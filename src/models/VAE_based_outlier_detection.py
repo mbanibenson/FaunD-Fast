@@ -25,7 +25,7 @@ from sklearn.covariance import EllipticEnvelope
 from sklearn import svm
 from sklearn.ensemble import IsolationForest
 from math import ceil
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import random
 from functools import partial
 from models.core_utils import merge_segmentation_patches_from_all_images
@@ -682,18 +682,46 @@ def train_model(directory_containing_training_images, batch_size, epochs, direct
     visualize_embedded_segment_patches(training_features_2d, patches=training_patches, figsize=(20,12),points_only=False, figname = 'training_set_scatter_plot_with_patches', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, zoom=0.3)
     
     return trained_VAE_model, train_generator, number_of_train_batches
+
+
+def copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400):
+    '''
+    Sample a number of images to be used to train the VAE
+    
+    '''
+    directory_containing_training_images = Path(directory_containing_training_images)
+    
+    directory_containing_test_images = Path(directory_containing_test_images)
+    
+    file_paths = list(directory_containing_test_images.rglob('*.JPG'))
+    
+    random.shuffle(file_paths)
+    
+    sampled_file_paths = random.sample(file_paths, k=sample_size)
+    
+    #Delete previously sampled training images if any
+    shutil.rmtree(directory_containing_training_images, ignore_errors=True)
+    directory_containing_training_images.mkdir()
+    
+    with ThreadPoolExecutor() as executor:
+        
+        [executor.submit(shutil.copy2, file_path, directory_containing_training_images) for file_path in sampled_file_paths]
+        
+    return
         
 
 
 if __name__ == '__main__':
      
-    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_021')
+    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_126')
 
     directory_containing_training_images = working_directory / 'background_images'
 
     directory_containing_test_images = working_directory / 'parent_images'
 
     outputs_directory = working_directory / 'detection_outputs'
+    
+    copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400)
 
     shutil.rmtree(outputs_directory, ignore_errors=True)
     outputs_directory.mkdir(exist_ok=True)
