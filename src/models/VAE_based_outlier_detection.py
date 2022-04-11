@@ -713,7 +713,7 @@ def copy_training_images_from_parent_images(directory_containing_test_images, di
 
 if __name__ == '__main__':
      
-    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_126')
+    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_160')
 
     directory_containing_training_images = working_directory / 'background_images'
 
@@ -721,7 +721,9 @@ if __name__ == '__main__':
 
     outputs_directory = working_directory / 'detection_outputs'
     
+    print('Copying training images ...')
     copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400)
+    print('Finished copying training images ...')
 
     shutil.rmtree(outputs_directory, ignore_errors=True)
     outputs_directory.mkdir(exist_ok=True)
