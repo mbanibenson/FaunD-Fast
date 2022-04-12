@@ -130,7 +130,7 @@ def train_model(model, train_generator, validation_generator):
 
 
 ################################## Visualization utils ##################################
-def visualize_model_curves(history, figsize=(12,8)):
+def visualize_model_curves(history, figsize=(12,8), directory_to_save_matplotlib_figures=None):
     '''
     Given history object generated from training, plot the training curves
     
@@ -151,8 +151,10 @@ def visualize_model_curves(history, figsize=(12,8)):
     
     ax.legend()
     
+    plt.savefig(Path(directory_to_save_matplotlib_figures) / f'model_curves.png', dpi=150, bbox_inches='tight')
     
-def visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8)):
+    
+def visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8), figname=None, directory_to_save_matplotlib_figures=None):
     '''
     Visualize proportions of test set classified under each class
     
@@ -174,6 +176,8 @@ def visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8))
         height = rect.get_height()
         ax.text(
         rect.get_x() + rect.get_width() / 2, height + 5, label, ha="center", va="bottom")
+        
+    plt.savefig(Path(directory_to_save_matplotlib_figures) / f'distributon_over_predictions_for_{figname}.png', dpi=150, bbox_inches='tight')
         
     return
         
@@ -219,9 +223,7 @@ def sort_images_using_trained_model(trained_model, class_label_mappings, directo
     
     directory_to_save_sorted_images = Path(directory_to_save_sorted_images)
     
-    shutil.rmtree(directory_to_save_sorted_images, ignore_errors=True)
-    directory_to_save_sorted_images.mkdir(exist_ok=True)
-    
+        
     test_data_gen, file_paths, number_of_batches = load_images_for_sorting(directory_containing_images_to_sort, target_size)
     
     file_names_for_sorting = []
@@ -239,9 +241,7 @@ def sort_images_using_trained_model(trained_model, class_label_mappings, directo
         file_name_for_sorting = directory_to_save_sorted_images / f'{str(predicted_class)}/{file_name.name}'
         
         file_names_for_sorting.append(file_name_for_sorting)
-    
-    
-    
+      
     
     #Create the directories to save sorted images
     unique_classes = set(predicted_classes_with_string_labels)
@@ -260,44 +260,46 @@ def sort_images_using_trained_model(trained_model, class_label_mappings, directo
     return predicted_classes_with_string_labels
 
 
-def create_post_processed_detections_summary_table(directory_containing_fauna_patches, path_to_original_summary_table, path_to_post_processed_summary_table):
+def create_post_processed_detections_summary_table(directory_containing_fauna_patches, directory_containing_unsupervised_outlier_detection_results, path_to_post_processed_summary_table):
     '''
-    Create a new table that has records for the prost processed patches - after sorting by CNN
+    Create a new table that has records for the post processed patches - after sorting by CNN
+    
+    ##TODO: Loop through dives directory and merge the detection_summary_tables.csv
+    
+    ##TODO: Merge the master detection summary table with the one containing georeferenced coordinates
     
     '''
     directory_containing_fauna_patches = Path(directory_containing_fauna_patches)
     
-    path_to_original_summary_table = Path(path_to_original_summary_table)
+    directory_containing_unsupervised_outlier_detection_results = Path(directory_containing_unsupervised_outlier_detection_results)
     
     path_to_post_processed_summary_table = Path(path_to_post_processed_summary_table)
     
+    original_summary_table_dataframes = []
     
-    path_to_original_summary_table = pd.read_csv(path_to_original_summary_table)
+    for directory in directory_containing_unsupervised_outlier_detection_results.iterdir():
+        
+        outlier_detection_output_directory = directory / 'detection_outputs'
+        
+        if not outlier_detection_output_directory.exists():
+            
+            continue
+            
+        path_to_original_summary_table = outlier_detection_output_directory / 'master_detections_summary_table.csv'
+    
+        original_summary_table_dataframe = pd.read_csv(path_to_original_summary_table)
+        
+        original_summary_table_dataframes.append(original_summary_table_dataframe)
+        
+    master_original_summary_table_dataframe = pd.concat(original_summary_table_dataframes, axis=0)
+    
+    assert len(master_original_summary_table_dataframe.columns) == len(original_summary_table_dataframes[0].columns), 'Summary tables merge was not properly done. Unexpected output shape'
     
     fauna_patches_file_names = [fp.stem for fp in directory_containing_fauna_patches.iterdir()]
     
     fauna_patches_df = pd.DataFrame({'patch_name':fauna_patches_file_names})
     
-    fauna_patches_df_complete = pd.merge(fauna_patches_df, path_to_original_summary_table, how='left', on='patch_name')
-    
-    def reformat_bbox(bbox_coords):
-        '''
-        Reformat bounding box coordinates
-        
-        '''
-#         coords = tuple(bbox_coords)
-        
-#         reformated_coords = f'{coords[1]}-{coords[3]}-{coords[5]}-{coords[7]}'
-
-        reformated_coords = bbox_coords.lstrip('(').rstrip(')').replace(', ', '-')
-        
-        return reformated_coords
-    
-    fauna_patches_df_complete = fauna_patches_df_complete.rename(columns={'bbox':'original_bbox'})
-    
-    fauna_patches_df_complete['bbox'] = fauna_patches_df_complete.original_bbox.map(reformat_bbox)
-    
-    
+    fauna_patches_df_complete = pd.merge(fauna_patches_df, master_original_summary_table_dataframe, how='left', on='patch_name')
     
     fauna_patches_df_complete.to_csv(path_to_post_processed_summary_table, index=False)
     
@@ -308,45 +310,62 @@ def create_post_processed_detections_summary_table(directory_containing_fauna_pa
 if __name__ == '__main__':
     
     #Set variables
-    #directory_containing_original_datasets = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/annotations/')
-    directory_containing_datasets = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/supervised_classification/')
     target_size = 224
     number_of_classes = 2
     figsize = (12,8)
-    directory_containing_images_to_sort = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_160/detection_outputs/')
-    #directory_containing_images_to_sort = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/annotations/non_fauna')
-    directory_to_save_sorted_images = directory_containing_images_to_sort / 'classified_patches'
-
-    directory_containing_fauna_patches = directory_to_save_sorted_images / 'non_fauna'
-
-    path_to_original_summary_table = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/fauna_detection_results/positively_detected_fauna_experimental_v8/detection_output_csv_tables/master_detections_summary_table.csv')
-
-    #path_to_post_processed_summary_table = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/fauna_detection_results/positively_detected_fauna_experimental_v8/detection_output_csv_tables/post_processed_master_detections_summary_table.csv')
-    path_to_post_processed_summary_table = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/auto_sorted_annotations/non_fauna_detections_summary_table.csv')
-
-    path_to_data_csv = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/auto_sorted_annotations/non_fauna_detections_summary_table.csv')
-    directory_containing_patches = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/auto_sorted_annotations/non_fauna/')
-    figname = 'non_fauna_embeddings'
-    directory_to_save_matplotlib_figures=Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/reports/auto_sorted_annotations')
+    dive_to_sort = 'random_dive'
     
+    data_directory = Path.cwd().parents[0] / 'data'
     
-    #Function calls
+    directory_containing_training_datasets = data_directory / 'supervised_fauna_non_fauna_classification/training_dataset/'
+    
+    directory_containing_classification_outputs = data_directory / 'supervised_fauna_non_fauna_classification/classification_outputs'
+    
+    shutil.rmtree(directory_containing_classification_outputs, ignore_errors=True)
+    directory_containing_classification_outputs.mkdir()
+    
+    directory_to_save_sorted_images = directory_containing_classification_outputs / 'classified_patches'
+    directory_to_save_sorted_images.mkdir()
+
+    path_to_post_processed_summary_table = directory_containing_classification_outputs / 'detections_summary_table.csv'
+    
+    directory_to_save_matplotlib_figures = directory_containing_classification_outputs / 'matplotlib_figures'
+    directory_to_save_matplotlib_figures.mkdir()
+    
+    directory_containing_pure_fauna_patches = directory_to_save_sorted_images / 'fauna'
+    
+    directory_containing_unsupervised_outlier_detection_results = data_directory / 'unsupervised_outlier_detection'
+    
     #Load datasets
-    train_generator, validation_generator, class_label_mappings = load_data_into_training_and_validation_sets(directory_containing_datasets, target_size)
-    
+    train_generator, validation_generator, class_label_mappings = load_data_into_training_and_validation_sets(directory_containing_training_datasets, target_size)
+
     #Set up the model
     model = build_model(number_of_classes, target_size)
-    
+
     #Perform model training
     trained_model, history = train_model(model, train_generator, validation_generator)
     
-    #Perform sorting
-    list_of_predictions = sort_images_using_trained_model(trained_model, class_label_mappings, directory_containing_images_to_sort, directory_to_save_sorted_images, target_size)
-    
     #Visualize training curves
-    visualize_model_curves(history, figsize=figsize)
+    visualize_model_curves(history, figsize=figsize, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
     
-    #Visualize distribuion over predictions
-    visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8))
     
-    #visualize_embedded_segment_patches(path_to_data_csv, directory_containing_patches, figsize=(20,12), figname = figname, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    for dive in directory_containing_unsupervised_outlier_detection_results.iterdir():
+        
+        dive_to_sort = dive.name
+        
+        if dive_to_sort not in ['dive_164', 'dive_177']:
+            
+            print(f'Sorting {dive_to_sort} ...')
+    
+            directory_containing_images_to_sort = directory_containing_unsupervised_outlier_detection_results /f'{dive_to_sort}/detection_outputs'
+
+            #Perform sorting (clasification inference)
+            list_of_predictions = sort_images_using_trained_model(trained_model, class_label_mappings, directory_containing_images_to_sort, directory_to_save_sorted_images, target_size)
+
+            #Visualize distribuion over predictions
+            visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8), figname=dive_to_sort, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+
+            #visualize_embedded_segment_patches(path_to_data_csv, directory_containing_patches, figsize=(20,12), figname = figname, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    
+    print('Saving post processed csv ...')
+    create_post_processed_detections_summary_table(directory_containing_pure_fauna_patches, directory_containing_unsupervised_outlier_detection_results, path_to_post_processed_summary_table)
