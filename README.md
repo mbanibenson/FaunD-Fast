@@ -1,6 +1,8 @@
 # Semi-automated deepsea fauna detection
 This repository contains the source codes used for semi-automatic detection of potential benthic megafauna on the seafloor. The workflow is based on the processing of a sequence of underwater optical images, and operates on the observation that fauna occurs infrequently in most photos. On the basis of this observation, we implemented the deepsea fauna detection workflow as follows:
 
+![Alt text](https://cloud.geomar.de/s/a8xCSFffQoAbEDK/download/Fauna_detection_workflow.svg)
+
 ## Training
 
 1. A subset of 400 images is sampled randomly from the entire image dataset collected during the dive/deployment.
