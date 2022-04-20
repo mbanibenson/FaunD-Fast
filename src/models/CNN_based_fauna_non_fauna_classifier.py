@@ -260,50 +260,7 @@ def sort_images_using_trained_model(trained_model, class_label_mappings, directo
     return predicted_classes_with_string_labels
 
 
-def create_post_processed_detections_summary_table(directory_containing_fauna_patches, directory_containing_unsupervised_outlier_detection_results, path_to_post_processed_summary_table):
-    '''
-    Create a new table that has records for the post processed patches - after sorting by CNN
-    
-    ##TODO: Loop through dives directory and merge the detection_summary_tables.csv
-    
-    ##TODO: Merge the master detection summary table with the one containing georeferenced coordinates
-    
-    '''
-    directory_containing_fauna_patches = Path(directory_containing_fauna_patches)
-    
-    directory_containing_unsupervised_outlier_detection_results = Path(directory_containing_unsupervised_outlier_detection_results)
-    
-    path_to_post_processed_summary_table = Path(path_to_post_processed_summary_table)
-    
-    original_summary_table_dataframes = []
-    
-    for directory in directory_containing_unsupervised_outlier_detection_results.iterdir():
-        
-        outlier_detection_output_directory = directory / 'detection_outputs'
-        
-        if not outlier_detection_output_directory.exists():
-            
-            continue
-            
-        path_to_original_summary_table = outlier_detection_output_directory / 'master_detections_summary_table.csv'
-    
-        original_summary_table_dataframe = pd.read_csv(path_to_original_summary_table)
-        
-        original_summary_table_dataframes.append(original_summary_table_dataframe)
-        
-    master_original_summary_table_dataframe = pd.concat(original_summary_table_dataframes, axis=0)
-    
-    assert len(master_original_summary_table_dataframe.columns) == len(original_summary_table_dataframes[0].columns), 'Summary tables merge was not properly done. Unexpected output shape'
-    
-    fauna_patches_file_names = [fp.stem for fp in directory_containing_fauna_patches.iterdir()]
-    
-    fauna_patches_df = pd.DataFrame({'patch_name':fauna_patches_file_names})
-    
-    fauna_patches_df_complete = pd.merge(fauna_patches_df, master_original_summary_table_dataframe, how='left', on='patch_name')
-    
-    fauna_patches_df_complete.to_csv(path_to_post_processed_summary_table, index=False)
-    
-    return
+
 ############################## End of sorting utils #########################################
 
 
@@ -327,7 +284,7 @@ if __name__ == '__main__':
     directory_to_save_sorted_images = directory_containing_classification_outputs / 'classified_patches'
     directory_to_save_sorted_images.mkdir()
 
-    path_to_post_processed_summary_table = directory_containing_classification_outputs / 'detections_summary_table.csv'
+    path_to_post_processed_summary_table = directory_containing_classification_outputs / 'master_detections_summary_table.csv'
     
     directory_to_save_matplotlib_figures = directory_containing_classification_outputs / 'matplotlib_figures'
     directory_to_save_matplotlib_figures.mkdir()
@@ -353,11 +310,11 @@ if __name__ == '__main__':
         
         dive_to_sort = dive.name
         
-        if dive_to_sort not in ['dive_164', 'dive_177']:
+        directory_containing_images_to_sort = directory_containing_unsupervised_outlier_detection_results /f'{dive_to_sort}/detection_outputs'
+        
+        if directory_containing_images_to_sort.exists():
             
             print(f'Sorting {dive_to_sort} ...')
-    
-            directory_containing_images_to_sort = directory_containing_unsupervised_outlier_detection_results /f'{dive_to_sort}/detection_outputs'
 
             #Perform sorting (clasification inference)
             list_of_predictions = sort_images_using_trained_model(trained_model, class_label_mappings, directory_containing_images_to_sort, directory_to_save_sorted_images, target_size)
@@ -366,6 +323,7 @@ if __name__ == '__main__':
             visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8), figname=dive_to_sort, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
 
             #visualize_embedded_segment_patches(path_to_data_csv, directory_containing_patches, figsize=(20,12), figname = figname, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+            
     
-    print('Saving post processed csv ...')
-    create_post_processed_detections_summary_table(directory_containing_pure_fauna_patches, directory_containing_unsupervised_outlier_detection_results, path_to_post_processed_summary_table)
+    
+    
