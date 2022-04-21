@@ -28,6 +28,8 @@ def create_post_processed_detections_summary_table(directory_containing_fauna_pa
         
         outlier_detection_output_directory = directory / 'detection_outputs'
         
+        parent_image_directory = directory / 'parent_images'
+        
         if not outlier_detection_output_directory.exists():
             
             continue
@@ -36,18 +38,24 @@ def create_post_processed_detections_summary_table(directory_containing_fauna_pa
     
         original_summary_table_dataframe = pd.read_csv(path_to_original_summary_table)
         
+        original_summary_table_dataframe['parent_image_url'] = original_summary_table_dataframe.parent_image_name.map(lambda name: str(parent_image_directory / f'{name}.JPG'))
+        
         original_summary_table_dataframes.append(original_summary_table_dataframe)
         
     master_original_summary_table_dataframe = pd.concat(original_summary_table_dataframes, axis=0)
     
     assert len(master_original_summary_table_dataframe.columns) == len(original_summary_table_dataframes[0].columns), 'Summary tables merge was not properly done. Unexpected output shape'
     
+#     full_parent_image_paths = [fp for fp in directory_containing_unsupervised_outlier_detection_results.rglob('*.JPG') if fp.stem in master_original_summary_table_dataframe.parent_image_name.values]
+    
+#     master_original_summary_table_dataframe['parent_image_url'] = full_parent_image_paths
+    
     fauna_patches_file_names = [fp.stem for fp in directory_containing_fauna_patches.iterdir()]
     
     fauna_patches_df = pd.DataFrame({'patch_name':fauna_patches_file_names})
     
     fauna_patches_df_complete = pd.merge(fauna_patches_df, master_original_summary_table_dataframe, how='left', on='patch_name')
-    
+        
     fauna_patches_df_complete.to_csv(path_to_post_processed_summary_table, index=False)
     
     return
@@ -71,7 +79,9 @@ def copy_files_to_image_viewer_for_annotation(directory_containing_pure_fauna_pa
     
     post_processed_summary_table = pd.read_csv(path_to_post_processed_summary_table)
     
-    original_parent_image_paths = set([fp for fp in directory_containing_unsupervised_outlier_detection_results.rglob('*.JPG') if fp.stem in post_processed_summary_table.parent_image_name.values])
+    # original_parent_image_paths = set([fp for fp in directory_containing_unsupervised_outlier_detection_results.rglob('*.JPG') if fp.stem in post_processed_summary_table.parent_image_name.values])
+    
+    original_parent_image_paths = post_processed_summary_table.parent_image_url.unique()
     
     print(f'Found {len(original_parent_image_paths)} parent image paths')
     
