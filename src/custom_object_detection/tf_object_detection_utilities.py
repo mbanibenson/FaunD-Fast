@@ -284,6 +284,7 @@ def visualize_detections(image_tensor, detections, category_index, score_thresho
     ax.set_xticks([])
     ax.set_yticks([])
     plt.savefig(Path(directory_to_save_detection_figures) / f'{figname}.png', dpi=300, bbox_inches='tight')
+    plt.close()
     
     
 
