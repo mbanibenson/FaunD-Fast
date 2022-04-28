@@ -2,7 +2,9 @@ from custom_object_detection.tf_object_detection_utilities import load_saved_mod
 from custom_object_detection.tf_object_detection_utilities import detect_objects_in_image
 from custom_object_detection.tf_object_detection_utilities import load_label_map_info
 from custom_object_detection.tf_object_detection_utilities import visualize_detections
-from custom_object_detection.tf_object_detection_utilities import read_image_as_ndarray
+from custom_object_detection.tf_object_detection_utilities import read_image_into_a_tensor
+import numpy as np
+import shutil
 import matplotlib.pyplot as plt
 from pathlib import Path
 
@@ -10,14 +12,37 @@ if __name__ == '__main__':
     
     path_to_saved_model = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/models/my_model_dir/exported_model_dir/saved_model'
     label_map_path = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/data/SO268_label_map.pbtxt'
-    image_file_path = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/unsupervised_outlier_detection/dive_177/parent_images/SO268-2_177-1_OFOS-13_20190510_071413.JPG'
+    directory_containing_images_to_detect = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/unsupervised_outlier_detection/random_dive/parent_images/')
     
+    image_file_paths = directory_containing_images_to_detect.iterdir()
+    
+    directory_to_save_detection_figures = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/predictions')
+    
+    shutil.rmtree(directory_to_save_detection_figures, ignore_errors=True)
+    directory_to_save_detection_figures.mkdir()
+    
+    score_threshold = 0.3
+    
+    print('Loading detection model ...')
+      
     detection_model = load_saved_model_for_inference(path_to_saved_model)
 
     category_index, label_map_dict = load_label_map_info(label_map_path)
     
-    image_tensor = read_image_as_ndarray(image_file_path)
-    
-    detections = detect_objects_in_image(detection_model, image_tensor)
-    
-    visualize_detections(image_tensor, detections, category_index)
+    for image_file_path in image_file_paths:
+        
+        figname = image_file_path.stem
+        
+        print(f'Detecting fauna in image {figname} ...')
+
+        image_tensor = read_image_into_a_tensor(image_file_path)
+
+        detections = detect_objects_in_image(detection_model, image_tensor)
+        
+        number_of_plausible_detections = np.count_nonzero(detections['detection_scores'].numpy() > score_threshold)
+        
+        if number_of_plausible_detections > 0:
+
+            visualize_detections(image_tensor, detections, category_index,score_threshold, directory_to_save_detection_figures,figname)
+            
+    print('Finished making detections.')

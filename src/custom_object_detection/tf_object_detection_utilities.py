@@ -239,7 +239,7 @@ def load_label_map_info(label_map_path):
     return category_index, label_map_dict
 
 
-def read_image_as_ndarray(image_file_path):
+def read_image_into_a_tensor(image_file_path):
     '''
     Load an image into a numpy array
     
@@ -249,7 +249,6 @@ def read_image_as_ndarray(image_file_path):
     image_tensor = tf.convert_to_tensor(image_as_ndarray)[tf.newaxis, ...]
     
     return image_tensor
-
 
 
 def detect_objects_in_image(detection_model, image_tensor):
@@ -262,8 +261,7 @@ def detect_objects_in_image(detection_model, image_tensor):
     return detections
 
 
-
-def visualize_detections(image_tensor, detections, category_index):
+def visualize_detections(image_tensor, detections, category_index, score_threshold, directory_to_save_detection_figures,figname):
     '''
     Plot the detections for visualization
     
@@ -278,12 +276,15 @@ def visualize_detections(image_tensor, detections, category_index):
       category_index,
       use_normalized_coordinates=True,
       max_boxes_to_draw=200,
-      min_score_thresh=.30,
+      min_score_thresh=score_threshold,
       agnostic_mode=False)
     
-    plt.figure(figsize=(12,16))
-    plt.imshow(image_np_with_detections)
-    plt.show()
+    fig, ax = plt.subplots(figsize=(12,16))
+    ax.imshow(image_np_with_detections)
+    ax.set_xticks([])
+    ax.set_yticks([])
+    plt.savefig(Path(directory_to_save_detection_figures) / f'{figname}.png', dpi=300, bbox_inches='tight')
+    
     
 
 
