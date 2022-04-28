@@ -7,12 +7,13 @@ import numpy as np
 import shutil
 import matplotlib.pyplot as plt
 from pathlib import Path
+import time
 
 if __name__ == '__main__':
     
     path_to_saved_model = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/models/my_model_dir/exported_model_dir/saved_model'
     label_map_path = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/data/SO268_label_map.pbtxt'
-    directory_containing_images_to_detect = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/unsupervised_outlier_detection/random_dive/parent_images/')
+    directory_containing_images_to_detect = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/unsupervised_outlier_detection/dive_126/parent_images/')
     
     image_file_paths = directory_containing_images_to_detect.iterdir()
     
@@ -22,6 +23,8 @@ if __name__ == '__main__':
     directory_to_save_detection_figures.mkdir()
     
     score_threshold = 0.3
+    
+    start_time = time.time()
     
     print('Loading detection model ...')
       
@@ -44,5 +47,11 @@ if __name__ == '__main__':
         if number_of_plausible_detections > 0:
 
             visualize_detections(image_tensor, detections, category_index,score_threshold, directory_to_save_detection_figures,figname)
-            
-    print('Finished making detections.')
+    
+    end_time = time.time()
+    
+    time_taken = time.gmtime(end_time - start_time)
+    
+    with open(directory_to_save_detection_figures/'processing_time.txt', 'w') as file:
+    
+        print(f'Finished making detections in {time_taken.tm_hour} hours, {time_taken.tm_min} minutes and {time_taken.tm_sec} seconds.', file=file)
