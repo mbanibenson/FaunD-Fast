@@ -5,13 +5,25 @@ This repository contains the source codes used for semi-automatic detection of p
 
 ## Training
 
-1. A subset of 400 images is sampled randomly from the entire image dataset collected during the dive/deployment.
+1. Randomly sample a subset of 'background' images (e.g 400) from the entire image dataset collected during the dive/deployment. These will be used for training the feature extractor and outlier detection algorithm.
+```
+python randomly_sample_images_for_training_VAE_and_outlier_detector.py
+```
 
-2. The images are segmented to extract image patches whose pixels are characteristically similar to each other. 
+2. Segment the sampled 'background' images into homogenous background image patches whose pixels are characteristically similar to each other. 
+```
+python segment_background_images.py
+```
 
-3. A Convolution Variational Auto Encoder(CVAE) is then trained and used to extract features from these image patches.
+3. Train a Convolution Variational Auto Encoder(CVAE) using the background image patches, and use the trained CVAE to extract feature vectors from the patches.
+```
+python train_CVAE_and_extract_features_from_background_patches.py
+```
 
-4. Isolation Forest algorithm is then trained to detect anomalous image patches based on the extracted features.
+4. Train Isolation Forest algorithm on the background feature vectors to detect anomalous image patches.
+```
+python train_Isolation_Forest_outlier_detector.py
+```
 
 ## Inference
 
@@ -24,6 +36,10 @@ This repository contains the source codes used for semi-automatic detection of p
 4. Each detected anomalous patch is saved to disk ordered by the anomalous score.
 
 5. A csv file is created for each dive which records details about all the detected anomalous patches. These include the parent image name and the bounding box coordinates marking the location of the patch within the parent image.
+```
+python perform_inference_to_detect_outlier_patches.py
+```
+
 
 ## Fauna/non-fauna classification
 
