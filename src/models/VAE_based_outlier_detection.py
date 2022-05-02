@@ -425,52 +425,180 @@ def extract_features_using_trained_VAE(trained_VAE, data_generator, total_number
 #     return pca_embeddings, test_outliers_patches
 
 
-def detect_outliers_using_trained_VAE(trained_VAE, 
-                                      train_generator,number_of_train_batches, 
-                                      directory_containing_test_images,
-                                      directory_to_save_patches_of_positive_detections,
-                                      batch_size=32, im_height=96, im_width=96, pca_object=None, contamination=0.01):
-    '''
-    Use trained VAE to make predictions
+# def detect_outliers_using_trained_VAE(trained_VAE, 
+#                                       train_generator,number_of_train_batches, 
+#                                       directory_containing_test_images,
+#                                       directory_to_save_patches_of_positive_detections,
+#                                       batch_size=32, im_height=96, im_width=96, pca_object=None, contamination=0.01):
+#     '''
+#     Use trained VAE to make predictions
     
-    '''
-    training_features = []
+#     '''
+#     training_features = []
     
-    test_outliers_features = []
+#     test_outliers_features = []
     
-    #test_outliers_patches = []
+#     #test_outliers_patches = []
     
-    test_outliers_patch_names = [] 
+#     test_outliers_patch_names = [] 
     
-    test_outliers_patch_bboxes = []
+#     test_outliers_patch_bboxes = []
     
-    #test_outliers_patch_class_labels = []
+#     #test_outliers_patch_class_labels = []
     
-    test_outlier_scores = []
+#     test_outlier_scores = []
     
     
     
-    #Encode the training features
-    for training_batch, _ in zip(train_generator, range(number_of_train_batches)):
+#     #Encode the training features
+#     for training_batch, _ in zip(train_generator, range(number_of_train_batches)):
         
-        mean_vector, logvar = trained_VAE.encode(training_batch/255)
+#         mean_vector, logvar = trained_VAE.encode(training_batch/255)
         
-        training_features.append(mean_vector)
+#         training_features.append(mean_vector)
     
-    training_features = np.vstack(training_features)
+#     training_features = np.vstack(training_features)
     
-    #Train outlier detector
-    #outlier_detector = IsolationForest(n_jobs=14, bootstrap=True, contamination=contamination).fit(training_features)
+#     #Train outlier detector
+#     #outlier_detector = IsolationForest(n_jobs=14, bootstrap=True, contamination=contamination).fit(training_features)
     
+#     outlier_detector = IsolationForest(n_jobs=14, 
+#                                        bootstrap=True,
+#                                        max_samples=5000,
+#                                        max_features=0.5,
+#                                       warm_start=False,
+#                                       contamination='auto').fit(training_features)
+    
+    
+    
+#     #Split the training set so we can process the in batches
+#     list_of_file_paths_for_test_images = list(directory_containing_test_images.rglob('*.JPG'))
+    
+#     number_of_splits = ceil(len(list_of_file_paths_for_test_images) / 16)
+    
+#     file_path_partitions = np.array_split(list_of_file_paths_for_test_images, number_of_splits)
+    
+#     #Loop through each batch for memory efficiency
+#     for file_path_partition in file_path_partitions:
+    
+#         print('Segmenting training images ...')
+#         list_of_test_patches, test_patch_names, test_patch_bboxes, _ = segment_images_and_return_segments_as_list_of_ndarrays(file_path_partition.tolist())
+
+#         test_generator, number_of_test_batches = create_tensorflow_dataset_from_numpy_ndarray(list_of_test_patches, batch_size, is_for_training=False)
+        
+#         test_features_for_this_partition = []
+
+#         for test_batch,_ in zip(test_generator, range(number_of_test_batches)):
+
+#             mean_vector, logvar = trained_VAE.encode(test_batch/255)
+
+#             test_features_for_this_partition.append(mean_vector)
+
+#         test_features_for_this_partition = np.vstack(test_features_for_this_partition)
+        
+        
+#         #Detect outliers from the test set partition
+#         test_outlier_predictions_for_this_partition = outlier_detector.predict(test_features_for_this_partition)
+
+#         test_outlier_selector_for_this_partition = (test_outlier_predictions_for_this_partition == -1)
+        
+#         test_scores_for_this_partition = outlier_detector.score_samples(test_features_for_this_partition)
+
+#         test_outliers_features_for_this_partition = np.compress(test_outlier_selector_for_this_partition, test_features_for_this_partition, axis=0)
+        
+#         test_outlier_scores_for_this_partition = np.compress(test_outlier_selector_for_this_partition, test_scores_for_this_partition)
+
+#         test_outliers_patches_for_this_partition = list(compress(list_of_test_patches,test_outlier_selector_for_this_partition))
+        
+#         test_patch_names_for_this_partition = list(compress(test_patch_names,test_outlier_selector_for_this_partition))
+        
+#         test_patch_bboxes_for_this_partition = list(compress(test_patch_bboxes,test_outlier_selector_for_this_partition))
+        
+#         #test_patch_class_labels_for_this_partition = list(compress(test_patch_class_labels,test_outlier_selector_for_this_partition))
+        
+#         test_outliers_features.append(test_outliers_features_for_this_partition)
+        
+#         #test_outliers_patches.extend(test_outliers_patches_for_this_partition)
+        
+#         test_outliers_patch_names.extend(test_patch_names_for_this_partition)
+        
+#         test_outliers_patch_bboxes.extend(test_patch_bboxes_for_this_partition)
+        
+#         #test_outliers_patch_class_labels.extend(test_patch_class_labels_for_this_partition)
+        
+#         test_outlier_scores.extend(test_outlier_scores_for_this_partition.tolist())
+        
+#         #Save the patches as you go
+#         save_patches_to_directory(directory_to_save_patches_of_positive_detections, test_outliers_patches_for_this_partition, test_patch_names_for_this_partition)
+        
+#         K.clear_session()
+        
+        
+#     test_outliers_features = np.concatenate(test_outliers_features, axis=0)
+        
+
+#     if test_outliers_features.shape[1] > 2:
+        
+#         if pca_object is None:
+            
+#             pca_object = PCA(n_components=2, whiten=True).fit(test_outliers_features)
+
+#         pca_embeddings = pca_object.transform(test_outliers_features)
+        
+
+#     else:
+        
+#         pca_embeddings = test_outliers_features
+
+#     print(f'Found {len(pca_embeddings)} outliers ...')
+    
+    
+# #     #Train a rigid outlier detector for selecting strictly outliers
+# #     outlier_detector_rigid = IsolationForest(n_jobs=14, bootstrap=True, contamination=0.005).fit(training_features)
+    
+# #     test_outlier_rigid_predictions = outlier_detector_rigid.predict(test_outliers_features)
+    
+# #     test_outlier_scores = (test_outlier_rigid_predictions == -1)
+        
+#     generate_csv_summarizing_detections(test_outliers_patch_names, test_outliers_features, test_outliers_patch_bboxes, pca_embeddings, test_outlier_scores, directory_to_save_patches_of_positive_detections)
+
+#     #return pca_embeddings, test_outliers_patches
+    
+    
+    
+def train_Isolation_Forest_to_detect_anomalous_patches(background_features, contamination='auto'):
+    '''
+    Train an instance of IF to be used as outlier detector
+    
+    '''
+    #Train outlier detector    
     outlier_detector = IsolationForest(n_jobs=14, 
                                        bootstrap=True,
                                        max_samples=5000,
                                        max_features=0.5,
-                                      warm_start=False,
-                                      contamination='auto').fit(training_features)
+                                       warm_start=False,
+                                       contamination=contamination).fit(background_features)
     
+    return outlier_detector
+
+
+def detect_anomalous_patches_using_trained_Isolation_Forest(trained_VAE,
+                                      trained_Isolation_Forest, 
+                                      directory_containing_test_images,
+                                      directory_to_save_patches_of_positive_detections):
+    '''
+    Use trained VAE to make predictions
     
+    '''
+    test_outliers_features = []
+
+    test_outliers_patch_names = [] 
     
+    test_outliers_patch_bboxes = []
+
+    test_outlier_scores = []
+  
+
     #Split the training set so we can process the in batches
     list_of_file_paths_for_test_images = list(directory_containing_test_images.rglob('*.JPG'))
     
@@ -513,24 +641,19 @@ def detect_outliers_using_trained_VAE(trained_VAE,
         test_patch_names_for_this_partition = list(compress(test_patch_names,test_outlier_selector_for_this_partition))
         
         test_patch_bboxes_for_this_partition = list(compress(test_patch_bboxes,test_outlier_selector_for_this_partition))
-        
-        #test_patch_class_labels_for_this_partition = list(compress(test_patch_class_labels,test_outlier_selector_for_this_partition))
-        
+                
         test_outliers_features.append(test_outliers_features_for_this_partition)
-        
-        #test_outliers_patches.extend(test_outliers_patches_for_this_partition)
-        
+                
         test_outliers_patch_names.extend(test_patch_names_for_this_partition)
         
         test_outliers_patch_bboxes.extend(test_patch_bboxes_for_this_partition)
-        
-        #test_outliers_patch_class_labels.extend(test_patch_class_labels_for_this_partition)
-        
+                
         test_outlier_scores.extend(test_outlier_scores_for_this_partition.tolist())
         
         #Save the patches as you go
         save_patches_to_directory(directory_to_save_patches_of_positive_detections, test_outliers_patches_for_this_partition, test_patch_names_for_this_partition)
         
+        #Clear gpu memory
         K.clear_session()
         
         
@@ -538,34 +661,21 @@ def detect_outliers_using_trained_VAE(trained_VAE,
         
 
     if test_outliers_features.shape[1] > 2:
-        
-        if pca_object is None:
             
-            pca_object = PCA(n_components=2, whiten=True).fit(test_outliers_features)
+        pca_object = PCA(n_components=2, whiten=True).fit(test_outliers_features)
 
         pca_embeddings = pca_object.transform(test_outliers_features)
         
-
     else:
         
         pca_embeddings = test_outliers_features
 
     print(f'Found {len(pca_embeddings)} outliers ...')
-    
-    
-#     #Train a rigid outlier detector for selecting strictly outliers
-#     outlier_detector_rigid = IsolationForest(n_jobs=14, bootstrap=True, contamination=0.005).fit(training_features)
-    
-#     test_outlier_rigid_predictions = outlier_detector_rigid.predict(test_outliers_features)
-    
-#     test_outlier_scores = (test_outlier_rigid_predictions == -1)
         
     generate_csv_summarizing_detections(test_outliers_patch_names, test_outliers_features, test_outliers_patch_bboxes, pca_embeddings, test_outlier_scores, directory_to_save_patches_of_positive_detections)
 
-    #return pca_embeddings, test_outliers_patches
-        
-    
-    
+    return
+
 ########################## END OF OUTLIER DETECTION USING TRAINED VAE #####################################
 
 
@@ -607,7 +717,7 @@ def segment_images_and_return_segments_as_list_of_ndarrays(list_of_file_paths):
     Given a directory of images, segment them and return the superpixels as ndarrays
     
     '''
-    all_file_paths = list_of_file_paths#list(directory_containing_images.rglob('*.JPG'))
+    all_file_paths = list_of_file_paths #list(directory_containing_images.rglob('*.JPG'))
     
     random.shuffle(all_file_paths)
     
@@ -682,6 +792,23 @@ def train_model(directory_containing_training_images, batch_size, epochs, direct
     visualize_embedded_segment_patches(training_features_2d, patches=training_patches, figsize=(20,12),points_only=False, figname = 'training_set_scatter_plot_with_patches', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, zoom=0.3)
     
     return trained_VAE_model, train_generator, number_of_train_batches
+
+def extract_features_using_trained_VAE(trained_VAE_model, data_generator, number_of_batches):
+    '''
+    Use a trained VAE encoder to extract feature vectors
+    
+    '''
+    training_features = []
+    
+    for batch, _ in zip(data_generator, range(number_of_batches)):
+        
+        mean_vector, logvar = trained_VAE_model.encode(batch/255)
+        
+        training_features.append(mean_vector)
+    
+    training_features = np.vstack(training_features)
+    
+    return training_features
 
 
 def copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400):
