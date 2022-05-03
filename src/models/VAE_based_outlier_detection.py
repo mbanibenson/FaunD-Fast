@@ -811,7 +811,7 @@ def extract_features_using_trained_VAE(trained_VAE_model, data_generator, number
     return training_features
 
 
-def copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400):
+def copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size):
     '''
     Sample a number of images to be used to train the VAE
     
