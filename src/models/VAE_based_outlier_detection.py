@@ -641,7 +641,9 @@ def detect_anomalous_patches_using_trained_Isolation_Forest(trained_VAE,
 
         test_outlier_selector_for_this_partition = (test_outlier_predictions_for_this_partition == -1)
         
-        test_scores_for_this_partition = trained_Isolation_Forest.score_samples(test_features_for_this_partition)
+        #test_scores_for_this_partition = trained_Isolation_Forest.score_samples(test_features_for_this_partition)
+        
+        test_scores_for_this_partition = trained_Isolation_Forest.decision_function(test_features_for_this_partition)
 
         test_outliers_features_for_this_partition = np.compress(test_outlier_selector_for_this_partition, test_features_for_this_partition, axis=0)
         

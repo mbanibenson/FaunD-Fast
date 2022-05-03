@@ -23,5 +23,5 @@ LATENT_DIMENSION = 100
 
 TRAINING_EPOCHS = 5
 
-CONTAMINATION = 0.01#'auto'
+CONTAMINATION = 'auto'
 #####################################################################################################

@@ -1,4 +1,5 @@
 from models.VAE_based_outlier_detection import detect_anomalous_patches_using_trained_Isolation_Forest
+from visualization.sort_patches_by_outlier_scores import save_copies_of_detected_patches_ordered_by_anomaly_score
 from parameters import deepsea_fauna_detection_params
 from keras.models import load_model
 import shutil
@@ -15,6 +16,8 @@ if __name__ == '__main__':
     
     directory_to_save_patches_of_positive_detections = deepsea_fauna_detection_params.DIVE_OUTPUT_DIR
     
+    unsupervised_learning_working_diectory = deepsea_fauna_detection_params.UNSUPERVISED_LEARNING_DIR
+    
     shutil.rmtree(directory_to_save_patches_of_positive_detections, ignore_errors=True)
     directory_to_save_patches_of_positive_detections.mkdir(exist_ok=True)
     
@@ -30,3 +33,5 @@ if __name__ == '__main__':
                                       trained_Isolation_Forest_model, 
                                       directory_containing_test_images,
                                       directory_to_save_patches_of_positive_detections)
+    
+    save_copies_of_detected_patches_ordered_by_anomaly_score(unsupervised_learning_working_diectory)

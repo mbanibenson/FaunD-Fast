@@ -27,6 +27,10 @@ def generate_superpixels_using_slic(image_as_rgb, number_of_segments, compactnes
     
     segmented_image = felzenszwalb(image_as_rgb, scale=200, sigma=10, min_size=20)
     
+    #segmented_image = felzenszwalb(image_as_rgb, scale=500, sigma=0.5, min_size=500)
+    
+    #segmented_image = felzenszwalb(image_as_rgb, scale=1000, min_size=50)
+    
     return segmented_image
 
 

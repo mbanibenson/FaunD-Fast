@@ -8,9 +8,7 @@ def save_copies_of_detected_patches_ordered_by_anomaly_score(data_directory):
     '''
     Save copies of detected outliers in order of anomalousness
     
-    '''
-    data_directory = data_directory / 'unsupervised_outlier_detection'
-    
+    '''    
     for dive in data_directory.iterdir():
 
         dive_output_directory = dive / 'detection_outputs'
