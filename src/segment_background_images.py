@@ -7,6 +7,8 @@ if __name__ == '__main__':
     directory_containing_images_to_segment = deepsea_fauna_detection_params.DIVE_SAMPLED_BACKGROUND_IMAGES_DIR
     
     directory_containing_pickled_items = deepsea_fauna_detection_params.DIVE_PICKLED_ITEMS_DIR
+    
+    directory_containing_pickled_items.mkdir(exist_ok=True)
 
     print('Segmenting background images ...')
     file_paths = list(directory_containing_images_to_segment.rglob('*.JPG'))

@@ -1,6 +1,7 @@
 from models.VAE_based_outlier_detection import create_tensorflow_dataset_from_numpy_ndarray
 from models.VAE_based_outlier_detection import train_VAE
 from models.VAE_based_outlier_detection import extract_features_using_trained_VAE
+import tensorflow as tf
 from parameters import deepsea_fauna_detection_params
 
 import pickle
@@ -27,19 +28,20 @@ if __name__ == '__main__':
     
     
     print('Training VAE ...')
-    trained_VAE_model = train_VAE(latent_dimension, train_generator, val_generator, number_of_train_batches, number_of_val_batches, epochs = epochs)    
+    trained_VAE_encoder_model = train_VAE(latent_dimension, train_generator, val_generator, number_of_train_batches, number_of_val_batches, epochs = epochs)    
     print('Finished training VAE ...')
     
     
     print('Extracting features from background patches using trained VAE ...')
-    background_feature_vectors = extract_features_using_trained_VAE(trained_VAE_model, train_generator, number_of_train_batches)
+    background_feature_vectors = extract_features_using_trained_VAE(trained_VAE_encoder_model, train_generator, number_of_train_batches)
     print('Finished extracting features from background patches using trained VAE ...')
     
     
     print('Pickling features ...')
     model_file_path = str(directory_containing_pickled_items / 'trained_VAE_model')
     
-    trained_VAE_model.save(model_file_path)
+    
+    trained_VAE_encoder_model.save(model_file_path)
     
     with open(directory_containing_pickled_items / f'background_feature_vectors.pickle', 'wb') as f:
         

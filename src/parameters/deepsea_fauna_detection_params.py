@@ -21,7 +21,7 @@ BATCH_SIZE = 32
 
 LATENT_DIMENSION = 100
 
-TRAINING_EPOCHS = 20
+TRAINING_EPOCHS = 5
 
-CONTAMINATION = 'auto'
+CONTAMINATION = 0.01#'auto'
 #####################################################################################################

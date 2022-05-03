@@ -223,6 +223,11 @@ class CVAE(tf.keras.Model):
             return probs
         
         return logits
+    
+    
+  def call(self, inputs):
+
+        vector = self.encoder(inputs)
 
 ############################ END OF VAE MODEL DEFINITION #################################
 
@@ -312,37 +317,43 @@ def train_VAE(latent_dim, train_generator, val_generator, number_of_train_batche
       #display.clear_output(wait=False)
         print('Epoch: {}, Test set ELBO: {}, time elapse for current epoch: {:.2f} seconds'
             .format(epoch, elbo, end_time - start_time))
+        
+    input_arr = tf.random.uniform((2,96,96,3))
     
-    return model
+    encoder = model.encoder
+    
+    mean_vector, logvar = encoder(input_arr)
+    
+    return encoder
 
 ################################## END OF VAE MODEL TRAINING ##########################################
 
 
 ################################## VAE MODEL FEATURE EXTRACTION ##########################################
-def extract_features_using_trained_VAE(trained_VAE, data_generator, total_number_of_batches, batch_size=32, im_height=96, im_width=96):
-    '''
-    Use trained VAE to make predictions
+# def extract_features_using_trained_VAE(trained_VAE, data_generator, total_number_of_batches, batch_size=32, im_height=96, im_width=96):
+#     '''
+#     Use trained VAE to make predictions
     
-    '''
-    features = []
+#     '''
+#     features = []
 
-    for batch, _ in zip(data_generator, range(total_number_of_batches)):
+#     for batch, _ in zip(data_generator, range(total_number_of_batches)):
         
-        mean_vector, logvar = trained_VAE.encode(batch/255)
+#         mean_vector, logvar = trained_VAE.encode(batch/255)
         
-        features.append(mean_vector)
+#         features.append(mean_vector)
 
-    features = np.vstack(features)
+#     features = np.vstack(features)
     
-    pca = PCA(n_components=2, whiten=True)
+#     pca = PCA(n_components=2, whiten=True)
 
-    #pca = KernelPCA(n_components=2, kernel='rbf')
+#     #pca = KernelPCA(n_components=2, kernel='rbf')
 
-    pca.fit(features)
+#     pca.fit(features)
 
-    pca_embeddings = pca.transform(features)
+#     pca_embeddings = pca.transform(features)
 
-    return pca_embeddings, pca
+#     return pca_embeddings, pca
 
 ################################## END OF VAE MODEL FEATURE EXTRACTION ##########################################
 
@@ -612,13 +623,13 @@ def detect_anomalous_patches_using_trained_Isolation_Forest(trained_VAE,
         print('Segmenting training images ...')
         list_of_test_patches, test_patch_names, test_patch_bboxes, _ = segment_images_and_return_segments_as_list_of_ndarrays(file_path_partition.tolist())
 
-        test_generator, number_of_test_batches = create_tensorflow_dataset_from_numpy_ndarray(list_of_test_patches, batch_size, is_for_training=False)
+        test_generator, number_of_test_batches = create_tensorflow_dataset_from_numpy_ndarray(list_of_test_patches, batch_size=32, is_for_training=False)
         
         test_features_for_this_partition = []
 
         for test_batch,_ in zip(test_generator, range(number_of_test_batches)):
 
-            mean_vector, logvar = trained_VAE.encode(test_batch/255)
+            mean_vector, logvar = tf.split(trained_VAE(test_batch/255), num_or_size_splits=2, axis=1)
 
             test_features_for_this_partition.append(mean_vector)
 
@@ -626,11 +637,11 @@ def detect_anomalous_patches_using_trained_Isolation_Forest(trained_VAE,
         
         
         #Detect outliers from the test set partition
-        test_outlier_predictions_for_this_partition = outlier_detector.predict(test_features_for_this_partition)
+        test_outlier_predictions_for_this_partition = trained_Isolation_Forest.predict(test_features_for_this_partition)
 
         test_outlier_selector_for_this_partition = (test_outlier_predictions_for_this_partition == -1)
         
-        test_scores_for_this_partition = outlier_detector.score_samples(test_features_for_this_partition)
+        test_scores_for_this_partition = trained_Isolation_Forest.score_samples(test_features_for_this_partition)
 
         test_outliers_features_for_this_partition = np.compress(test_outlier_selector_for_this_partition, test_features_for_this_partition, axis=0)
         
@@ -750,50 +761,50 @@ def segment_images_and_return_segments_as_list_of_ndarrays(list_of_file_paths):
     return segment_patches, segment_patch_names, segment_patch_bboxes, segment_patch_class_labels
 
 
-def train_model(directory_containing_training_images, batch_size, epochs, directory_to_save_matplotlib_figures=None):
-    '''
-    Train the VAE and return the model, and the generator for training patches
+# def train_model(directory_containing_training_images, batch_size, epochs, directory_to_save_matplotlib_figures=None):
+#     '''
+#     Train the VAE and return the model, and the generator for training patches
     
-    '''
-    list_of_file_paths_for_training_images = list(directory_containing_training_images.rglob('*.JPG'))
+#     '''
+#     list_of_file_paths_for_training_images = list(directory_containing_training_images.rglob('*.JPG'))
     
-    print('Segmenting training images ...')
-    list_of_training_patches, training_patch_names, training_patch_bboxes, training_patch_class_labels = segment_images_and_return_segments_as_list_of_ndarrays(list_of_file_paths_for_training_images)
+#     print('Segmenting training images ...')
+#     list_of_training_patches, training_patch_names, training_patch_bboxes, training_patch_class_labels = segment_images_and_return_segments_as_list_of_ndarrays(list_of_file_paths_for_training_images)
     
-    print('Generating train/val tf dataset split of patches training images ...')
-    train_generator, val_generator, number_of_train_batches, number_of_val_batches = create_tensorflow_dataset_from_numpy_ndarray(list_of_training_patches, batch_size, is_for_training=True)
-    print('Finished creating training tf dataset ...')
+#     print('Generating train/val tf dataset split of patches training images ...')
+#     train_generator, val_generator, number_of_train_batches, number_of_val_batches = create_tensorflow_dataset_from_numpy_ndarray(list_of_training_patches, batch_size, is_for_training=True)
+#     print('Finished creating training tf dataset ...')
     
-    print('Training VAE ...')
-    trained_VAE_model = train_VAE(latent_dimension, train_generator, val_generator, number_of_train_batches, number_of_val_batches, epochs = epochs)
+#     print('Training VAE ...')
+#     trained_VAE_model = train_VAE(latent_dimension, train_generator, val_generator, number_of_train_batches, number_of_val_batches, epochs = epochs)
     
-    training_patches = []
+#     training_patches = []
     
-    training_features = []
+#     training_features = []
     
-    for training_batch, _ in zip(train_generator, range(number_of_train_batches)):
+#     for training_batch, _ in zip(train_generator, range(number_of_train_batches)):
         
-        mean_vector, logvar = trained_VAE_model.encode(training_batch/255)
+#         mean_vector, logvar = trained_VAE_model.encode(training_batch/255)
         
-        training_features.append(mean_vector)
+#         training_features.append(mean_vector)
         
-        training_patches.append(training_batch)
+#         training_patches.append(training_batch)
     
-    training_features = np.vstack(training_features)
+#     training_features = np.vstack(training_features)
     
-    training_patches = np.concatenate(training_patches, axis=0)
+#     training_patches = np.concatenate(training_patches, axis=0)
     
-    pca_object = PCA(n_components=2, whiten=True).fit(training_features)
+#     pca_object = PCA(n_components=2, whiten=True).fit(training_features)
     
-    training_features_2d = pca_object.transform(training_features)
+#     training_features_2d = pca_object.transform(training_features)
     
-    visualize_embedded_segment_patches(training_features_2d, patches=None, figsize=(20,12),points_only=True, figname = 'training_set_scatter_plot', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, zoom=0.3)
+#     visualize_embedded_segment_patches(training_features_2d, patches=None, figsize=(20,12),points_only=True, figname = 'training_set_scatter_plot', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, zoom=0.3)
     
-    visualize_embedded_segment_patches(training_features_2d, patches=training_patches, figsize=(20,12),points_only=False, figname = 'training_set_scatter_plot_with_patches', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, zoom=0.3)
+#     visualize_embedded_segment_patches(training_features_2d, patches=training_patches, figsize=(20,12),points_only=False, figname = 'training_set_scatter_plot_with_patches', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures, zoom=0.3)
     
-    return trained_VAE_model, train_generator, number_of_train_batches
+#     return trained_VAE_model, train_generator, number_of_train_batches
 
-def extract_features_using_trained_VAE(trained_VAE_model, data_generator, number_of_batches):
+def extract_features_using_trained_VAE(trained_VAE_encoder_model, data_generator, number_of_batches):
     '''
     Use a trained VAE encoder to extract feature vectors
     
@@ -802,7 +813,7 @@ def extract_features_using_trained_VAE(trained_VAE_model, data_generator, number
     
     for batch, _ in zip(data_generator, range(number_of_batches)):
         
-        mean_vector, logvar = trained_VAE_model.encode(batch/255)
+        mean_vector, logvar = tf.split(trained_VAE_encoder_model(batch/255), num_or_size_splits=2, axis=1)
         
         training_features.append(mean_vector)
     
@@ -838,104 +849,104 @@ def copy_training_images_from_parent_images(directory_containing_test_images, di
         
 
 
-if __name__ == '__main__':
+# if __name__ == '__main__':
      
-    working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_160')
+#     working_directory = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/dive_160')
 
-    directory_containing_training_images = working_directory / 'background_images'
+#     directory_containing_training_images = working_directory / 'background_images'
 
-    directory_containing_test_images = working_directory / 'parent_images'
+#     directory_containing_test_images = working_directory / 'parent_images'
 
-    outputs_directory = working_directory / 'detection_outputs'
+#     outputs_directory = working_directory / 'detection_outputs'
     
-    print('Copying training images ...')
-    copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400)
-    print('Finished copying training images ...')
+#     print('Copying training images ...')
+#     copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400)
+#     print('Finished copying training images ...')
 
-    shutil.rmtree(outputs_directory, ignore_errors=True)
-    outputs_directory.mkdir(exist_ok=True)
+#     shutil.rmtree(outputs_directory, ignore_errors=True)
+#     outputs_directory.mkdir(exist_ok=True)
 
-    directory_to_save_patches_of_positive_detections = outputs_directory
+#     directory_to_save_patches_of_positive_detections = outputs_directory
 
-    directory_to_save_matplotlib_figures = outputs_directory
-
-
-    #shutil.rmtree(directory_to_save_matplotlib_figures, ignore_errors=True)
-
-    #directory_to_save_matplotlib_figures.mkdir(exist_ok=True)
-
-    #directory_to_save_patches_of_positive_detections = directory_to_save_matplotlib_figures
-
-    latent_dimension = 100
-
-    epochs = 20
-
-    target_image_height, target_image_width = 96, 96
-
-    batch_size = 32
-
-    contamination = 0.05
+#     directory_to_save_matplotlib_figures = outputs_directory
 
 
+#     #shutil.rmtree(directory_to_save_matplotlib_figures, ignore_errors=True)
 
-    training_tic = time.time()
+#     #directory_to_save_matplotlib_figures.mkdir(exist_ok=True)
 
-    trained_VAE_model, train_generator, number_of_train_batches = train_model(directory_containing_training_images, batch_size, epochs, directory_to_save_matplotlib_figures)
+#     #directory_to_save_patches_of_positive_detections = directory_to_save_matplotlib_figures
 
-    training_toc = time.time()
+#     latent_dimension = 100
 
+#     epochs = 20
 
-    inference_tic = time.time()
+#     target_image_height, target_image_width = 96, 96
+
+#     batch_size = 32
+
+#     contamination = 0.05
 
 
 
-    print('Detecting outliers using trained VAE ...')
-    #Detect outliers in test images
-    detect_outliers_using_trained_VAE(trained_VAE_model, train_generator, 
-                                      number_of_train_batches,directory_containing_test_images,
-                                      directory_to_save_patches_of_positive_detections,
-                                      batch_size=batch_size, im_height=target_image_height, 
-                                      im_width=target_image_width, pca_object=None, 
-                                      contamination=contamination)
-    inference_toc = time.time()
+#     training_tic = time.time()
+
+#     trained_VAE_model, train_generator, number_of_train_batches = train_model(directory_containing_training_images, batch_size, epochs, directory_to_save_matplotlib_figures)
+
+#     training_toc = time.time()
 
 
-    visualization_tic = time.time()
-
-#     print('Extracting features for training sets ...')
-#     #Extract features from training set for later visualization
-#     training_features, pca_object = extract_features_using_trained_VAE(trained_VAE_model, train_generator,number_of_train_batches,
-#                                                                          batch_size=batch_size, im_height=target_image_height, im_width=target_image_width)
-
-#     print('Generating visualization for outliers ...')
-#     #Visualize outliers
-#     visualize_embedded_segment_patches(outlier_features, outlier_patches, figsize=(20,12),points_only=False, figname = 'outliers', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
-
-#     print('Generating visualization for training sets without patches ...')
-#     #Visualize the training set without patches
-#     visualize_embedded_segment_patches(training_features, list_of_training_patches, figsize=(20,12),points_only=True, figname = 'training_set_scatter_plot', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
-
-#     print('Generating visualization for training sets with patches ...')
-#     #Visualize the training set with patches
-#     visualize_embedded_segment_patches(training_features, list_of_training_patches, figsize=(20,12),points_only=False, figname = 'training_set_with_patches', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
-
-    visualization_toc = time.time()
-
-    visualization_time_taken = time.gmtime(visualization_toc-visualization_tic)
-
-    training_time_taken = time.gmtime(training_toc-training_tic)
-
-    inference_time_taken = time.gmtime(inference_toc-inference_tic)
+#     inference_tic = time.time()
 
 
 
-    with open(directory_to_save_matplotlib_figures / 'processing_time.txt', 'w') as file:
+#     print('Detecting outliers using trained VAE ...')
+#     #Detect outliers in test images
+#     detect_outliers_using_trained_VAE(trained_VAE_model, train_generator, 
+#                                       number_of_train_batches,directory_containing_test_images,
+#                                       directory_to_save_patches_of_positive_detections,
+#                                       batch_size=batch_size, im_height=target_image_height, 
+#                                       im_width=target_image_width, pca_object=None, 
+#                                       contamination=contamination)
+#     inference_toc = time.time()
 
-        print(f'Completed Training in {training_time_taken.tm_hour} Hours, {training_time_taken.tm_min} Minutes and {training_time_taken.tm_sec} Seconds \n', file=file)
 
-        print(f'Completed Inference in {inference_time_taken.tm_hour} Hours, {inference_time_taken.tm_min} Minutes and {inference_time_taken.tm_sec} Seconds \n', file=file)
+#     visualization_tic = time.time()
 
-        print(f'Completed Visualizations in {visualization_time_taken.tm_hour} Hours, {visualization_time_taken.tm_min} Minutes and {visualization_time_taken.tm_sec} Seconds \n', file=file)
+# #     print('Extracting features for training sets ...')
+# #     #Extract features from training set for later visualization
+# #     training_features, pca_object = extract_features_using_trained_VAE(trained_VAE_model, train_generator,number_of_train_batches,
+# #                                                                          batch_size=batch_size, im_height=target_image_height, im_width=target_image_width)
+
+# #     print('Generating visualization for outliers ...')
+# #     #Visualize outliers
+# #     visualize_embedded_segment_patches(outlier_features, outlier_patches, figsize=(20,12),points_only=False, figname = 'outliers', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+
+# #     print('Generating visualization for training sets without patches ...')
+# #     #Visualize the training set without patches
+# #     visualize_embedded_segment_patches(training_features, list_of_training_patches, figsize=(20,12),points_only=True, figname = 'training_set_scatter_plot', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+
+# #     print('Generating visualization for training sets with patches ...')
+# #     #Visualize the training set with patches
+# #     visualize_embedded_segment_patches(training_features, list_of_training_patches, figsize=(20,12),points_only=False, figname = 'training_set_with_patches', directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+
+#     visualization_toc = time.time()
+
+#     visualization_time_taken = time.gmtime(visualization_toc-visualization_tic)
+
+#     training_time_taken = time.gmtime(training_toc-training_tic)
+
+#     inference_time_taken = time.gmtime(inference_toc-inference_tic)
+
+
+
+#     with open(directory_to_save_matplotlib_figures / 'processing_time.txt', 'w') as file:
+
+#         print(f'Completed Training in {training_time_taken.tm_hour} Hours, {training_time_taken.tm_min} Minutes and {training_time_taken.tm_sec} Seconds \n', file=file)
+
+#         print(f'Completed Inference in {inference_time_taken.tm_hour} Hours, {inference_time_taken.tm_min} Minutes and {inference_time_taken.tm_sec} Seconds \n', file=file)
+
+#         print(f'Completed Visualizations in {visualization_time_taken.tm_hour} Hours, {visualization_time_taken.tm_min} Minutes and {visualization_time_taken.tm_sec} Seconds \n', file=file)
     
     
     
