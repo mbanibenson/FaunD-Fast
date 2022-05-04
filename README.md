@@ -27,13 +27,15 @@ python train_Isolation_Forest_outlier_detector.py
 
 ## Inference
 
-1. Each image is segmented to extract image patches whose pixels are characteristically similar to each other.
+Anomalous image patches alongside their bounding box coordinates are detected and extracted from each test image as follows:
 
-2. The trained CVAE is then used to extract features from the image patches.
+1. The test image is segmented to extract image patches whose pixels are characteristically similar to each other.
+
+2. The trained CVAE is used to extract features from the extracted image patches.
 
 3. The trained Isolation Forest algorithm is used to detect any anomalous image patches.
 
-4. Each detected anomalous patch is saved to disk ordered by the anomalous score.
+4. Each detected anomalous patch is ordered by its anomalous score and saved to the directory data/unsupervised/dive/predictions/ordered_patches.
 
 5. A csv file is created for each dive which records details about all the detected anomalous patches. These include the parent image name and the bounding box coordinates marking the location of the patch within the parent image.
 ```
@@ -43,19 +45,31 @@ python perform_inference_to_detect_outlier_patches.py
 
 ## Fauna/non-fauna classification
 
-1. A few examples of fauna and non-fauna image patches are retrieved from the saved anomalous patches.
+The image patches flagged as anomalous contain a huge number of false positives (i.e image patches flagged as anomalous which are infact seafloor). This was by design since we would rather retrieve all anomalous patches together with a some seafloor patches instead of detecting a few pathces that are obviously anomalous while missing those which are only subtly anomalous.
 
-2. The retrieved patches are used to train a CNN to distinguish between fauna (true positives) and non-fauna (false positives).
+Therefore, a cnn classifier was configured to help sort the retrieved anomalous image patches into fauna (true positives) and non-fauna(false positives). In order to train this classifier:
 
-3. The trained CNN classifies all the anomalous image patches, and automatically sorts them into either fauna or non-fauna folder
+1. A few training examples of each class should be selected from the directory containing detected anomalous patches and copied to the respective folder in data/supervised_fauna_non_fauna. You can use e.g xnview to browse the images.
+
+2. The CNN is trained using the training examples, after which it is used to classify all the detected anomalous patches. On the basis of their assigned class, each image patch is automatically sorted into either fauna or non-fauna folder. The classification results can be found in data/supervised_fauna_non_fauna/predictions.
+```
+python auto_sort_anomalous_patches_into_fauna_non_fauna.py
+```
 
 ## Semantic Annotation
 
-1. The fauna image patched are imported into the custom image viewer tool.
+After classification above, the pure fauna image patches will be located in data/supervised_fauna_non_fauna/predictions/fauna. All we have to do is semantically annotate each of them to a specific morphotype class. For this task, we have developed a simple web based tool for rapid annotation.
 
-2. Expert human annotator assigns each a semantic species-level name.
+1. Start by importing the the fauna image patches into the custom image viewer/annotation tool.
+```
+python copy_files_to_image_viewer.py
+```
+2. Click on each image patch and annotate with a semantic morphotype class.
 
-3. An updated csv file is created which records details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and species name.
+3. After annotation, a csv file is created with details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and the annotated morphotype class name.
+
+## Training an object detector using the annotations
+We now have sufficient annotations to train a state-of-the art mask R-CNN object detector
 
 ## Species distribution mapping
 
