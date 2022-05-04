@@ -263,36 +263,12 @@ def sort_images_using_trained_model(trained_model, class_label_mappings, directo
 
 ############################## End of sorting utils #########################################
 
-
-if __name__ == '__main__':
+############################## MAIN FUNCTION CALL ###########################################
+def train_fauna_non_fauna_classifier_and_auto_sort_anomalous_patches(directory_containing_training_datasets, target_size, number_of_classes, figsize, directory_to_save_matplotlib_figures, directory_containing_unsupervised_outlier_detection_results, directory_to_save_sorted_images):
+    '''
+    Train a binary classifier and use it to automatically sort detected anomalous patches
     
-    #Set variables
-    target_size = 224
-    number_of_classes = 2
-    figsize = (12,8)
-    dive_to_sort = 'random_dive'
-    
-    data_directory = Path.cwd().parents[0] / 'data'
-    
-    directory_containing_training_datasets = data_directory / 'supervised_fauna_non_fauna_classification/training_dataset/'
-    
-    directory_containing_classification_outputs = data_directory / 'supervised_fauna_non_fauna_classification/classification_outputs'
-    
-    shutil.rmtree(directory_containing_classification_outputs, ignore_errors=True)
-    directory_containing_classification_outputs.mkdir()
-    
-    directory_to_save_sorted_images = directory_containing_classification_outputs / 'classified_patches'
-    directory_to_save_sorted_images.mkdir()
-
-    path_to_post_processed_summary_table = directory_containing_classification_outputs / 'master_detections_summary_table.csv'
-    
-    directory_to_save_matplotlib_figures = directory_containing_classification_outputs / 'matplotlib_figures'
-    directory_to_save_matplotlib_figures.mkdir()
-    
-    directory_containing_pure_fauna_patches = directory_to_save_sorted_images / 'fauna'
-    
-    directory_containing_unsupervised_outlier_detection_results = data_directory / 'unsupervised_outlier_detection'
-    
+    '''
     #Load datasets
     train_generator, validation_generator, class_label_mappings = load_data_into_training_and_validation_sets(directory_containing_training_datasets, target_size)
 
@@ -323,6 +299,69 @@ if __name__ == '__main__':
             visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8), figname=dive_to_sort, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
 
             #visualize_embedded_segment_patches(path_to_data_csv, directory_containing_patches, figsize=(20,12), figname = figname, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+            
+#############################################################################################
+
+
+# if __name__ == '__main__':
+    
+#     #Set variables
+#     target_size = 224
+#     number_of_classes = 2
+#     figsize = (12,8)
+#     dive_to_sort = 'random_dive'
+    
+#     data_directory = Path.cwd().parents[0] / 'data'
+    
+#     directory_containing_training_datasets = data_directory / 'supervised_fauna_non_fauna_classification/training_dataset/'
+    
+#     directory_containing_classification_outputs = data_directory / 'supervised_fauna_non_fauna_classification/classification_outputs'
+    
+#     shutil.rmtree(directory_containing_classification_outputs, ignore_errors=True)
+#     directory_containing_classification_outputs.mkdir()
+    
+#     directory_to_save_sorted_images = directory_containing_classification_outputs / 'classified_patches'
+#     directory_to_save_sorted_images.mkdir()
+
+#     path_to_post_processed_summary_table = directory_containing_classification_outputs / 'master_detections_summary_table.csv'
+    
+#     directory_to_save_matplotlib_figures = directory_containing_classification_outputs / 'matplotlib_figures'
+#     directory_to_save_matplotlib_figures.mkdir()
+    
+#     directory_containing_pure_fauna_patches = directory_to_save_sorted_images / 'fauna'
+    
+#     directory_containing_unsupervised_outlier_detection_results = data_directory / 'unsupervised_outlier_detection'
+    
+#     #Load datasets
+#     train_generator, validation_generator, class_label_mappings = load_data_into_training_and_validation_sets(directory_containing_training_datasets, target_size)
+
+#     #Set up the model
+#     model = build_model(number_of_classes, target_size)
+
+#     #Perform model training
+#     trained_model, history = train_model(model, train_generator, validation_generator)
+    
+#     #Visualize training curves
+#     visualize_model_curves(history, figsize=figsize, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+    
+    
+#     for dive in directory_containing_unsupervised_outlier_detection_results.iterdir():
+        
+#         dive_to_sort = dive.name
+        
+#         directory_containing_images_to_sort = directory_containing_unsupervised_outlier_detection_results /f'{dive_to_sort}/detection_outputs'
+        
+#         if directory_containing_images_to_sort.exists():
+            
+#             print(f'Sorting {dive_to_sort} ...')
+
+#             #Perform sorting (clasification inference)
+#             list_of_predictions = sort_images_using_trained_model(trained_model, class_label_mappings, directory_containing_images_to_sort, directory_to_save_sorted_images, target_size)
+
+#             #Visualize distribuion over predictions
+#             visualize_distribution_over_predictions(list_of_predictions, figsize=(12,8), figname=dive_to_sort, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
+
+#             #visualize_embedded_segment_patches(path_to_data_csv, directory_containing_patches, figsize=(20,12), figname = figname, directory_to_save_matplotlib_figures=directory_to_save_matplotlib_figures)
             
     
     
