@@ -68,8 +68,30 @@ python copy_files_to_image_viewer.py
 
 3. After annotation, a csv file is created with details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and the annotated morphotype class name.
 
+
+
 ## Training an object detector using the annotations
-We now have sufficient annotations to train a state-of-the art mask R-CNN object detector
+We now have sufficient annotations to train a state-of-the art mask R-CNN object detector as follows:
+
+1. Repurpose the annotations csv file to a format that can be ingested by tensorflow tfrecords utilities
+```
+python generate_csv_for_loading_training_data_into_tfrecords.py
+```
+
+2. Use the repurposed csv to convert all input datasets and annotations to tensorflow tfrecord format
+```
+python generate_tfrecords_and_input_files_for_object_detection.py
+```
+
+3. Train the state-of-the art mask R-CNN object detector
+```
+python train_mask_rcnn_object_detector.py
+```
+
+4. Use the trained mask R-CNN object detector to detect objects from all your images.
+```
+python detect_objects_in_image.py
+```
 
 ## Species distribution mapping
 
