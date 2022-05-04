@@ -88,7 +88,12 @@ python generate_tfrecords_and_input_files_for_object_detection.py
 python train_mask_rcnn_object_detector.py
 ```
 
-4. Use the trained mask R-CNN object detector to detect objects from all your images.
+4. Export the trained mask R-CNN to a saved model to be loaded and used during inference/detection.
+```
+python export_trained_mask_rcnn_to_saved_tensorflow_model.py
+```
+
+4. Use the exported mask R-CNN object detector to detect objects from all your images.
 ```
 python detect_objects_in_image.py
 ```
