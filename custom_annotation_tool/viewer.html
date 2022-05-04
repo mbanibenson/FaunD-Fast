@@ -1,0 +1,555 @@
+<html>
+<head>
+	<style>
+		body{
+			display: flex;
+			flex-direction: row;
+			padding: 0;
+			margin: 0;
+		}
+		#imagecontainer{
+			flex-shrink: 0;
+			overflow-y: auto;
+			height: calc(100vh - 2px);
+			display: flex;
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+
+		#divider{
+			height: 100vh;
+			width: 1em;
+			background-color: #aaa;
+			cursor:col-resize;
+		}
+
+		.imgcontainer{
+			border-radius: 3px;
+			display: inline-block;
+			position: relative;
+		}
+
+		.img{
+			margin: 0.5vw;
+			width: 5vw;
+			height: 5vw;
+			border: 2px solid #aaa;
+			border-radius: 3px;
+		}
+
+		.img:hover{
+			border: 2px solid #3333ff;
+		}
+
+		.img.selected{
+			border: 2px solid rgb(0, 255, 0);
+		}
+
+		.imglabel{
+			position: absolute;
+			bottom: 12px;
+			left: 12px;
+			font-family: monospace;
+			color: rgb(0, 255, 0);
+		}
+
+		#preview{
+			flex-grow: 1;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			overflow-y: auto;
+		}
+
+		#preview-canvas{
+			/*width: 100%;*/
+			/*align-self: stretch;*/
+			/*max-width: 100%;*/
+			max-height: 100%;
+			min-height: 3em;
+		}
+
+		#preview-data{
+			padding: 0.5em;
+			font-family: monospace;
+			font-size: 80%;
+			color: #666;
+		}
+
+		#title-data{
+			padding: 0.5em;
+			font-family: sans-serif;
+			text-align: center;
+			color: #666;
+			display: none;
+		}
+
+		#classification{
+			display: flex;
+			flex-direction: row;
+		}
+
+		.button{
+			display: inline-block;
+			border-radius: 3px;
+			font-family: monospace;
+			background-color: #bbb;
+			padding: 1px;
+			margin-left: 0.5em;
+			font-size: 85%;
+		}
+
+		.button:hover{
+			background-color: #999;
+		}
+
+		.button:active, .button.active{
+			background-color: #6f6;
+		}
+
+		.button.classified{
+			color: #0f0;
+		}
+
+		.button.predicted{
+			border: 1px solid #66f;
+		}
+
+	</style>
+</head>
+<body onload="main()">
+	<div id="imagecontainer" style="width: 300px;">
+	</div>
+	<div id="divider"><</div>
+	<div id="preview">
+		<div id="classification">
+			<div class="button" onclick="load()">Load</div>
+			<div class="button" onclick="save()">Save</div>
+			<div class="button" onclick="csv()">CSV</div>
+		</div>
+		<div id="title-data"></div>
+		<canvas id="preview-canvas"></canvas>
+		<div id="preview-data"></div>
+	</div>
+	<a id="savelink" href="#" download="classification.json"></a>
+	<input id="loadfile" type="file" style="display: none;"></input>
+	<script src="mobilenet/tf.js"> </script>
+	<script src="mobilenet/mobilenet.2.1.0.js"> </script>
+	<script src="mobilenet/knn-classifier.js"></script>
+	<script>
+		const PATCH_DIRECTORY = "patches";
+		const PARENT_DIRECTORY ="parent_images";
+		const PATCH_EXTENSION = "png";
+		const PARENT_EXTENSION = "JPG";
+		let objects = [];
+		let classes = [];
+		let classifications = [];
+		let activations = {};
+		let mobilenet_instance = null;
+		let classifier = knnClassifier.create();
+
+		let image_container = document.getElementById("imagecontainer");
+		image_container.addEventListener("scroll", resize_handler);
+		window.addEventListener("resize", resize_handler);
+
+		let selectedImage = null;
+		let selectedObject = null;
+
+		//Reload visible images when scrolling or resizing
+		function resize_handler(){
+			var container_bbox = image_container.getBoundingClientRect();
+			for(let element of document.querySelectorAll(".img")){
+				var img_bbox = element.getBoundingClientRect();
+				let visible = //Check if image in viewport
+					(img_bbox.left < (container_bbox.left + container_bbox.width)) &&
+					(container_bbox.left < (img_bbox.left + img_bbox.width)) &&
+					(img_bbox.top < (container_bbox.top + container_bbox.height)) &&
+					(container_bbox.top < (img_bbox.top + img_bbox.height));
+				if(visible){ //Load the image if yes
+					let object = objects[parseInt(element.getAttribute("index"))];
+					let url = PATCH_DIRECTORY + "/" + encodeURIComponent(object.patch_name) + "." + PATCH_EXTENSION;
+					element.setAttribute("src", url);
+				}else{ //Unload the image when it exits the viewport
+					element.removeAttribute("src");
+				}
+			}
+			//We also need to redraw the outline if the page size has changed
+			redrawSelection();
+		}
+
+		function image_click(e){
+			if(selectedImage){
+				selectedImage.classList.remove("selected");
+			}
+			selectedImage = e.target;
+			selectedImage.classList.add("selected");
+			selectedObject = objects[parseInt(selectedImage.getAttribute("index"))];
+			if(! activations.hasOwnProperty(selectedObject.patch_name)){
+				if (mobilenet_instance){
+					let before = performance.now();
+					let a = mobilenet_instance.infer(selectedImage, true);
+					console.log("mobilenet took " + (performance.now() - before) + " us");
+					activations[selectedObject.patch_name] = a;
+					updatePrediction();
+				}
+			}
+			redrawSelection();
+			updateClassification();
+		}
+
+		async function updatePrediction(){
+			let current_activation = activations[selectedObject.patch_name];
+			if(current_activation){
+				let label = 0;
+				try{
+					let before = performance.now();
+					let prediction = await classifier.predictClass(current_activation, 20);
+					console.log("predicting took " + (performance.now() - before) + " us");
+					label = parseInt(prediction.label);
+					console.log("predicted class " + label + " with probability " + prediction.confidences[label]);
+					classes.forEach(c => {
+						if(prediction.confidences.hasOwnProperty(c.number) && (prediction.confidences[c.number] > 0)){
+							c.prediction_label.innerText = " " + Math.round(prediction.confidences[c.number] * 100) + "%";
+						}else{
+							c.prediction_label.innerText = "";
+						}
+					});
+				}catch{}
+				classes.forEach(c => {
+				if(c.number != label){
+					c.button.classList.remove("predicted");
+				}else{
+					c.button.classList.add("predicted");
+				}
+			});
+			}
+		}
+
+		function updateClassification(){
+			let current_classnumber = classifications.find(c => c.patch_name == selectedObject.patch_name)?.classnumber || -1;
+			console.log("Current class is ", current_classnumber);
+			classes.forEach(c => {
+				if(c.number != current_classnumber){
+					c.button.classList.remove("classified");
+				}else{
+					c.button.classList.add("classified");
+				}
+			});
+			
+		}
+
+		let previewCanvas = document.getElementById("preview-canvas");
+		let previewData = document.getElementById("preview-data");
+		let titleData = document.getElementById("title-data");
+		let ctx = previewCanvas.getContext("2d");
+
+		async function redrawSelection(){
+			let original_bbox = await redrawParentImage(selectedObject);
+			redrawOutline(selectedObject, original_bbox, false);
+			let other_outline_images = objects.filter(o => o.parent_image_name == selectedObject.parent_image_name && o.patch_name != selectedObject.patch_name);
+			//console.log("found" , other_outline_images.length, "other iamges")
+			for(let otherObject of other_outline_images){
+				redrawOutline(otherObject, original_bbox, true);
+			}
+		}
+
+		function redrawParentImage(imageObject){
+			return new Promise((res, rej) => {
+				//Create new image loader
+				let image = new Image();
+				image.onload = () => {
+					let bbox = imageObject.bbox;
+					let canvas_bbox = previewCanvas.getBoundingClientRect();
+					let future_height = image.naturalHeight / image.naturalWidth * canvas_bbox.width;
+					previewCanvas.setAttribute("width", canvas_bbox.width);
+					previewCanvas.setAttribute("height", future_height);
+					previewCanvas.style.height = future_height;
+					ctx.clearRect(0,0,canvas_bbox.width,canvas_bbox.height);
+					ctx.drawImage(image,0,0,image.naturalWidth, image.naturalHeight,0,0,canvas_bbox.width,future_height);
+					res([image.naturalWidth, image.naturalHeight]);
+				};
+				//Here's where to load the image from
+				image.src = PARENT_DIRECTORY + "/" + encodeURIComponent(imageObject.parent_image_name) + "." + PARENT_EXTENSION
+				//Also parse the extra data
+				//Set title
+				titleData.innerText = imageObject.patch_name + " in " + imageObject.parent_image_name;
+				//Set extra data
+				previewData.innerText = "";
+				for(let property in imageObject){
+					previewData.innerText = property + " = '" + imageObject[property] + "'\n" + previewData.innerText;
+				}
+			});
+		}
+
+		function redrawOutline(image, original_bbox, isSecondaryOutline){
+			if(isSecondaryOutline){
+				ctx.strokeStyle = "rgba(255,255,255,0.5)";
+				ctx.fillStyle = "rgba(255,255,255,0.05)";
+			}else{
+				ctx.strokeStyle = "rgba(0, 255, 0, 1)";
+				ctx.fillStyle = "rgba(0, 255, 0, 0.1)";
+			}
+			let bbox = image.bbox;
+			let canvas_width = ctx.canvas.width;
+			let canvas_height = ctx.canvas.height;
+			//let canvas_bbox = previewCanvas.getBoundingClientRect();
+			ctx.strokeRect(bbox[1] / original_bbox[0] * canvas_width, bbox[0] / original_bbox[1] * canvas_height, (bbox[3] - bbox[1]) / original_bbox[0] * canvas_width, (bbox[2] - bbox[0]) / original_bbox[1] * canvas_height);
+			ctx.fillRect(bbox[1] / original_bbox[0] * canvas_width, bbox[0] / original_bbox[1] * canvas_height, (bbox[3] - bbox[1]) / original_bbox[0] * canvas_width, (bbox[2] - bbox[0]) / original_bbox[1] * canvas_height);
+		}
+
+		function selectByRelativeIndex(relativeIndex){
+			if(selectedImage){
+				let index = parseInt(selectedImage.getAttribute("index"));
+					index = index + relativeIndex;
+				if((index < 0) || (index > objects.length)){
+					return;
+				}
+				let elem = document.querySelector(`.img[index='${index}']`);
+				if(elem){
+					elem.click();
+				}
+			}
+		}
+
+		let reference_position = null;
+		let divider = document.getElementById("divider");
+		divider.addEventListener("mousedown", e => {reference_position = e.clientX; console.log("Refx", reference_position);});
+		divider.addEventListener("mouseup", () => {reference_position = null; window.localStorage["divider-width"] = image_container.style.width; console.log("drag finished"); resize_handler();});
+		divider.addEventListener("mousemove", e => {
+			if(e.buttons == 1 && (reference_position != null)){
+				let delta_x = e.clientX - reference_position;
+				reference_position = e.clientX;
+				image_container.style.width = (parseFloat(image_container.style.width) + delta_x) + "px"
+			}
+		});
+		let stored_width = window.localStorage["divider-width"];
+		if(stored_width && stored_width.endsWith("px")){
+			image_container.style.width = stored_width;
+		}
+
+		async function main(){
+			fetch("master_detections_summary_table.csv").then(r => r.text()).then(t => {
+				let lines = t.split("\n");
+				//Read header
+				let header = lines[0].split(",").map(s => s.trim());
+				//Read data
+				objects = [];
+				for(let i = 1; i < lines.length; i++){
+					//Make object of line with fields from header
+					let lineobj= lines[i].split(",").map(s => s.trim()).reduce((obj, item, index) => {
+						obj[header[index]] = item;
+						return obj;
+					}, {});
+					//Ignore bboxes
+					if(lineobj.bbox){
+						objects.push(lineobj);
+					}
+				}
+				//Rehydrate bounding boxes
+				for(let object of objects){
+					object.bbox = object.bbox.split("-").map(s => parseInt(s));
+				}
+				//Sort by parent image
+				objects.sort((a,b) => a.parent_image_name > b.parent_image_name);
+				//Create images
+				let objcounter = 0;
+				for(let object of objects){
+					setTimeout(() => { //Using setTimeout to prevent the GUI from freezing
+						let container = document.createElement("div");
+						container.classList.add("imgcontainer");
+						//Create image element for each object
+						let img = document.createElement("img");
+						img.classList.add("img");
+						//Store all the things we might need
+						img.setAttribute("index", objcounter);
+						img.addEventListener("click", image_click);
+						//Add to container
+						container.appendChild(img);
+						let label = document.createElement("span");
+						label.classList.add("imglabel");
+						label.setAttribute("index", objcounter);
+						//label.innerText = objcounter;
+						container.appendChild(label);
+						image_container.appendChild(container);
+						//Last image triggers resize_handler to load images that should be currently visible
+						objcounter++;
+						if(objcounter == objects.length){
+							setTimeout(() => {
+								selectedImage.scrollIntoView();
+								resize_handler();
+							},100);
+						}else if (objcounter == 1){
+							//We also want the first image to be selected
+							img.click();
+						}
+					},0);
+				}
+			});
+
+			fetch("classes.txt").then(r => r.text()).then(t => {
+				let classnames = ["Nothing", ...t.split("\n").map(s => s.trim())];
+				let classnumber = 0;
+				let keylist = "0123456789QWERTZUIOPASDFGHJKLYXCVBNM";
+				let classifiction_el = document.getElementById("classification");
+				for(let c of classnames){
+					let button_el = document.createElement("div");
+					button_el.classList.add("button");
+					button_el.innerText = keylist[classnumber] + " " + c;
+					let prediction_el = document.createElement("span");
+					((classnumber, button_el) => {
+						prediction_el.setAttribute("classnumber", classnumber);
+						button_el.addEventListener("click", () => {
+							classify(classnumber);
+						});
+					})(classnumber, button_el);
+					button_el.appendChild(prediction_el);
+					classes.push({
+						name: c,
+						number: classnumber,
+						key: keylist[classnumber],
+						button: button_el,
+						prediction_label: prediction_el
+					});
+					classifiction_el.appendChild(button_el);
+					classnumber++;
+				}
+			});
+
+			let model_url = window.location.origin + "/" + "mobilenet/model.json";
+			console.log("model url", model_url);
+			mobilenet.load({
+				version: 1,
+				modelUrl: model_url
+			}).then(model => {
+				mobilenet_instance = model;
+				console.log(mobilenet_instance);
+			});
+		}
+
+		function classify(classnumber){
+			let selectedClass = classes.find(c => c.number == classnumber);
+			let index = parseInt(selectedImage.getAttribute("index"));
+			document.querySelector(`.imglabel[index='${index}']`).innerText = selectedClass.name;
+			let existing_classification = classifications.find(c => c.patch_name && (c.patch_name == selectedObject.patch_name));
+			if(existing_classification){
+				if(existing_classification.classnumber = classnumber){
+					return;
+				}
+				console.log("existing class:" + existing_classification.classnumber);
+				try{
+					classifier.clearClass(existing_classification.classnumber);
+				}catch{};
+				classifications.filter(c => c.classnumber = existing_classification.classnumber).forEach(c => {
+					let activation = activations[c.patch_name];
+					if(activation){
+						classifier.addExample(activation, existing_classification.classnumber);
+					}
+				});
+				let activation = activations[selectedObject.patch_name];
+				if(activation){
+					classifier.addExample(activation, classnumber);
+				}
+				existing_classification.classnumber = classnumber;
+			}else{
+				classifications.push({
+					patch_name: selectedObject.patch_name,
+					classnumber
+				});
+				let activation = activations[selectedObject.patch_name];
+				if(activation){
+					classifier.addExample(activation, classnumber);
+				}
+			}
+			updateClassification();
+			updatePrediction();
+		}
+
+		document.getElementById("loadfile").addEventListener("change", async e => {
+			let file = e.target.files[0];
+			let save_obj = await new Response(file).json();
+			classifications = [];
+			save_obj.classifications.forEach( c => {
+				classifications.push(c);
+			});
+			activations = {};
+			save_obj["mobilenet_activations"].forEach(a => {
+				activations[a["name"]] = tf.tensor(JSON.parse(a["activations"]), [1,1024]);
+			});
+			try{
+			classifier.clearAllClasses()
+			}catch{}
+			classifications.forEach(c => {
+					let activation = activations[c.patch_name];
+					if(activation){
+						classifier.addExample(activation, c.classnumber);
+					}
+					let index = objects.findIndex(o => o.patch_name == c.patch_name);
+					document.querySelector(`.imglabel[index='${index}']`).innerText = classes.find(cl => cl.number == c.classnumber).name;
+				});
+			redrawSelection();
+			updateClassification();
+			console.log("loaded");
+		});
+
+		function load(){
+			document.getElementById("loadfile").click();
+		}
+
+		function save(){
+			let savelink = document.getElementById("savelink");
+			let save_obj = {};
+			save_obj.classifications = classifications;
+			save_obj.classes = classes.map(c => ({
+				"name": c.name,
+				"classnumber": c.number
+			}));
+			save_obj.mobilenet_activations = Object.keys(activations).map(patch_name => ({
+				"name": patch_name,
+				"activations": JSON.stringify([... activations[patch_name].dataSync()])
+			}));
+			let encoder = new TextEncoder();
+			let save_url =  'data:application/json;base64,' + btoa(JSON.stringify(save_obj, null, 4));
+			savelink.setAttribute("download", "classification.json");
+			savelink.href = save_url;
+			savelink.click();
+		}
+
+		function csv(){
+			let savelink = document.getElementById("savelink");
+			let classlookup = {};
+			classes.forEach(c => {
+				classlookup[c.number] = c.name;
+			});
+			let csv = "patch_name;classification\n";
+			csv += classifications.map(cl => {
+				return cl.patch_name + ";" + classlookup[cl.classnumber];
+			}).join("\n");
+			let save_url =  'data:text/plain;base64,' + btoa(csv);
+			savelink.setAttribute("download", "classification.csv");
+			savelink.href = save_url;
+			savelink.click();
+		}
+
+		window.addEventListener("keydown", e => {
+			if(e.key == "ArrowLeft"){
+				selectByRelativeIndex(-1);	
+			}else if (e.key == "ArrowRight"){
+				selectByRelativeIndex(1);
+			}else{
+				//Check if there's a class with that key
+				let k = e.key.toUpperCase();
+				let c = classes.find(c => c.key == k);
+				if(c){
+					classify(c.number);
+					c.button.classList.add("active");
+					setTimeout(() => {
+						c.button.classList.remove("active");
+					}, 100);
+				}
+			}
+			//console.log(e);
+		})
+
+	</script>
+</body>
+</html>

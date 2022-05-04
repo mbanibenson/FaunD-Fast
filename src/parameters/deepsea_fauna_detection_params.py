@@ -1,7 +1,7 @@
 from pathlib import Path
 
 ########################## Segmentation, VAE training and outlier detection #########################
-DIVE_TO_PROCESS = 'test_dive'
+DIVE_TO_PROCESS = 'dive_126'
 
 UNSUPERVISED_LEARNING_DIR = Path.cwd().parent / 'data/unsupervised_outlier_detection/' #Relative to src directory
 
@@ -15,13 +15,13 @@ DIVE_PICKLED_ITEMS_DIR = DIVE_WORKING_DIR / 'pickled_items'
 
 DIVE_OUTPUT_DIR = DIVE_WORKING_DIR / 'detection_outputs'
 
-NUMBER_OF_IMAGES_TO_SAMPLE_AS_BACKGROUND = 10
+NUMBER_OF_IMAGES_TO_SAMPLE_AS_BACKGROUND = 500
 
 BATCH_SIZE = 32
 
 LATENT_DIMENSION = 100
 
-TRAINING_EPOCHS = 5
+TRAINING_EPOCHS = 100
 
 CONTAMINATION = 'auto'
 #####################################################################################################

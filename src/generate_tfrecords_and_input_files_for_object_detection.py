@@ -8,6 +8,8 @@ if __name__ == '__main__':
     
     object_detection_data_directory = data_directory / 'tf_object_detection/data'
     
+    object_detection_data_directory.mkdir(exist_ok=True)
+    
     path_to_csv_with_labels = object_detection_data_directory / 'object_detection_input_datasheet.csv'
     
     path_to_label_map = object_detection_data_directory / 'SO268_label_map.pbtxt'
