@@ -69,17 +69,21 @@ def generate_label_map_from_object_detection_input_datasheet(path_to_object_dete
 
 if __name__ == '__main__':
     
-    data_directory = Path.cwd().parents[0] / 'data'
-
-    image_viewer_directory = Path.cwd().parents[0] / 'reports/mbani-image-viewer'
+    working_directory = Path.cwd().parents[0]
     
-    object_detection_directory = data_directory / 'tf_object_detection'
+    image_viewer_directory = working_directory / 'custom_annotation_tool'
+    
+    object_detection_directory = working_directory / 'fauna_detection_with_tensorflow_object_detection_api'
+    
+    object_detection_data_directory = object_detection_directory / 'data'
+    
+    object_detection_data_directory.mkdir(exist_ok=True)
 
     path_to_post_processed_summary_table = image_viewer_directory / 'master_detections_summary_table.csv'
     
-    path_to_object_detection_input_datasheet = object_detection_directory / 'data/object_detection_input_datasheet.csv'
+    path_to_object_detection_input_datasheet = object_detection_data_directory / 'object_detection_input_datasheet.csv'
     
-    path_to_label_map = object_detection_directory / 'data/SO268_label_map.pbtxt'
+    path_to_label_map = object_detection_data_directory / 'SO268_label_map.pbtxt'
     
     generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet)
     

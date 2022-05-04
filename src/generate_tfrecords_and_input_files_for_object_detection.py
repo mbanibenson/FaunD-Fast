@@ -4,11 +4,11 @@ from custom_object_detection.tf_object_detection_utilities import download_check
 
 if __name__ == '__main__':
     
-    data_directory = data_directory = Path.cwd().parents[0] / 'data'
+    working_directory = Path.cwd().parents[0]
     
-    object_detection_data_directory = data_directory / 'tf_object_detection/data'
+    object_detection_directory = working_directory / 'fauna_detection_with_tensorflow_object_detection_api'
     
-    object_detection_data_directory.mkdir(exist_ok=True)
+    object_detection_data_directory = object_detection_directory / 'data'
     
     path_to_csv_with_labels = object_detection_data_directory / 'object_detection_input_datasheet.csv'
     
@@ -18,13 +18,13 @@ if __name__ == '__main__':
     
     path_to_validation_tfrecord_file = object_detection_data_directory / 'validation.tfrecord'
     
-    directory_to_save_config_file = data_directory / 'tf_object_detection/models/my_model_dir/'
+    directory_to_save_config_file = object_detection_directory / 'my_model_dir/'
     
     config_file_source_url = 'https://raw.githubusercontent.com/tensorflow/models/master/research/object_detection/configs/tf2/faster_rcnn_resnet101_v1_800x1333_coco17_gpu-8.config'
     
     detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/tf2/20200711/faster_rcnn_resnet101_v1_800x1333_coco17_gpu-8.tar.gz'
     
-    directory_to_save_checkpoint = data_directory / 'tf_object_detection/models/my_model_dir/'
+    directory_to_save_checkpoint = object_detection_directory / 'my_model_dir/'
     
     create_train_val_input_tfrecords(path_to_csv_with_labels, path_to_label_map, path_to_train_tfrecord_file, path_to_validation_tfrecord_file)
     
