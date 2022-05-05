@@ -1,5 +1,6 @@
 from models.CNN_based_fauna_non_fauna_classifier import train_fauna_non_fauna_classifier_and_auto_sort_anomalous_patches
 from pathlib import Path
+import shutil
 
 if __name__ == '__main__':
     
