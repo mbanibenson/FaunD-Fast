@@ -83,7 +83,7 @@ python generate_csv_for_loading_training_data_into_tfrecords.py
 python generate_tfrecords_and_input_files_for_object_detection.py
 ```
 
-3. Train the state-of-the art mask R-CNN object detector
+3. Train the state-of-the art mask R-CNN object detector. Remember to upgrade the config file first.
 ```
 python train_mask_rcnn_object_detector.py
 ```
