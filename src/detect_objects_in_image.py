@@ -11,13 +11,16 @@ import time
 
 if __name__ == '__main__':
     
-    path_to_saved_model = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/models/my_model_dir/exported_model_dir/saved_model'
+    object_detection_working_directory = Path.cwd().parents[0] / 'fauna_detection_with_tensorflow_object_detection_api'
     
-    label_map_path = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/data/SO268_label_map.pbtxt'
+    path_to_saved_model = object_detection_working_directory / 'my_model_dir/exported_model_dir/saved_model'
     
-    directory_with_subdirectories_to_detect = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/unsupervised_outlier_detection')
+    label_map_path = object_detection_working_directory / 'data/SO268_label_map.pbtxt'
     
-    directory_to_save_predictions = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/predictions')
+    directory_with_subdirectories_to_detect = Path.cwd().parents[0] /'data/unsupervised_outlier_detection'
+    
+    directory_to_save_predictions = object_detection_working_directory / 'predictions'
+    directory_to_save_predictions.mkdir(exist_ok=True)
     
     for subdirectory_to_detect in directory_with_subdirectories_to_detect.iterdir():
         
@@ -32,15 +35,15 @@ if __name__ == '__main__':
         shutil.rmtree(directory_to_save_detection_figures, ignore_errors=True)
         directory_to_save_detection_figures.mkdir()
 
-        score_threshold = 0.3
+        score_threshold = 0.1
 
         start_time = time.time()
 
         print('Loading detection model ...')
 
-        detection_model = load_saved_model_for_inference(path_to_saved_model)
+        detection_model = load_saved_model_for_inference(str(path_to_saved_model))
 
-        category_index, label_map_dict = load_label_map_info(label_map_path)
+        category_index, label_map_dict = load_label_map_info(str(label_map_path))
 
         for image_file_path in image_file_paths:
 
