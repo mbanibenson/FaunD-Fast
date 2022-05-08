@@ -1,6 +1,7 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
+from sklearn.preprocessing import LabelEncoder
 
 def convert_segmentation_bbox_to_normalized_format(bbox_column_as_pandas_series):
     '''
@@ -13,8 +14,7 @@ def convert_segmentation_bbox_to_normalized_format(bbox_column_as_pandas_series)
     
     return desired_dataframe
 
-
-def generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet):
+def generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet, path_to_annotations_table):
     '''
     Reformat the post processed datasheet to generate the corresponding YOLO compatible version
     
@@ -23,15 +23,29 @@ def generate_object_detection_input_datasheet_from_detection_summary_table(path_
     
     post_processed_summary_table = pd.read_csv(path_to_post_processed_summary_table)
     
-    bbox_column = post_processed_summary_table.bbox
     
-    image_path_column = post_processed_summary_table.parent_image_url.tolist()
+    path_to_annotations_table = Path(path_to_annotations_table)
+    
+    annotations_table = pd.read_csv(path_to_annotations_table, delimiter=';')
+    
+    annotated_summary_table = pd.merge(post_processed_summary_table, annotations_table, on='patch_name')
+    
+    annotated_summary_table = annotated_summary_table.loc[annotated_summary_table.classification.ne('Nothing')]
+    
+    
+    bbox_column = annotated_summary_table.bbox
+    
+    image_path_column = annotated_summary_table.parent_image_url.tolist()
     
     image_name_column = [Path(fp).name for fp in image_path_column]
     
-    object_name_column = ['fauna'] * len(image_name_column)
+    object_name_column = annotated_summary_table.classification.tolist()
     
-    object_index_column = [1] * len(image_name_column)
+    label_encoder = LabelEncoder()
+    
+    encoded_labels = label_encoder.fit_transform(object_name_column)
+    
+    object_index_column = (encoded_labels + 1).tolist()
     
     object_detection_labels_dataframe = pd.DataFrame({'image_path':image_path_column, 'image_name':image_name_column, 'object_name':object_name_column, 'object_index':object_index_column})
     
@@ -42,6 +56,35 @@ def generate_object_detection_input_datasheet_from_detection_summary_table(path_
     object_detection_input_datasheet.to_csv(path_to_object_detection_input_datasheet, index=False)
     
     return
+
+# def generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet):
+#     '''
+#     Reformat the post processed datasheet to generate the corresponding YOLO compatible version
+    
+#     '''
+#     path_to_post_processed_summary_table = Path(path_to_post_processed_summary_table)
+    
+#     post_processed_summary_table = pd.read_csv(path_to_post_processed_summary_table)
+    
+#     bbox_column = post_processed_summary_table.bbox
+    
+#     image_path_column = post_processed_summary_table.parent_image_url.tolist()
+    
+#     image_name_column = [Path(fp).name for fp in image_path_column]
+    
+#     object_name_column = ['fauna'] * len(image_name_column)
+    
+#     object_index_column = [1] * len(image_name_column)
+    
+#     object_detection_labels_dataframe = pd.DataFrame({'image_path':image_path_column, 'image_name':image_name_column, 'object_name':object_name_column, 'object_index':object_index_column})
+    
+#     object_detection_coordinates_dataframe = convert_segmentation_bbox_to_normalized_format(bbox_column)
+    
+#     object_detection_input_datasheet = pd.concat([object_detection_labels_dataframe, object_detection_coordinates_dataframe], axis=1)
+    
+#     object_detection_input_datasheet.to_csv(path_to_object_detection_input_datasheet, index=False)
+    
+#     return
 
 def generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_input_datasheet, path_to_label_map):
     '''
@@ -85,6 +128,10 @@ if __name__ == '__main__':
     
     path_to_label_map = object_detection_data_directory / 'SO268_label_map.pbtxt'
     
-    generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet)
+    path_to_annotations_table = image_viewer_directory / 'annotations.csv'
+    
+    generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet, path_to_annotations_table)
+    
+    #generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet)
     
     generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_input_datasheet, path_to_label_map)

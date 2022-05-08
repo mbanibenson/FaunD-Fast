@@ -22,7 +22,7 @@ if __name__ == '__main__':
     
     config_file_source_url = 'https://raw.githubusercontent.com/tensorflow/models/master/research/object_detection/configs/tf2/faster_rcnn_resnet101_v1_800x1333_coco17_gpu-8.config'
     
-    detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/tf2/20200711/faster_rcnn_resnet101_v1_800x1333_coco17_gpu-8.tar.gz'
+    detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/tf2/20200711/faster_rcnn_resnet101_v1_1024x1024_coco17_tpu-8.tar.gz'
     
     directory_to_save_checkpoint = object_detection_directory / 'my_model_dir/'
     

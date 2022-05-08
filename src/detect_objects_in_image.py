@@ -35,7 +35,7 @@ if __name__ == '__main__':
         shutil.rmtree(directory_to_save_detection_figures, ignore_errors=True)
         directory_to_save_detection_figures.mkdir()
 
-        score_threshold = 0.1
+        score_threshold = 0.3
 
         start_time = time.time()
 
