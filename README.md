@@ -83,17 +83,17 @@ python generate_csv_for_loading_training_data_into_tfrecords.py
 python generate_tfrecords_and_input_files_for_object_detection.py
 ```
 
-3. Train the state-of-the art mask R-CNN object detector. Remember to upgrade the config file first.
+3. Train the state-of-the art faster R-CNN object detector. Remember to upgrade the config file first.
 ```
 python train_mask_rcnn_object_detector.py
 ```
 
-4. Export the trained mask R-CNN to a saved model to be loaded and used during inference/detection.
+4. Export the trained faster R-CNN to a saved model to be loaded and used during inference/detection.
 ```
 python export_trained_mask_rcnn_to_saved_tensorflow_model.py
 ```
 
-4. Use the exported mask R-CNN object detector to detect objects from all your images.
+4. Use the exported faster R-CNN object detector to detect objects from all your images.
 ```
 python detect_objects_in_image.py
 ```
