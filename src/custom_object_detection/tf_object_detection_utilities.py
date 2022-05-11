@@ -184,7 +184,9 @@ def download_checkpoint_for_pretraining(detection_checkpoint_url, directory_to_s
     
     pipeline_config_file = directory_to_save_checkpoint / f'{unpacked_directory_name}/pipeline.config'
     
-    shutil.copy2(pipeline_config_file, directory_to_save_checkpoint/'my_model_template.config')
+    if pipeline_config_file.exists():
+    
+        shutil.copy2(pipeline_config_file, directory_to_save_checkpoint/'my_model_template.config')
     
     Path(file_save_path).unlink()
     
