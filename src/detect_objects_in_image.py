@@ -3,7 +3,10 @@ from custom_object_detection.tf_object_detection_utilities import detect_objects
 from custom_object_detection.tf_object_detection_utilities import load_label_map_info
 from custom_object_detection.tf_object_detection_utilities import visualize_detections
 from custom_object_detection.tf_object_detection_utilities import read_image_into_a_tensor
+from custom_object_detection.tf_object_detection_utilities import generate_matrix_of_detections
+from custom_object_detection.tf_object_detection_utilities import save_georeferenced_detection_results_as_csv
 import numpy as np
+import pandas as pd
 import shutil
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -21,6 +24,8 @@ if __name__ == '__main__':
     
     directory_to_save_predictions = object_detection_working_directory / 'predictions'
     directory_to_save_predictions.mkdir(exist_ok=True)
+    
+    detection_matrix = []
     
     for subdirectory_to_detect in directory_with_subdirectories_to_detect.iterdir():
         
@@ -58,6 +63,10 @@ if __name__ == '__main__':
             number_of_plausible_detections = np.count_nonzero(detections['detection_scores'].numpy() > score_threshold)
 
             if number_of_plausible_detections > 0:
+                
+                selected_detection_matrix = generate_matrix_of_detections(detections, score_threshold, image_file_path)
+                
+                detection_matrix.append(selected_detection_matrix)
 
                 visualize_detections(image_tensor, detections, category_index,score_threshold, directory_to_save_detection_figures,figname)
 
@@ -68,3 +77,9 @@ if __name__ == '__main__':
         with open(directory_to_save_detection_figures/'processing_time.txt', 'w') as file:
 
             print(f'Finished making detections in {time_taken.tm_hour} hours, {time_taken.tm_min} minutes and {time_taken.tm_sec} seconds.', file=file)
+        
+    complete_detection_matrix = np.concatenate(detection_matrix, axis=0)
+    
+    detection_results_csv_file_name = directory_to_save_predictions / 'detections_summary_table.csv'
+
+    save_georeferenced_detection_results_as_csv(complete_detection_matrix, label_map_path, detection_results_csv_file_name)

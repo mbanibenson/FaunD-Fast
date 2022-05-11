@@ -11,6 +11,7 @@ import io
 from object_detection.utils import label_map_util
 from object_detection.utils import visualization_utils as viz_utils
 import numpy as np
+from zipfile import ZipFile
 import matplotlib.pyplot as plt
 
 
@@ -285,6 +286,76 @@ def visualize_detections(image_tensor, detections, category_index, score_thresho
     ax.set_yticks([])
     plt.savefig(Path(directory_to_save_detection_figures) / f'{figname}.png', dpi=300, bbox_inches='tight')
     plt.close()
+    
+    
+    
+def generate_matrix_of_detections(detections, score_threshold, file_path):
+    '''
+    Given a detection instance, process it to generate matrix of detection results
+    
+    '''
+    
+    scores  = detections['detection_scores'][0].numpy().reshape(-1,1)
+    classes = detections['detection_classes'][0].numpy().reshape(-1,1)
+    boxes = detections['detection_boxes'][0].numpy()
+    file_paths = np.array([str(Path(file_path))]*len(scores)).reshape(-1,1)
+    file_names = np.array([str(Path(file_path).stem)]*len(scores)).reshape(-1,1)
+
+    detection_matrix = np.hstack([file_names, scores, classes, boxes, file_paths])
+
+    selector = (scores > score_threshold).squeeze()
+
+    selected_detection_matrix = np.compress(selector,detection_matrix, axis=0)
+    
+    return selected_detection_matrix
+
+
+
+def append_geospatial_coordinates_to_master_detection_summary_table(master_dataframe_summarizing_detections):
+    '''
+    Append geospatial coordinates to master dataframe summarizing detections before saving to disk
+    
+    '''
+    path_to_table_with_georeferenced_coords_for_all_photos = Path.cwd().parents[0]/'reports/auxilliary_data/georeferenced_photo_coordinates.zip'
+    
+    with ZipFile(path_to_table_with_georeferenced_coords_for_all_photos) as myzip:
+        
+        with myzip.open('georeferenced_photo_coordinates.csv') as myfile:
+            
+            table_with_georeferenced_coords_for_all_photos = pd.read_csv(myfile)
+            
+    table_with_georeferenced_coords_for_all_photos['parent_image_name'] = table_with_georeferenced_coords_for_all_photos.Name.map(lambda x: x.split('.')[0])
+            
+    georeferenced_master_dataframe_summarizing_detections = pd.merge(master_dataframe_summarizing_detections, table_with_georeferenced_coords_for_all_photos, how='left', on='parent_image_name')
+    
+    return georeferenced_master_dataframe_summarizing_detections
+
+
+def save_georeferenced_detection_results_as_csv(complete_detection_matrix, label_map_path, detection_results_csv_file_name):
+    '''
+    Georeference detection results and save to disk
+    
+    '''
+    columns = ['parent_image_name', 'score', 'object_class_id', 'ymin', 'xmin', 'ymax', 'xmax', 'parent_image_path']
+
+    detection_matrix_dataframe = pd.DataFrame(complete_detection_matrix, columns=columns)
+    
+    georeferenced_detection_matrix_dataframe = append_geospatial_coordinates_to_master_detection_summary_table(detection_matrix_dataframe)
+    
+    label_map = label_map_util.load_labelmap(label_map_path)
+
+    label_map_dict = label_map_util.get_label_map_dict(label_map, use_display_name=False)
+    
+    label_map_dict_reversed = {v:k for k,v in label_map_dict.items()}
+    
+    object_class_name = georeferenced_detection_matrix_dataframe.object_class_id.map(lambda x:label_map_dict_reversed[int(float(x))])
+    
+    georeferenced_detection_matrix_dataframe['object_class_name'] = object_class_name
+    
+    georeferenced_detection_matrix_dataframe = georeferenced_detection_matrix_dataframe.loc[:,['parent_image_name', 'object_class_name', 'object_class_id', 'score', 'ymin', 'xmin', 'ymax', 'xmax', 'dive', 'time_stamp', 'Latitude', 'Longitude', 'recoded_classification', 'license_area', 'activity', 'parent_image_path']].rename(columns={'recoded_classification':'seafloor_classification'})
+
+    georeferenced_detection_matrix_dataframe.to_csv(detection_results_csv_file_name, index=False)
+
     
     
 
