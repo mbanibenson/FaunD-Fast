@@ -297,7 +297,7 @@ def generate_matrix_of_detections(detections, score_threshold, file_path):
     
     scores  = detections['detection_scores'][0].numpy().reshape(-1,1)
     classes = detections['detection_classes'][0].numpy().reshape(-1,1)
-    boxes = detections['detection_boxes'][0].numpy()
+    boxes = detections['detection_boxes'][0].numpy() * [1120, 1680, 1120, 1680]
     file_paths = np.array([str(Path(file_path))]*len(scores)).reshape(-1,1)
     file_names = np.array([str(Path(file_path).stem)]*len(scores)).reshape(-1,1)
 

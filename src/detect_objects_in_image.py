@@ -77,7 +77,7 @@ if __name__ == '__main__':
         with open(directory_to_save_detection_figures/'processing_time.txt', 'w') as file:
 
             print(f'Finished making detections in {time_taken.tm_hour} hours, {time_taken.tm_min} minutes and {time_taken.tm_sec} seconds.', file=file)
-        
+    
     complete_detection_matrix = np.concatenate(detection_matrix, axis=0)
     
     detection_results_csv_file_name = directory_to_save_predictions / 'detections_summary_table.csv'
