@@ -98,6 +98,21 @@ python export_trained_mask_rcnn_to_saved_tensorflow_model.py
 python detect_objects_in_image.py
 ```
 
+## Evaluating the performance of the trained object detector
+
+1. Sample a few images with most detections for manual annotation. 
+```
+python sample_ground_truth_images.py
+```
+
+Alternatively, you could also import your own annotated ground truth images
+
+
+2. Evaluate the trained object detector on the ground truth annotations
+```
+python evaluate_trained_faster_rnn_model.py
+```
+
 ## Species distribution mapping
 
 1. Each annotated patch is assigned the georeferenced coordinates of its parent image.
