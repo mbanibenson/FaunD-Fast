@@ -13,6 +13,7 @@ from object_detection.utils import visualization_utils as viz_utils
 import numpy as np
 from zipfile import ZipFile
 import matplotlib.pyplot as plt
+from concurrent.futures import ThreadPoolExecutor
 
 
 def pre_process_csv_with_labels_to_have_one_row_per_image(path_to_csv_with_labels):
@@ -357,6 +358,29 @@ def save_georeferenced_detection_results_as_csv(complete_detection_matrix, label
     georeferenced_detection_matrix_dataframe = georeferenced_detection_matrix_dataframe.loc[:,['parent_image_name', 'object_class_name', 'object_class_id', 'score', 'ymin', 'xmin', 'ymax', 'xmax', 'dive', 'time_stamp', 'Latitude', 'Longitude', 'recoded_classification', 'license_area', 'activity', 'parent_image_path']].rename(columns={'recoded_classification':'seafloor_classification'})
 
     georeferenced_detection_matrix_dataframe.to_csv(detection_results_csv_file_name, index=False)
+    
+    
+    
+def sample_ground_truth_images_for_annotation(directory_to_save_samples, path_to_detections_summary_table, n_samples):
+    '''
+    Sample images with the most detections for manual annotation and error reporting
+    
+    '''
+    directory_to_save_samples = Path(directory_to_save_samples)
+    
+    path_to_detections_summary_table = Path(path_to_detections_summary_table)
+    
+    df = pd.read_csv(path_to_detections_summary_table)
+    
+    number_of_detections_df = df.groupby('parent_image_path').size().to_frame(name='number_of_detections').reset_index()
+    
+    sorted_number_of_detections_df = number_of_detections_df.sort_values(by='number_of_detections', ascending=False, ignore_index=True)
+    
+    file_paths_to_sample = sorted_number_of_detections_df.loc[:n_samples, 'parent_image_path']
+    
+    with ThreadPoolExecutor() as executor:
+        
+        [executor.submit(shutil.copy2, fp, directory_to_save_samples) for fp in file_paths_to_sample]
 
     
     

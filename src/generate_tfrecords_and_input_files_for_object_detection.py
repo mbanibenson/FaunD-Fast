@@ -19,10 +19,8 @@ if __name__ == '__main__':
     path_to_validation_tfrecord_file = object_detection_data_directory / 'validation.tfrecord'
     
     directory_to_save_config_file = object_detection_directory / 'my_model_dir/'
-    
-    config_file_source_url = 'https://raw.githubusercontent.com/tensorflow/models/master/research/object_detection/configs/tf2/faster_rcnn_resnet101_v1_800x1333_coco17_gpu-8.config'
-    
-    detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/classification/tf2/20200710/efficientnet_b7.tar.gz'
+        
+    detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/tf2/20200713/centernet_hg104_1024x1024_coco17_tpu-32.tar.gz'
     
     directory_to_save_checkpoint = object_detection_directory / 'my_model_dir/'
     
