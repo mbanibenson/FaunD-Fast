@@ -105,7 +105,7 @@ python detect_objects_in_image.py
 python sample_ground_truth_images.py
 ```
 
-Alternatively, you could also import your own annotated ground truth images
+2. Annotate the sampled ground truth images e.g in BIIGLE or labelimg. Alternatively, you could also import your own annotated ground truth images.
 
 
 2. Evaluate the trained object detector on the ground truth annotations
