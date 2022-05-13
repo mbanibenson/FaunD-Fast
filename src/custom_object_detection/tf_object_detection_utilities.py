@@ -203,12 +203,16 @@ def create_train_val_input_tfrecords(path_to_csv_with_labels, path_to_label_map,
     
     tf_train_examples, tf_val_examples = generate_tfrecords_from_csv_with_labels(path_to_csv_with_labels)
     
-    for tf_example in tf_train_examples:
+    tf_train_plus_validation_examples = tf_train_examples + tf_val_examples #combine them because we will manually annotate test images
+    
+    print(f'Writing {len(tf_train_plus_validation_examples)} training examples ...')
+    for tf_example in tf_train_plus_validation_examples:
         
         train_writer.write(tf_example.SerializeToString())
 
     train_writer.close()
     
+    print(f'Writing {len(tf_val_examples)} validation examples ...')
     for tf_example in tf_val_examples:
         
         validation_writer.write(tf_example.SerializeToString())
@@ -361,22 +365,26 @@ def save_georeferenced_detection_results_as_csv(complete_detection_matrix, label
     
     
     
-def sample_ground_truth_images_for_annotation(directory_to_save_samples, path_to_detections_summary_table, n_samples):
+def sample_ground_truth_images_for_annotation(directory_with_all_parent_images, directory_to_save_samples, path_to_annotations_table, n_samples):
     '''
     Sample images with the most detections for manual annotation and error reporting
     
     '''
     directory_to_save_samples = Path(directory_to_save_samples)
     
-    path_to_detections_summary_table = Path(path_to_detections_summary_table)
+    path_to_annotations_table = Path(path_to_annotations_table)
     
-    df = pd.read_csv(path_to_detections_summary_table)
+    directory_with_all_parent_images = Path(directory_with_all_parent_images)
     
-    number_of_detections_df = df.groupby('parent_image_path').size().to_frame(name='number_of_detections').reset_index()
+    df = pd.read_csv(path_to_annotations_table)
+    
+    number_of_detections_df = df.groupby('image_name').size().to_frame(name='number_of_detections').reset_index()
     
     sorted_number_of_detections_df = number_of_detections_df.sort_values(by='number_of_detections', ascending=False, ignore_index=True)
     
-    file_paths_to_sample = sorted_number_of_detections_df.loc[:n_samples, 'parent_image_path']
+    file_names_to_sample = sorted_number_of_detections_df.loc[:n_samples, 'image_name']
+    
+    file_paths_to_sample = [(directory_with_all_parent_images / name) for name in file_names_to_sample]
     
     with ThreadPoolExecutor() as executor:
         

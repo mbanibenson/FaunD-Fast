@@ -20,7 +20,7 @@ if __name__ == '__main__':
     
     directory_to_save_config_file = object_detection_directory / 'my_model_dir/'
         
-    detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/tf2/20200713/centernet_hg104_1024x1024_coco17_tpu-32.tar.gz'
+    detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/classification/tf2/20200710/resnet101_v1.tar.gz'
     
     directory_to_save_checkpoint = object_detection_directory / 'my_model_dir/'
     
