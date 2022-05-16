@@ -125,6 +125,28 @@ def create_tf_example_from_a_row_of_csv_with_labels(row_of_csv_as_named_tuple):
     return tf_example
 
 
+# def generate_tfrecords_from_csv_with_labels(path_to_csv_with_labels):
+#     '''
+#     Given a csv with labels from image viewer, process its columns to generate trecord files
+    
+#     '''
+#     processed_df = pre_process_csv_with_labels_to_have_one_row_per_image(path_to_csv_with_labels)
+    
+#     rows_of_csv_as_named_tuple = processed_df.itertuples()
+    
+#     tf_examples = [create_tf_example_from_a_row_of_csv_with_labels(row_of_csv) for row_of_csv in rows_of_csv_as_named_tuple]
+
+#     random.shuffle(tf_examples)
+    
+#     number_of_train_examples = int(0.9 * len(tf_examples))
+    
+#     tf_train_examples = tf_examples[:number_of_train_examples]
+    
+#     tf_val_examples = tf_examples[number_of_train_examples:]
+    
+#     return tf_train_examples, tf_val_examples
+
+
 def generate_tfrecords_from_csv_with_labels(path_to_csv_with_labels):
     '''
     Given a csv with labels from image viewer, process its columns to generate trecord files
@@ -135,16 +157,8 @@ def generate_tfrecords_from_csv_with_labels(path_to_csv_with_labels):
     rows_of_csv_as_named_tuple = processed_df.itertuples()
     
     tf_examples = [create_tf_example_from_a_row_of_csv_with_labels(row_of_csv) for row_of_csv in rows_of_csv_as_named_tuple]
-
-    random.shuffle(tf_examples)
     
-    number_of_train_examples = int(0.9 * len(tf_examples))
-    
-    tf_train_examples = tf_examples[:number_of_train_examples]
-    
-    tf_val_examples = tf_examples[number_of_train_examples:]
-    
-    return tf_train_examples, tf_val_examples
+    return tf_examples
 
 
 def download_config_file(directory_to_save_config_file, config_file_source_url):
@@ -195,18 +209,18 @@ def download_checkpoint_for_pretraining(detection_checkpoint_url, directory_to_s
 
 
 
-def create_train_val_input_tfrecords(path_to_csv_with_labels, path_to_label_map, path_to_train_tfrecord_file, path_to_validation_tfrecord_file):
+def create_train_val_input_tfrecords(path_to_train_csv_with_labels, path_to_val_csv_with_labels, path_to_label_map, path_to_train_tfrecord_file, path_to_validation_tfrecord_file):
        
     train_writer = tf.io.TFRecordWriter(str(path_to_train_tfrecord_file))
     
     validation_writer = tf.io.TFRecordWriter(str(path_to_validation_tfrecord_file))
     
-    tf_train_examples, tf_val_examples = generate_tfrecords_from_csv_with_labels(path_to_csv_with_labels)
+    tf_train_examples = generate_tfrecords_from_csv_with_labels(path_to_train_csv_with_labels)
     
-    tf_train_plus_validation_examples = tf_train_examples + tf_val_examples #combine them because we will manually annotate test images
+    tf_val_examples = generate_tfrecords_from_csv_with_labels(path_to_val_csv_with_labels)
     
-    print(f'Writing {len(tf_train_plus_validation_examples)} training examples ...')
-    for tf_example in tf_train_plus_validation_examples:
+    print(f'Writing {len(tf_train_examples)} training examples ...')
+    for tf_example in tf_train_examples:
         
         train_writer.write(tf_example.SerializeToString())
 

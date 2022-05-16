@@ -10,7 +10,9 @@ if __name__ == '__main__':
     
     object_detection_data_directory = object_detection_directory / 'data'
     
-    path_to_csv_with_labels = object_detection_data_directory / 'object_detection_input_datasheet.csv'
+    path_to_train_csv_with_labels = object_detection_data_directory / 'object_detection_input_datasheet.csv'
+    
+    path_to_val_csv_with_labels = object_detection_data_directory / 'object_detection_validation_datasheet.csv'
     
     path_to_label_map = object_detection_data_directory / 'SO268_label_map.pbtxt'
     
@@ -23,8 +25,8 @@ if __name__ == '__main__':
     detection_checkpoint_url = 'http://download.tensorflow.org/models/object_detection/classification/tf2/20200710/resnet101_v1.tar.gz'
     
     directory_to_save_checkpoint = object_detection_directory / 'my_model_dir/'
-    
-    create_train_val_input_tfrecords(path_to_csv_with_labels, path_to_label_map, path_to_train_tfrecord_file, path_to_validation_tfrecord_file)
+
+    create_train_val_input_tfrecords(path_to_train_csv_with_labels, path_to_val_csv_with_labels, path_to_label_map, path_to_train_tfrecord_file, path_to_validation_tfrecord_file)
     
     download_checkpoint_for_pretraining(detection_checkpoint_url, directory_to_save_checkpoint)
 
