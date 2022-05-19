@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
         subdirectory_name = directory_containing_test_images.name
 
-        exclude_list = ['SO268-2_126-1_OFOS-07']
+        exclude_list = ['dive_153', 'dive_117']
 
         if subdirectory_name not in exclude_list:
 

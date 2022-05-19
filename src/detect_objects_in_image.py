@@ -27,6 +27,13 @@ if __name__ == '__main__':
     
     detection_matrix = []
     
+    print('Loading detection model ...')
+
+    detection_model = load_saved_model_for_inference(str(path_to_saved_model))
+
+    category_index, label_map_dict = load_label_map_info(str(label_map_path))
+    
+    
     for subdirectory_to_detect in directory_with_subdirectories_to_detect.iterdir():
         
         name_of_subdirectory_to_detect = subdirectory_to_detect.name
@@ -44,12 +51,6 @@ if __name__ == '__main__':
 
         start_time = time.time()
 
-        print('Loading detection model ...')
-
-        detection_model = load_saved_model_for_inference(str(path_to_saved_model))
-
-        category_index, label_map_dict = load_label_map_info(str(label_map_path))
-
         for image_file_path in image_file_paths:
 
             figname = image_file_path.stem
@@ -63,9 +64,9 @@ if __name__ == '__main__':
             number_of_plausible_detections = np.count_nonzero(detections['detection_scores'].numpy() > score_threshold)
 
             if number_of_plausible_detections > 0:
-                
+
                 selected_detection_matrix = generate_matrix_of_detections(detections, score_threshold, image_file_path)
-                
+
                 detection_matrix.append(selected_detection_matrix)
 
                 visualize_detections(image_tensor, detections, category_index,score_threshold, directory_to_save_detection_figures,figname)
