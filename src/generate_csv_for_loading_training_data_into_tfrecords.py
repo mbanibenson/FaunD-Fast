@@ -2,6 +2,7 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
+from sklearn.model_selection import train_test_split
 
 def convert_segmentation_bbox_to_normalized_format(bbox_column_as_pandas_series):
     '''
@@ -90,32 +91,75 @@ def parse_manually_annotated_text_file_in_yolo_format_from_labelimg(text_file_pa
         
 
 
-def generate_object_detection_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_validation_images, path_to_object_detection_validation_datasheet):
+# def generate_object_detection_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_validation_images, path_to_object_detection_validation_datasheet):
+#     '''
+#     Process manual annotations into a csv file to be consumed by tfrecords creation utility
+    
+#     '''
+#     directory_with_manual_annotations_text_files = Path(directory_with_manual_annotations_text_files)
+    
+#     directory_with_validation_images = Path(directory_with_validation_images)
+    
+#     path_to_object_detection_validation_datasheet = Path(path_to_object_detection_validation_datasheet)
+    
+#     validation_images_file_paths = list(directory_with_validation_images.iterdir())
+    
+#     validation_images_file_names = [fp.name for fp in validation_images_file_paths]
+    
+#     validation_images_annotations_text_file_names = [fp.with_suffix('.txt').name for fp in validation_images_file_paths]
+    
+#     validation_images_annotations_text_file_paths = [(directory_with_manual_annotations_text_files / f_name) for f_name in validation_images_annotations_text_file_names]
+    
+#     parsed_annotations = [parse_manually_annotated_text_file_in_yolo_format_from_labelimg(txt_file) for txt_file in validation_images_annotations_text_file_paths]
+    
+#     validation_dataframe = pd.DataFrame(parsed_annotations, columns = ('object_index', 'min_y', 'min_x', 'max_y', 'max_x'))
+    
+#     validation_dataframe['image_path'] = validation_images_file_paths
+    
+#     validation_dataframe['image_name'] = validation_images_file_names
+    
+#     label_map_path = directory_with_manual_annotations_text_files / 'classes.txt'
+    
+#     with open(label_map_path) as file:
+        
+#         label_map = [label.rstrip() for label in file.readlines()]        
+        
+#     validation_dataframe['object_name'] = [label_map[i] for i in validation_dataframe.object_index.tolist()]
+    
+#     validation_dataframe['object_index'] = validation_dataframe['object_index'] + 1
+    
+#     validation_dataframe.to_csv(path_to_object_detection_validation_datasheet, index=False)
+    
+#     return
+
+def generate_object_detection_training_and_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_images, path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet):
     '''
     Process manual annotations into a csv file to be consumed by tfrecords creation utility
     
     '''
     directory_with_manual_annotations_text_files = Path(directory_with_manual_annotations_text_files)
     
-    directory_with_validation_images = Path(directory_with_validation_images)
+    path_to_object_detection_training_datasheet = Path(path_to_object_detection_training_datasheet)
     
     path_to_object_detection_validation_datasheet = Path(path_to_object_detection_validation_datasheet)
     
-    validation_images_file_paths = list(directory_with_validation_images.iterdir())
+    directory_with_images = Path(directory_with_images)
+
+    annotations_text_file_paths = list(directory_with_manual_annotations_text_files.glob('SO268*.txt'))
     
-    validation_images_file_names = [fp.name for fp in validation_images_file_paths]
+    empty_annotations = [fp for fp in annotations_text_file_paths if not fp.read_text()]
     
-    validation_images_annotations_text_file_names = [fp.with_suffix('.txt').name for fp in validation_images_file_paths]
+    print(f'Found {len(annotations_text_file_paths)} annotations with {len(empty_annotations)} empty annotation files...')
     
-    validation_images_annotations_text_file_paths = [(directory_with_manual_annotations_text_files / f_name) for f_name in validation_images_annotations_text_file_names]
+    [fp.unlink() for fp in empty_annotations]
     
-    parsed_annotations = [parse_manually_annotated_text_file_in_yolo_format_from_labelimg(txt_file) for txt_file in validation_images_annotations_text_file_paths]
+    parsed_annotations = [parse_manually_annotated_text_file_in_yolo_format_from_labelimg(txt_file) for txt_file in annotations_text_file_paths if txt_file not in empty_annotations]
     
-    validation_dataframe = pd.DataFrame(parsed_annotations, columns = ('object_index', 'min_y', 'min_x', 'max_y', 'max_x'))
+    annotations_dataframe = pd.DataFrame(parsed_annotations, columns = ('object_index', 'min_y', 'min_x', 'max_y', 'max_x'))
     
-    validation_dataframe['image_path'] = validation_images_file_paths
+    annotations_dataframe['image_name'] = [fp.with_suffix('.JPG').name for fp in annotations_text_file_paths]
     
-    validation_dataframe['image_name'] = validation_images_file_names
+    annotations_dataframe['image_path'] = [(directory_with_images / im_name) for im_name in annotations_dataframe.image_name.tolist()]
     
     label_map_path = directory_with_manual_annotations_text_files / 'classes.txt'
     
@@ -123,29 +167,44 @@ def generate_object_detection_validation_datasheet_from_manual_annotations(direc
         
         label_map = [label.rstrip() for label in file.readlines()]        
         
-    validation_dataframe['object_name'] = [label_map[i] for i in validation_dataframe.object_index.tolist()]
+    annotations_dataframe['object_name'] = [label_map[i] for i in annotations_dataframe.object_index.tolist()]
     
-    validation_dataframe['object_index'] = validation_dataframe['object_index'] + 1
+    annotations_dataframe['object_index'] = annotations_dataframe['object_index'] + 1
     
-    validation_dataframe.to_csv(path_to_object_detection_validation_datasheet, index=False)
+    indices = annotations_dataframe.index.tolist()
+    
+    training_indices, test_indices = train_test_split(indices, test_size=0.2, random_state=42)
+    
+    training_annotations_df = annotations_dataframe.loc[training_indices]
+    
+    validation_annotations_df = annotations_dataframe.loc[test_indices]
+    
+    print(f'Saving datasheets with {len(training_annotations_df)} training and {len(validation_annotations_df)} validation examples ...')
+    
+    training_annotations_df.to_csv(path_to_object_detection_training_datasheet, index=False)
+    
+    validation_annotations_df.to_csv(path_to_object_detection_validation_datasheet, index=False)
     
     return
-    
-    
-        
-    
 
 
-def generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_input_datasheet, path_to_label_map):
+
+def generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet, path_to_label_map):
     '''
     Generate label map from the generated datasheet
     
     '''
-    path_to_object_detection_input_datasheet = Path(path_to_object_detection_input_datasheet)
+    path_to_object_detection_training_datasheet = Path(path_to_object_detection_training_datasheet)
+    
+    path_to_object_detection_validation_datasheet = Path(path_to_object_detection_validation_datasheet)
     
     path_to_label_map = Path(path_to_label_map)
     
-    input_datasheet_df = pd.read_csv(path_to_object_detection_input_datasheet).sort_values(by='object_index')
+    train_df = pd.read_csv(path_to_object_detection_training_datasheet).sort_values(by='object_index')
+    
+    val_df = pd.read_csv(path_to_object_detection_validation_datasheet).sort_values(by='object_index')
+    
+    input_datasheet_df = pd.concat([train_df, val_df])
     
     string_labels = input_datasheet_df.groupby('object_index').object_name.first()
     
@@ -174,20 +233,27 @@ if __name__ == '__main__':
 
     path_to_post_processed_summary_table = image_viewer_directory / 'master_detections_summary_table.csv'
     
-    path_to_object_detection_input_datasheet = object_detection_data_directory / 'object_detection_input_datasheet.csv'
+    # path_to_object_detection_input_datasheet = object_detection_data_directory / 'object_detection_input_datasheet.csv'
     
     path_to_label_map = object_detection_data_directory / 'SO268_label_map.pbtxt'
     
     path_to_annotations_table = image_viewer_directory / 'annotations.csv'
     
-    directory_with_manual_annotations_text_files = object_detection_directory / 'performance_assessment/manual_annotations'
+    directory_with_manual_annotations_text_files = image_viewer_directory / 'yolo_annotations_labelimg'
     
-    directory_with_validation_images = object_detection_directory / 'performance_assessment/validation_images'
+    directory_with_images = image_viewer_directory / 'parent_images'
+    
+    path_to_object_detection_training_datasheet = object_detection_data_directory / 'object_detection_input_datasheet.csv'
     
     path_to_object_detection_validation_datasheet = object_detection_data_directory / 'object_detection_validation_datasheet.csv'
     
-    generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet, path_to_annotations_table)
     
-    generate_object_detection_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_validation_images, path_to_object_detection_validation_datasheet)
+    generate_object_detection_training_and_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_images, path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet)
     
-    generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_input_datasheet, path_to_label_map)
+    generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_training_datasheet,path_to_object_detection_validation_datasheet, path_to_label_map)
+    
+#     generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet, path_to_annotations_table)
+    
+#     generate_object_detection_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_validation_images, path_to_object_detection_validation_datasheet)
+    
+    
