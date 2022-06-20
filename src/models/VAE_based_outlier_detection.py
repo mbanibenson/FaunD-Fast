@@ -292,7 +292,10 @@ def train_VAE(latent_dim, train_generator, val_generator, number_of_train_batche
     '''
     Train the VAE
     
-    '''    
+    ''' 
+    all_models = []
+    all_ELBO_losses = []
+    
     optimizer = tf.keras.optimizers.Adam(1e-4)
 
     model = CVAE(latent_dim)
@@ -314,17 +317,36 @@ def train_VAE(latent_dim, train_generator, val_generator, number_of_train_batche
             loss(compute_loss(model, test_x/255))
             
         elbo = -loss.result()
+        
+        all_models.append(model)
+        all_ELBO_losses.append(elbo)
       #display.clear_output(wait=False)
         print('Epoch: {}, Test set ELBO: {}, time elapse for current epoch: {:.2f} seconds'
             .format(epoch, elbo, end_time - start_time))
         
+    
+    best_model = retrieve_the_best_performing_model(all_models, all_ELBO_losses)
+    
     input_arr = tf.random.uniform((2,96,96,3))
     
-    encoder = model.encoder
+    encoder = best_model.encoder
     
     mean_vector, logvar = encoder(input_arr)
     
     return encoder
+
+def retrieve_the_best_performing_model(all_models, all_ELBO_losses):
+    '''
+    Choose the model that performs the best of all epochs
+    
+    '''
+    index_of_lowest_loss = np.argmax(all_ELBO_losses)
+    
+    best_model = all_models[index_of_lowest_loss]
+    
+    print(f'The VAE model with lowest ELBO was at epoch {index_of_lowest_loss + 1} of {len(all_ELBO_losses)}')
+    
+    return best_model
 
 ################################## END OF VAE MODEL TRAINING ##########################################
 
@@ -586,7 +608,7 @@ def train_Isolation_Forest_to_detect_anomalous_patches(background_features, cont
     outlier_detector = IsolationForest(n_jobs=14, 
                                        bootstrap=True,
                                        max_samples=5000,
-                                       max_features=0.5,
+                                       max_features=0.9,
                                        warm_start=False,
                                        contamination=contamination).fit(background_features)
     
@@ -621,7 +643,7 @@ def detect_anomalous_patches_using_trained_Isolation_Forest(trained_VAE,
     for file_path_partition in file_path_partitions:
     
         print('Segmenting training images ...')
-        list_of_test_patches, test_patch_names, test_patch_bboxes, _ = segment_images_and_return_segments_as_list_of_ndarrays(file_path_partition.tolist())
+        list_of_test_patches, test_patch_names, test_patch_bboxes, _, _, _ = segment_images_and_return_segments_as_list_of_ndarrays(file_path_partition.tolist())
 
         test_generator, number_of_test_batches = create_tensorflow_dataset_from_numpy_ndarray(list_of_test_patches, batch_size=32, is_for_training=False)
         
@@ -759,8 +781,12 @@ def segment_images_and_return_segments_as_list_of_ndarrays(list_of_file_paths):
         
     #Gather segment patches and support sets
     segment_patches, segment_patch_names, segment_patch_bboxes, segment_patch_class_labels = merge_segmentation_patches_from_all_images(segmented_image_objects)
+    
+    segmented_images = [segmented_image_object.segmented_image for segmented_image_object in segmented_image_objects][:10]
+    
+    original_images = [segmented_image_object.rgb_image for segmented_image_object in segmented_image_objects][:10]
         
-    return segment_patches, segment_patch_names, segment_patch_bboxes, segment_patch_class_labels
+    return segment_patches, segment_patch_names, segment_patch_bboxes, segment_patch_class_labels, segmented_images, original_images
 
 
 # def train_model(directory_containing_training_images, batch_size, epochs, directory_to_save_matplotlib_figures=None):
