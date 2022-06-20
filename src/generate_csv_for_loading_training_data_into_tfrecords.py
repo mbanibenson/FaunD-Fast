@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
+from itertools import chain
 
 def convert_segmentation_bbox_to_normalized_format(bbox_column_as_pandas_series):
     '''
@@ -64,29 +65,37 @@ def parse_manually_annotated_text_file_in_yolo_format_from_labelimg(text_file_pa
     Parse a yolo type annotation file
     
     '''
+    set_of_annotations = []
+    
     with open(text_file_path) as file:
         
-        annotations = file.readline().split()
+        for line in file:
+            
+            annotations = line.split()
         
-    object_index = int(annotations[0])
+            object_index = int(annotations[0])
+
+            object_x_center = float(annotations[1])
+
+            object_y_center = float(annotations[2])
+
+            object_x_width = float(annotations[3])
+
+            object_y_height = float(annotations[4])
+
+            min_y = object_y_center - (0.5*object_y_height)
+
+            max_y = object_y_center + (0.5*object_y_height)
+
+            min_x = object_x_center - (0.5*object_x_width)
+
+            max_x = object_x_center + (0.5*object_x_width)
+            
+            image_name = text_file_path.with_suffix('.JPG').name
+            
+            set_of_annotations.append((object_index, min_y, min_x, max_y, max_x, image_name))
     
-    object_x_center = float(annotations[1])
-    
-    object_y_center = float(annotations[2])
-    
-    object_x_width = float(annotations[3])
-    
-    object_y_height = float(annotations[4])
-    
-    min_y = object_y_center - (0.5*object_y_height)
-    
-    max_y = object_y_center + (0.5*object_y_height)
-    
-    min_x = object_x_center - (0.5*object_x_width)
-    
-    max_x = object_x_center + (0.5*object_x_width)
-    
-    return object_index, min_y, min_x, max_y, max_x
+    return set_of_annotations
         
         
 
@@ -153,11 +162,13 @@ def generate_object_detection_training_and_validation_datasheet_from_manual_anno
     
     [fp.unlink() for fp in empty_annotations]
     
-    parsed_annotations = [parse_manually_annotated_text_file_in_yolo_format_from_labelimg(txt_file) for txt_file in annotations_text_file_paths if txt_file not in empty_annotations]
+    parsed_annotations_nested = [parse_manually_annotated_text_file_in_yolo_format_from_labelimg(txt_file) for txt_file in annotations_text_file_paths if txt_file not in empty_annotations]
     
-    annotations_dataframe = pd.DataFrame(parsed_annotations, columns = ('object_index', 'min_y', 'min_x', 'max_y', 'max_x'))
+    parsed_annotations = chain.from_iterable(parsed_annotations_nested)
     
-    annotations_dataframe['image_name'] = [fp.with_suffix('.JPG').name for fp in annotations_text_file_paths]
+    annotations_dataframe = pd.DataFrame(parsed_annotations, columns = ('object_index', 'min_y', 'min_x', 'max_y', 'max_x', 'image_name'))
+    
+    #annotations_dataframe['image_name'] = [fp.with_suffix('.JPG').name for fp in annotations_text_file_paths]
     
     annotations_dataframe['image_path'] = [(directory_with_images / im_name) for im_name in annotations_dataframe.image_name.tolist()]
     
@@ -168,26 +179,77 @@ def generate_object_detection_training_and_validation_datasheet_from_manual_anno
         label_map = [label.rstrip() for label in file.readlines()]        
         
     annotations_dataframe['object_name'] = [label_map[i] for i in annotations_dataframe.object_index.tolist()]
+        
+    annotations_dataframe = annotations_dataframe.loc[annotations_dataframe.object_name.ne('Fauna')]
     
-    annotations_dataframe['object_index'] = annotations_dataframe['object_index'] + 1
+    class_names = annotations_dataframe['object_name']
     
-    indices = annotations_dataframe.index.tolist()
+    le = LabelEncoder()
     
-    training_indices, test_indices = train_test_split(indices, test_size=0.2, random_state=42)
+    le.fit(class_names)
     
-    training_annotations_df = annotations_dataframe.loc[training_indices]
+    annotations_dataframe['object_index'] = le.transform(class_names) + 1
     
-    validation_annotations_df = annotations_dataframe.loc[test_indices]
+    #annotations_dataframe = annotations_dataframe.loc[annotations_dataframe.object_name.ne('Coral')]
+    
+    #annotations_dataframe['object_index'] = annotations_dataframe['object_index'] + 1
+    
+    #indices = annotations_dataframe.index.tolist()
+    image_names = annotations_dataframe.image_name.unique()
+    
+    training_image_names, test_image_names = train_test_split(image_names, test_size=0.1, random_state=100)
+    
+    training_annotations_df = annotations_dataframe.loc[annotations_dataframe.image_name.isin(training_image_names)]
+    
+    validation_annotations_df = annotations_dataframe.loc[annotations_dataframe.image_name.isin(test_image_names)]
     
     print(f'Saving datasheets with {len(training_annotations_df)} training and {len(validation_annotations_df)} validation examples ...')
+    
+    #training_annotations_df.to_csv(path_to_object_detection_training_datasheet, index=False)
     
     training_annotations_df.to_csv(path_to_object_detection_training_datasheet, index=False)
     
     validation_annotations_df.to_csv(path_to_object_detection_validation_datasheet, index=False)
     
-    return
+    return le
 
+def generate_label_map_from_lebelencoder(trained_label_encoder, path_to_label_map):
+    '''
+    Infer classes from a trained label encoder and write to label map
+    
+    '''
+    classes = trained_label_encoder.classes_
+    
+    with open(path_to_label_map, 'w') as file:
+        
+        for index, label in enumerate(classes, start=1): 
+            
+            label_template = f'item {{\n\n id: {index}\n\n name: "{label}"\n\n}}\n\n'
+        
+            file.write(label_template)
+            
 
+def generate_label_map_from_labelimg_annotations(directory_with_labelimg_annotations, path_to_label_map):
+    '''
+    Process labelimg annotations to generate label map
+    
+    '''
+    labelimg_label_map_path = directory_with_labelimg_annotations / 'classes.txt'
+    
+    with open(labelimg_label_map_path) as file:
+        
+        labelimg_label_map = [label.rstrip() for label in file.readlines()]
+        
+        labelimg_label_map.remove('Fauna')
+        
+        
+    with open(path_to_label_map, 'w') as file:
+        
+        for index, label in enumerate(labelimg_label_map, start=1): 
+            
+            label_template = f'item {{\n\n id: {index}\n\n name: "{label}"\n\n}}\n\n'
+        
+            file.write(label_template)
 
 def generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet, path_to_label_map):
     '''
@@ -200,11 +262,11 @@ def generate_label_map_from_object_detection_input_datasheet(path_to_object_dete
     
     path_to_label_map = Path(path_to_label_map)
     
-    train_df = pd.read_csv(path_to_object_detection_training_datasheet).sort_values(by='object_index')
+    train_df = pd.read_csv(path_to_object_detection_training_datasheet)#.sort_values(by='object_index')
     
-    val_df = pd.read_csv(path_to_object_detection_validation_datasheet).sort_values(by='object_index')
+    val_df = pd.read_csv(path_to_object_detection_validation_datasheet)#.sort_values(by='object_index')
     
-    input_datasheet_df = pd.concat([train_df, val_df])
+    input_datasheet_df = pd.concat([train_df, val_df]).sort_values(by='object_index')
     
     string_labels = input_datasheet_df.groupby('object_index').object_name.first()
     
@@ -247,10 +309,15 @@ if __name__ == '__main__':
     
     path_to_object_detection_validation_datasheet = object_detection_data_directory / 'object_detection_validation_datasheet.csv'
     
+    trained_label_encoder = generate_object_detection_training_and_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_images, path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet)
     
-    generate_object_detection_training_and_validation_datasheet_from_manual_annotations(directory_with_manual_annotations_text_files, directory_with_images, path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet)
+    generate_label_map_from_lebelencoder(trained_label_encoder, path_to_label_map)
     
-    generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_training_datasheet,path_to_object_detection_validation_datasheet, path_to_label_map)
+    #generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_training_datasheet, path_to_object_detection_validation_datasheet, path_to_label_map)
+    
+    #generate_label_map_from_labelimg_annotations(directory_with_manual_annotations_text_files, path_to_label_map)
+    
+    # generate_label_map_from_object_detection_input_datasheet(path_to_object_detection_training_datasheet,path_to_object_detection_validation_datasheet, path_to_label_map)
     
 #     generate_object_detection_input_datasheet_from_detection_summary_table(path_to_post_processed_summary_table, path_to_object_detection_input_datasheet, path_to_annotations_table)
     
