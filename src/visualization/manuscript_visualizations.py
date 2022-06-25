@@ -14,6 +14,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pandas as pd
 import seaborn as sns
 from skimage.io import imread
+import random
 
 def generate_background_images_with_superpixel_overlays(path_to_pickled_segmented_images, path_to_pickled_original_images, directory_to_save_manuscript_plots, figsize, n_sample=10):
     '''
@@ -108,8 +109,8 @@ def generate_feature_space_view_of_background_superpixels(path_to_pickled_backgr
     print(f'Background feature vectors shape: {background_feature_vectors.shape}')
     
     print(f'Number of background patches: {len(list_of_background_patches)}')
-
-    background_feature_vectors_2d = pca_object.fit_transform(background_feature_vectors)
+    
+    background_feature_vectors_2d = pca_object.transform(background_feature_vectors)
             
     fig, ax = plt.subplots(figsize=figsize)
     
@@ -145,7 +146,7 @@ def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_det
         
     anomalous_superpixels_df = pd.read_csv(path_to_detections_summary_table)
     
-    anomalous_superpixels_feature_vectors = anomalous_superpixels_df.loc[:,'feature_0':'feature_99']
+    anomalous_superpixels_feature_vectors = anomalous_superpixels_df.iloc[:,5:-2]
     
     anomalous_patch_file_paths = [(directory_with_anomalous_superpixel_patches / f'{fn}.png') for fn in anomalous_superpixels_df.patch_name.tolist()]
     
@@ -161,7 +162,7 @@ def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_det
     
     print(f'Number of anomalous superpixel patches: {len(anomalous_superpixel_patches)}')
 
-    anomalous_superpixels_feature_vectors_2d = pca_object.fit_transform(anomalous_superpixels_feature_vectors)
+    anomalous_superpixels_feature_vectors_2d = pca_object.transform(anomalous_superpixels_feature_vectors)
             
     fig, ax = plt.subplots(figsize=figsize)
     

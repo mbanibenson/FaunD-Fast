@@ -3,6 +3,7 @@ from models.VAE_based_outlier_detection_old import detect_outliers_using_trained
 import shutil
 import time
 from parameters import deepsea_fauna_detection_params
+import pickle
 
 if __name__ == '__main__':
      
@@ -13,6 +14,10 @@ if __name__ == '__main__':
     directory_containing_test_images = deepsea_fauna_detection_params.DIVE_PARENT_IMAGES_DIR
 
     outputs_directory = deepsea_fauna_detection_params.DIVE_OUTPUT_DIR 
+    
+    directory_containing_pickled_items = deepsea_fauna_detection_params.DIVE_PICKLED_ITEMS_DIR
+    
+    directory_containing_pickled_items.mkdir(exist_ok=True)
     
     latent_dimension = deepsea_fauna_detection_params.LATENT_DIMENSION
 
@@ -44,7 +49,7 @@ if __name__ == '__main__':
 
     training_tic = time.time()
 
-    trained_VAE_model, train_generator, number_of_train_batches = train_model(directory_containing_training_images, batch_size, epochs, latent_dimension, directory_to_save_matplotlib_figures)
+    trained_VAE_model, train_generator, number_of_train_batches, segmented_images, original_images, background_feature_vectors, background_patches, pca_object = train_model(directory_containing_training_images, batch_size, epochs, latent_dimension, directory_to_save_matplotlib_figures)
 
     training_toc = time.time()
 
@@ -62,6 +67,36 @@ if __name__ == '__main__':
                                       im_width=target_image_width, pca_object=None, 
                                       contamination=contamination)
     inference_toc = time.time()
+    
+    
+    print('Pickling things ...\n')
+    
+    print('Pickling original images ...')
+    with open(directory_containing_pickled_items / f'original_images.pickle', 'wb') as f:
+        
+        pickle.dump(original_images, f, pickle.HIGHEST_PROTOCOL)
+        
+    print('Pickling segmented images ...')
+    with open(directory_containing_pickled_items / f'segmented_images.pickle', 'wb') as f:
+        
+        pickle.dump(segmented_images, f, pickle.HIGHEST_PROTOCOL)
+    
+    print('Pickling background feature vectors ...')
+    with open(directory_containing_pickled_items / f'background_feature_vectors.pickle', 'wb') as f:
+        
+        pickle.dump(background_feature_vectors, f, pickle.HIGHEST_PROTOCOL)
+        
+    print('Pickling background patches ...')
+    with open(directory_containing_pickled_items / f'background_patches.pickle', 'wb') as f:
+        
+        pickle.dump(background_patches, f, pickle.HIGHEST_PROTOCOL)
+        
+    print('Pickling pca ...')
+    with open(directory_containing_pickled_items / f'pca_object.pickle', 'wb') as f:
+        
+        pickle.dump(pca_object, f, pickle.HIGHEST_PROTOCOL)
+        
+    print('\nDone pickling things ...')
 
 
     visualization_tic = time.time()
