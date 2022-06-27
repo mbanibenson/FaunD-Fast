@@ -1,7 +1,9 @@
 from pathlib import Path
 
 ########################## Segmentation, VAE training and outlier detection #########################
-UNSUPERVISED_LEARNING_DIR = Path.cwd().parent / 'data/unsupervised_outlier_detection/' #Relative to src directory
+PROJECT_DIRECTORY = Path.cwd().parent
+
+UNSUPERVISED_LEARNING_DIR = PROJECT_DIRECTORY / 'data/unsupervised_outlier_detection/' #Relative to src directory
 
 DIVE_TO_PROCESS = 'example_dive'
 
@@ -15,16 +17,27 @@ DIVE_PICKLED_ITEMS_DIR = DIVE_WORKING_DIR / 'pickled_items'
 
 DIVE_OUTPUT_DIR = DIVE_WORKING_DIR / 'detection_outputs'
 
-NUMBER_OF_IMAGES_TO_SAMPLE_AS_BACKGROUND = 20
+NUMBER_OF_IMAGES_TO_SAMPLE_AS_BACKGROUND = 500
 
 BATCH_SIZE = 32
 
 LATENT_DIMENSION = 100
 
-TRAINING_EPOCHS = 50
+TRAINING_EPOCHS = 20
 
-CONTAMINATION = 'auto'
+CONTAMINATION = 0.01
 #####################################################################################################
+
+########################## Supervised binary classification and annotation #########################
+SUPERVISED_LEARNING_DIR = PROJECT_DIRECTORY / 'data/supervised_fauna_non_fauna_classification/' #Relative to src directory
+
+DIVE_OUTPUT_DIR_AFTER_BINARY_CLASSIFICATION = SUPERVISED_LEARNING_DIR / 'classification_outputs/'
+
+ANNOTATION_TOOL_DIR = PROJECT_DIRECTORY / 'custom_annotation_tool/'
+#####################################################################################################
+
+########################## TF OBJECT DETECTION API #########################
+OBJECT_DETECTION_DIR = PROJECT_DIRECTORY / 'fauna_detection_with_tensorflow_object_detection_api'
 
 ############################### MANUSCRIPT VISUALIZATION ############################################
 EXAMPLE_DIVE = 'example_dive'
