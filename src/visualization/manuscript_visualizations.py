@@ -131,9 +131,9 @@ def generate_feature_space_view_of_background_superpixels(path_to_pickled_backgr
         
     for x0, y0, patch in zip(data_matrix.X.values, data_matrix.Y.values, list_of_background_patches):
 
-        ab = AnnotationBbox(OffsetImage(patch, zoom=0.3), (x0, y0), frameon=False)
+        ab = AnnotationBbox(OffsetImage(patch, zoom=0.1), (x0, y0), frameon=False)
 
-        ab.set_zorder(0)
+        ab.set_zorder(5)
 
         ax.add_artist(ab)
             
@@ -144,11 +144,17 @@ def generate_feature_space_view_of_background_superpixels(path_to_pickled_backgr
     return
 
 
-def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize):
+def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize, thumbnails_only):
     '''
     Show projection of anomalous superpixels in feature space
     
     '''
+    z_order = 5 if thumbnails_only else 0
+    
+    name = 'feature_space_view_of_all_anomalous_superpixels_thumbnails_only.png' if thumbnails_only else 'feature_space_view_of_all_anomalous_superpixels.png'
+    
+    show_legend = False if thumbnails_only else True
+    
     
     with open(path_to_pickled_pca_object, 'rb') as f:
         
@@ -179,17 +185,17 @@ def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_det
     
     data_matrix = pd.DataFrame({'X':anomalous_superpixels_feature_vectors_2d[:,0], 'Y':anomalous_superpixels_feature_vectors_2d[:,1], 'anomaly_score':anomalous_superpixels_df.anomaly_score.multiply(-1)})
     
-    temp = sns.scatterplot(x='X', y='Y', size='anomaly_score', data=data_matrix, ax=ax)
+    temp = sns.scatterplot(x='X', y='Y', size='anomaly_score', data=data_matrix, ax=ax, legend=show_legend)
         
     for x0, y0, patch in zip(data_matrix.X.values, data_matrix.Y.values, anomalous_superpixel_patches):
 
-        ab = AnnotationBbox(OffsetImage(patch, zoom=0.1), (x0, y0), frameon=False)
+        ab = AnnotationBbox(OffsetImage(patch, zoom=0.05), (x0, y0), frameon=False)
 
-        ab.set_zorder(0)
+        ab.set_zorder(z_order)
 
         ax.add_artist(ab)
             
-    file_name = directory_to_save_manuscript_plots / 'feature_space_view_of_all_anomalous_superpixels.png'
+    file_name = directory_to_save_manuscript_plots / name
             
     plt.savefig(file_name, dpi=300, bbox_inches='tight')
     
@@ -241,7 +247,7 @@ def generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detection
     
     data_matrix = pd.DataFrame({'X':anomalous_superpixels_feature_vectors_2d[:,0], 'Y':anomalous_superpixels_feature_vectors_2d[:,1], 'anomaly_score':anomalous_superpixels_df.anomaly_score.multiply(-1)})
     
-    temp = sns.scatterplot(x='X', y='Y', size='anomaly_score', data=data_matrix, ax=ax)
+    temp = sns.scatterplot(x='X', y='Y', data=data_matrix, ax=ax, legend=False)
         
     for x0, y0, patch in zip(data_matrix.X.values, data_matrix.Y.values, anomalous_superpixel_patches):
 

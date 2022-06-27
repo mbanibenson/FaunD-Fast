@@ -58,7 +58,9 @@ if __name__ == '__main__':
     path_to_detections_summary_table = anomalous_superpixel_detection_output_directory / 'detections_summary_table.csv'
     directory_with_anomalous_superpixel_patches = anomalous_superpixel_detection_output_directory / 'patches'
     
-    generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize)
+    generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize, thumbnails_only=True)
+    
+    generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize, thumbnails_only=False)
     
     
     ### Feature space view of top-k anomalous superpixels
