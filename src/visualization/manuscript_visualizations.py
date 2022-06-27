@@ -253,7 +253,7 @@ def generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detection
 
         ab = AnnotationBbox(OffsetImage(patch, zoom=0.1), (x0, y0), frameon=False)
 
-        ab.set_zorder(0)
+        ab.set_zorder(5)
 
         ax.add_artist(ab)
             
