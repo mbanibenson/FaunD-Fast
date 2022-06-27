@@ -1,5 +1,5 @@
-from models.VAE_based_outlier_detection_old import train_model
-from models.VAE_based_outlier_detection_old import detect_outliers_using_trained_VAE
+from models.VAE_based_outlier_detection import train_model
+from models.VAE_based_outlier_detection import detect_outliers_using_trained_VAE
 import shutil
 import time
 from parameters import deepsea_fauna_detection_params
