@@ -185,7 +185,7 @@ def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_det
     
     data_matrix = pd.DataFrame({'X':anomalous_superpixels_feature_vectors_2d[:,0], 'Y':anomalous_superpixels_feature_vectors_2d[:,1], 'anomaly_score':anomalous_superpixels_df.anomaly_score.multiply(-1)})
     
-    temp = sns.scatterplot(x='X', y='Y', size='anomaly_score', data=data_matrix, ax=ax, legend=show_legend)
+    temp = sns.scatterplot(x='X', y='Y', size='anomaly_score', hue='anomaly_score', sizes=(5,10), data=data_matrix, ax=ax, legend=show_legend)
         
     for x0, y0, patch in zip(data_matrix.X.values, data_matrix.Y.values, anomalous_superpixel_patches):
 
@@ -319,7 +319,11 @@ def generate_grid_view_of_anomalous_superpixels_after_binary_classification(dire
     
     number_of_patches_to_show = grid_dimension * grid_dimension  
     
-    sampled_anomalous_patches_file_paths = random.sample(anomalous_patches_file_paths, k=number_of_patches_to_show)
+    sampled_anomalous_patches_file_paths = [fp for fp in anomalous_patches_file_paths if fp.stem.startswith('SO268-2_126')]
+    
+    if len(sampled_anomalous_patches_file_paths) > number_of_patches_to_show:
+    
+        sampled_anomalous_patches_file_paths = random.sample(sampled_anomalous_patches_file_paths, k=number_of_patches_to_show)
     
     sampled_anomalous_patches = list(map(imread, sampled_anomalous_patches_file_paths))
     

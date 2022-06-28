@@ -43,9 +43,9 @@ if __name__ == '__main__':
     
     ### Grid view of background superpixels
     path_to_pickled_background_patches = directory_with_pickled_items / 'background_patches.pickle'
-    grid_dimension = 20
+    grid_dimension_background = 20
     
-    generate_grid_view_of_background_superpixels(path_to_pickled_background_patches, directory_to_save_manuscript_plots, grid_dimension, figsize)
+    generate_grid_view_of_background_superpixels(path_to_pickled_background_patches, directory_to_save_manuscript_plots, grid_dimension_background, figsize)
     
     ### Feature space view of background superpixels
     path_to_pickled_background_feature_vectors = directory_with_pickled_items / 'background_feature_vectors.pickle'
@@ -78,8 +78,8 @@ if __name__ == '__main__':
     generate_feature_space_view_of_anomalous_superpixels_after_binary_classification(path_to_post_classification_detections_summary_table, directory_with_post_classification_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize)
     
     ### Grid view of anomalous superpixels
-    
-    generate_grid_view_of_anomalous_superpixels_after_binary_classification(directory_with_post_classification_anomalous_superpixel_patches, directory_to_save_manuscript_plots, grid_dimension, figsize)
+    grid_dimension_anomalous = 15
+    generate_grid_view_of_anomalous_superpixels_after_binary_classification(directory_with_post_classification_anomalous_superpixel_patches, directory_to_save_manuscript_plots, grid_dimension_anomalous, figsize)
     
     
     ### Screen shot of superpixel annotation software
