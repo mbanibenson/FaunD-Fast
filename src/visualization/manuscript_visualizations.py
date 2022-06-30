@@ -348,6 +348,52 @@ def generate_grid_view_of_anomalous_superpixels_after_binary_classification(dire
     return
 
 
+def generate_grid_view_of_top_k_superpixels_based_on_anomaly_score(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, directory_to_save_manuscript_plots, grid_dimension, figsize):
+    '''
+    Show a grid view of anomalous superpixels
+    
+    ''' 
+    
+    k = grid_dimension * grid_dimension
+        
+    anomalous_superpixels_df = pd.read_csv(path_to_detections_summary_table)
+    
+    
+    indices_that_sort_anomalous_scores = anomalous_superpixels_df.anomaly_score.argsort()
+    
+    top_k_anomalous_indices = indices_that_sort_anomalous_scores[:k]
+    
+    
+    anomalous_superpixels_df = anomalous_superpixels_df.loc[top_k_anomalous_indices]
+    
+    anomalous_patch_file_paths = [(directory_with_anomalous_superpixel_patches / f'{fn}.png') for fn in anomalous_superpixels_df.patch_name.tolist()]
+    
+    
+    with ThreadPoolExecutor() as executor:
+        
+        anomalous_superpixel_patches = list(executor.map(imread, anomalous_patch_file_paths))
+        
+        
+    top_k_patches_to_visualize = np.stack(anomalous_superpixel_patches)
+        
+        
+    montage_of_anomalous_patches = montage(top_k_patches_to_visualize, grid_shape=(grid_dimension, grid_dimension), channel_axis=-1, padding_width=1, fill=[1,1,1])
+    
+    fig, ax = plt.subplots(figsize=figsize)
+        
+    ax.imshow(montage_of_anomalous_patches)
+
+    ax.set_xticks([])
+
+    ax.set_yticks([])
+
+    file_name = directory_to_save_manuscript_plots / f'grid_view_of__top_{k}_anomalous_superpixels.png'
+
+    plt.savefig(file_name, dpi=300)
+    
+    return
+
+
 def generate_screenshot_of_superpixel_annotation_tool(path_to_screenshot, directory_to_save_manuscript_plots, figsize):
     '''
     Show a grid view of anomalous superpixels

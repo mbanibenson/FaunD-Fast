@@ -9,6 +9,7 @@ from visualization.manuscript_visualizations import generate_screenshot_of_super
 from visualization.manuscript_visualizations import generate_distribution_of_annotated_morphotypes
 from visualization.manuscript_visualizations import generate_distribution_of_detected_morphotypes
 from visualization.manuscript_visualizations import generate_example_images_with_bounding_box_overlays
+from visualization.manuscript_visualizations import generate_grid_view_of_top_k_superpixels_based_on_anomaly_score
 
 from parameters import deepsea_fauna_detection_params
 import pickle
@@ -34,6 +35,7 @@ if __name__ == '__main__':
     shutil.rmtree(directory_to_save_manuscript_plots, ignore_errors=True)
     directory_to_save_manuscript_plots.mkdir(exist_ok=True)
     
+    
     ### Background Superpixel Boundaries
     path_to_pickled_segmented_images = directory_with_pickled_items / 'segmented_images.pickle'
     path_to_pickled_original_images = directory_with_pickled_items / 'original_images.pickle'  
@@ -41,17 +43,20 @@ if __name__ == '__main__':
     
     generate_background_images_with_superpixel_overlays(path_to_pickled_segmented_images, path_to_pickled_original_images, directory_to_save_manuscript_plots, figsize, n_sample=number_of_annotated_background_images)
     
+    
     ### Grid view of background superpixels
     path_to_pickled_background_patches = directory_with_pickled_items / 'background_patches.pickle'
-    grid_dimension_background = 20
+    grid_dimension_background = 15
     
     generate_grid_view_of_background_superpixels(path_to_pickled_background_patches, directory_to_save_manuscript_plots, grid_dimension_background, figsize)
+    
     
     ### Feature space view of background superpixels
     path_to_pickled_background_feature_vectors = directory_with_pickled_items / 'background_feature_vectors.pickle'
     path_to_pickled_pca_object = directory_with_pickled_items / 'pca_object.pickle'
     
     generate_feature_space_view_of_background_superpixels(path_to_pickled_background_feature_vectors, path_to_pickled_background_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize)
+    
     
     
     ### Feature space view of anomalous superpixels
@@ -70,12 +75,18 @@ if __name__ == '__main__':
     
     generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize, k)
     
+    ### Grid view of top-k anomalous superpixels by anomaly score
+    grid_dimension_top_k = 15
+    generate_grid_view_of_top_k_superpixels_based_on_anomaly_score(path_to_detections_summary_table, directory_with_anomalous_superpixel_patches, directory_to_save_manuscript_plots, grid_dimension_top_k, figsize)
+    
     
     ### Feature space view of post binary classifcation anomalous superpixels
     path_to_post_classification_detections_summary_table = anomalous_superpixel_detection_after_binary_classification_output_directory / 'master_detections_summary_table.csv'
     directory_with_post_classification_anomalous_superpixel_patches = anomalous_superpixel_detection_after_binary_classification_output_directory / 'classified_patches/fauna/'
     
     generate_feature_space_view_of_anomalous_superpixels_after_binary_classification(path_to_post_classification_detections_summary_table, directory_with_post_classification_anomalous_superpixel_patches, path_to_pickled_pca_object, directory_to_save_manuscript_plots, figsize)
+    
+    
     
     ### Grid view of anomalous superpixels
     grid_dimension_anomalous = 15
