@@ -16,6 +16,9 @@ import seaborn as sns
 from skimage.io import imread
 import random
 from numpy.random import default_rng
+import tensorflow as tf
+from itertools import chain
+from skimage.transform import resize
 
 rng = default_rng
 
@@ -26,6 +29,8 @@ def generate_background_images_with_superpixel_overlays(path_to_pickled_segmente
     Sample a few background images and segment them to indicate superpixel boundaries
     
     '''
+    
+    figsize = (3, 2)
     
     directory_to_save_manuscript_plots = directory_to_save_manuscript_plots / 'superpixel_boundary_overlays'
     
@@ -56,7 +61,9 @@ def generate_background_images_with_superpixel_overlays(path_to_pickled_segmente
         
         file_name = directory_to_save_manuscript_plots / f'background_images_with_superpixel_boundaries_{num}.png'
         
-        plt.savefig(file_name, dpi=300)
+        fig.tight_layout()
+        
+        plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
         
     return
 
@@ -66,6 +73,8 @@ def generate_grid_view_of_background_superpixels(path_to_pickled_background_patc
     Show a grod view of background superpixels
     
     '''
+    figsize = (4, 4)
+    
     with open(path_to_pickled_background_patches, 'rb') as f:
         
         list_of_background_patches = pickle.load(f)
@@ -92,7 +101,7 @@ def generate_grid_view_of_background_superpixels(path_to_pickled_background_patc
 
     file_name = directory_to_save_manuscript_plots / f'grid_view_of_background_superpixels.png'
 
-    plt.savefig(file_name, dpi=300)
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -101,6 +110,7 @@ def generate_feature_space_view_of_background_superpixels(path_to_pickled_backgr
     Show projection of background superpixels in feature space
     
     '''
+    figsize = (7, 5)
     
     with open(path_to_pickled_background_feature_vectors, 'rb') as f:
         
@@ -139,7 +149,7 @@ def generate_feature_space_view_of_background_superpixels(path_to_pickled_backgr
             
     file_name = directory_to_save_manuscript_plots / 'feature_space_view_of_background_superpixels.png'
             
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -149,6 +159,8 @@ def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_det
     Show projection of anomalous superpixels in feature space
     
     '''
+    figsize = (7, 5)
+    
     z_order = 5 if thumbnails_only else 0
     
     name = 'feature_space_view_of_all_anomalous_superpixels_thumbnails_only.png' if thumbnails_only else 'feature_space_view_of_all_anomalous_superpixels.png'
@@ -197,7 +209,7 @@ def generate_feature_space_view_of_all_flagged_anomalous_superpixels(path_to_det
             
     file_name = directory_to_save_manuscript_plots / name
             
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -207,6 +219,7 @@ def generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detection
     Show projection of very anomalous superpixels in feature space
     
     '''
+    figsize = (7, 5)
     
     with open(path_to_pickled_pca_object, 'rb') as f:
         
@@ -215,13 +228,20 @@ def generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detection
         
     anomalous_superpixels_df = pd.read_csv(path_to_detections_summary_table)
     
+    anomaly_threshold = anomalous_superpixels_df.anomaly_score.quantile(0.25)
     
-    indices_that_sort_anomalous_scores = anomalous_superpixels_df.anomaly_score.argsort()
+    selector = anomalous_superpixels_df.anomaly_score.le(anomaly_threshold)
     
-    top_k_anomalous_indices = indices_that_sort_anomalous_scores[:k]
+    anomalous_superpixels_df = anomalous_superpixels_df.loc[selector]
     
     
-    anomalous_superpixels_df = anomalous_superpixels_df.loc[top_k_anomalous_indices]
+#     indices_that_sort_anomalous_scores = anomalous_superpixels_df.anomaly_score.argsort()
+    
+#     top_k_anomalous_indices = indices_that_sort_anomalous_scores[:k]
+    
+    
+#     anomalous_superpixels_df = anomalous_superpixels_df.loc[top_k_anomalous_indices]
+    
             
     anomalous_superpixels_feature_vectors = anomalous_superpixels_df.iloc[:,5:-2]
     
@@ -251,7 +271,7 @@ def generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detection
         
     for x0, y0, patch in zip(data_matrix.X.values, data_matrix.Y.values, anomalous_superpixel_patches):
 
-        ab = AnnotationBbox(OffsetImage(patch, zoom=0.1), (x0, y0), frameon=False)
+        ab = AnnotationBbox(OffsetImage(patch, zoom=0.04), (x0, y0), frameon=False)
 
         ab.set_zorder(5)
 
@@ -259,7 +279,7 @@ def generate_feature_space_view_of_top_k_anomalous_superpixels(path_to_detection
             
     file_name = directory_to_save_manuscript_plots / f'feature_space_view_of_top_{k}_anomalous_superpixels.png'
             
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -269,6 +289,7 @@ def generate_feature_space_view_of_anomalous_superpixels_after_binary_classifica
     Show projection of anomalous superpixels in feature space
     
     '''
+    figsize = (7, 5)
 
     anomalous_superpixels_df = pd.read_csv(path_to_post_classification_detections_summary_table)
     
@@ -306,7 +327,7 @@ def generate_feature_space_view_of_anomalous_superpixels_after_binary_classifica
             
     file_name = directory_to_save_manuscript_plots / 'feature_space_view_of_post_binary_classification_anomalous_superpixels.png'
             
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -315,6 +336,8 @@ def generate_grid_view_of_anomalous_superpixels_after_binary_classification(dire
     Show a grid view of anomalous superpixels
     
     ''' 
+    figsize = (4, 4)
+    
     anomalous_patches_file_paths = list(directory_with_anomalous_superpixel_patches.iterdir())
     
     number_of_patches_to_show = grid_dimension * grid_dimension  
@@ -343,7 +366,7 @@ def generate_grid_view_of_anomalous_superpixels_after_binary_classification(dire
 
     file_name = directory_to_save_manuscript_plots / f'grid_view_of_anomalous_superpixels_after_binary_classification.png'
 
-    plt.savefig(file_name, dpi=300)
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -353,6 +376,7 @@ def generate_grid_view_of_top_k_superpixels_based_on_anomaly_score(path_to_detec
     Show a grid view of anomalous superpixels
     
     ''' 
+    figsize = (4, 4)
     
     k = grid_dimension * grid_dimension
         
@@ -389,7 +413,7 @@ def generate_grid_view_of_top_k_superpixels_based_on_anomaly_score(path_to_detec
 
     file_name = directory_to_save_manuscript_plots / f'grid_view_of__top_{k}_anomalous_superpixels.png'
 
-    plt.savefig(file_name, dpi=300)
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -399,6 +423,7 @@ def generate_screenshot_of_superpixel_annotation_tool(path_to_screenshot, direct
     Show a grid view of anomalous superpixels
     
     ''' 
+    figsize = (3.5, 2.8)
        
     screenshot = imread(path_to_screenshot)
     
@@ -412,7 +437,7 @@ def generate_screenshot_of_superpixel_annotation_tool(path_to_screenshot, direct
 
     file_name = directory_to_save_manuscript_plots / f'screenshot_of_superpixel_annotator.png'
 
-    plt.savefig(file_name, dpi=300)
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -421,6 +446,8 @@ def generate_distribution_of_annotated_morphotypes(path_to_annotated_datasheet,d
     Generate distributuion over annotated morphotypes
     
     '''
+    figsize = (4, 3)
+    
     annotated_datasheet = pd.read_csv(path_to_annotated_datasheet).sort_values(by='object_name')
 
     fig, ax = plt.subplots(figsize=figsize)
@@ -431,11 +458,14 @@ def generate_distribution_of_annotated_morphotypes(path_to_annotated_datasheet,d
     
     ax.set_ylabel('Absolute Count')
     
-    ax.tick_params(axis='x', labelrotation=30)
+    #ax.tick_params(axis='x', labelrotation=30)
+    
+    plt.setp(ax.get_xticklabels(), rotation=60, ha="right",
+         rotation_mode="anchor")
 
     file_name = directory_to_save_manuscript_plots / f'distribution_of_annotated_morphotypes.png'
 
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -446,6 +476,8 @@ def generate_distribution_of_detected_morphotypes(path_to_detection_summary_tabl
     Generate distributuion over annotated morphotypes
     
     '''
+    figsize = (4, 3)
+    
     detections_datasheet = pd.read_csv(path_to_detection_summary_table).sort_values(by='object_class_name')
 
     fig, ax = plt.subplots(figsize=figsize)
@@ -456,11 +488,15 @@ def generate_distribution_of_detected_morphotypes(path_to_detection_summary_tabl
     
     ax.set_ylabel('Absolute Count')
     
-    ax.tick_params(axis='x', labelrotation=30)
+   # ax.tick_params(axis='x', labelrotation=60)
+    
+    plt.setp(ax.get_xticklabels(), rotation=60, ha="right",
+         rotation_mode="anchor")
+      
 
     file_name = directory_to_save_manuscript_plots / f'distribution_of_detected_morphotypes.png'
 
-    plt.savefig(file_name, dpi=300, bbox_inches='tight')
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
     
     return
 
@@ -470,6 +506,8 @@ def generate_example_images_with_bounding_box_overlays(directory_with_example_de
     Visualize a few detections
     
     ''' 
+    figsize = (2.5, 1.8)
+    
     directory_to_save_manuscript_plots = directory_to_save_manuscript_plots / 'bounding_box_detections'
     
     directory_to_save_manuscript_plots.mkdir()
@@ -490,10 +528,93 @@ def generate_example_images_with_bounding_box_overlays(directory_with_example_de
         
         file_name = directory_to_save_manuscript_plots / f'example_image_with_detection_bounding_box_overlay_{num}.png'
         
-        plt.savefig(file_name, dpi=300)
+        plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
         
     return
+
+def crop_detections_for_display(path_to_detections_summary_table):
+    '''
+    Crop the detections so they may be visualized
     
+    '''
+    detected_megafauna_df = pd.read_csv(path_to_detections_summary_table)
+    
+    morphotype_groupings = detected_megafauna_df.groupby('object_class_name')
+    
+    cropped_detections_to_display = {}
+    
+    for morphotype_class, morphotype_group in morphotype_groupings:
+        
+        morphotype_group_subset = morphotype_group.sort_values(by='score', ascending=False).iloc[:50]
+        
+        cropped_detections = []
+        
+        for detection in morphotype_group_subset.itertuples():
+            
+            image_array = imread(detection.parent_image_path)
+            
+            offset_height = int(detection.ymin)
+            
+            offset_width = int(detection.xmin)
+            
+            target_height = int(detection.ymax) - int(detection.ymin)
+            
+            target_width = int(detection.xmax) - int(detection.xmin)
+            
+            cropped_detection = tf.image.crop_to_bounding_box(image_array, offset_height, offset_width, target_height, target_width).numpy()
+            
+            cropped_detections.append(resize(cropped_detection, (96,96)))
+            
+        cropped_detections_to_display[morphotype_class] = cropped_detections
+        
+        print(f'{morphotype_class}: {len(cropped_detections)}')
+        
+    return cropped_detections_to_display
+
+
+def generate_grid_view_of_megafauna_detected_by_faster_rcnn(path_to_detections_summary_table, directory_to_save_manuscript_plots, grid_dimension, figsize):
+    '''
+    Show a grid view of detected benthic mega fauna
+    
+    ''' 
+    figsize = (4, 4)
+    
+    cropped_detections_to_display = crop_detections_for_display(path_to_detections_summary_table)
+    
+    print(f'crops for one group are {len(cropped_detections_to_display["Coral"])}')
+    
+    selected_cropped_detections_to_display = list(chain.from_iterable([cropped_detections_to_display[key][:grid_dimension] for key in cropped_detections_to_display.keys()]))
+    
+    print(f'selected crops are {len(selected_cropped_detections_to_display)}')
+    
+    cropped_detections_to_visualize = np.stack(selected_cropped_detections_to_display)
+    
+    number_of_morphotypes = len(cropped_detections_to_display.keys())
+        
+    montage_of_detected_morphotypes = montage(cropped_detections_to_visualize, grid_shape=(number_of_morphotypes, grid_dimension), channel_axis=-1, padding_width=1, fill=[1,1,1])
+    
+    morphotype_labels = '\n'.join(cropped_detections_to_display.keys())
+    
+    Path(directory_to_save_manuscript_plots / f'morphotype_labels_for_detection_grid.txt').write_text(morphotype_labels)
+    
+    fig, ax = plt.subplots(figsize=figsize)
+        
+    ax.imshow(montage_of_detected_morphotypes)
+
+    ax.set_xticks([])
+
+    ax.set_yticks([])
+
+    file_name = directory_to_save_manuscript_plots / f'grid_view_of_detected_morphotypes.png'
+
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
+        
+    
+            
+
+            
+            
+        
     
         
         
