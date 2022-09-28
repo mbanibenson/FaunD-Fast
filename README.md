@@ -3,47 +3,29 @@ This repository contains the source codes used for semi-automatic detection of p
 
 <img src="https://cloud.geomar.de/s/naRyyAdqMsocW4r/preview">
 
-## Training
+## Locate the anomalous superpixels
 
-1. Randomly sample a subset of 'background' images (e.g 400) from the entire image dataset collected during the dive/deployment. These will be used for training the feature extractor and outlier detection algorithm.
+This function operates dive-by-dive and performs the following operations:
+
+1. Randomly samples of a subset of images to reduce computation cost
+
+2. Segments the sampled images and crops out the superpixels into square image patches
+
+3. Trains a variational auto encoder model (VAE)
+
+4. Extracts the features of superpixels using the trained VAE
+
+5. Detects anomalous superpixels with unusual visual properties
+
+6. Visualize the superpixels in VAE embedded feature space (after PCA)
+
 ```
-python randomly_sample_images_for_training_VAE_and_outlier_detector.py
-```
-
-2. Segment the sampled 'background' images into homogenous background image patches whose pixels are characteristically similar to each other. 
-```
-python segment_background_images.py
-```
-
-3. Train a Convolution Variational Auto Encoder(CVAE) using the background image patches, and use the trained CVAE to extract feature vectors from the patches.
-```
-python train_CVAE_and_extract_features_from_background_patches.py
-```
-
-4. Train Isolation Forest algorithm on the background feature vectors to detect anomalous image patches.
-```
-python train_Isolation_Forest_outlier_detector.py
-```
-
-## Inference
-
-Anomalous image patches alongside their bounding box coordinates are detected and extracted from each test image as follows:
-
-1. The test image is segmented to extract image patches whose pixels are characteristically similar to each other.
-
-2. The trained CVAE is used to extract features from the extracted image patches.
-
-3. The trained Isolation Forest algorithm is used to detect any anomalous image patches.
-
-4. Each detected anomalous patch is ordered by its anomalous score and saved to the directory data/unsupervised/dive/predictions/ordered_patches.
-
-5. A csv file is created for each dive which records details about all the detected anomalous patches. These include the parent image name and the bounding box coordinates marking the location of the patch within the parent image.
-```
-python perform_inference_to_detect_outlier_patches.py
+python extract_superpixel_features_and_detect_outliers.py
 ```
 
 
-## Fauna/non-fauna classification
+
+## Generate weak annotations from post-processed anomalous superpixels (true positives)
 
 The image patches flagged as anomalous contain a huge number of false positives (i.e image patches flagged as anomalous which are infact seafloor). This was by design since we would rather retrieve all anomalous patches together with a some seafloor patches instead of detecting a few pathces that are obviously anomalous while missing those which are only subtly anomalous.
 
@@ -56,7 +38,7 @@ Therefore, a cnn classifier was configured to help sort the retrieved anomalous 
 python auto_sort_anomalous_patches_into_fauna_non_fauna.py
 ```
 
-## Semantic Annotation
+## Assign semantic morphotype labels to the weak annotations
 
 After classification above, the pure fauna image patches will be located in data/supervised_fauna_non_fauna/predictions/fauna. All we have to do is semantically annotate each of them to a specific morphotype class. For this task, we have developed a simple web based tool for rapid annotation.
 
@@ -70,7 +52,7 @@ python copy_files_to_image_viewer.py
 
 
 
-## Training an object detector using the annotations
+## Train a Faster R-CNN object detection model using the Tensorflor object detection API
 We now have sufficient annotations to train a state-of-the art mask R-CNN object detector as follows:
 
 1. Repurpose the annotations csv file to a format that can be ingested by tensorflow tfrecords utilities
@@ -98,25 +80,15 @@ python export_trained_mask_rcnn_to_saved_tensorflow_model.py
 python detect_objects_in_image.py
 ```
 
-## Evaluating the performance of the trained object detector
+## Evaluate the performance of the trained object detector
 
-1. Sample a few images with most detections for manual annotation. 
-```
-python sample_ground_truth_images.py
-```
-
-2. Annotate the sampled ground truth images e.g in BIIGLE or labelimg. Alternatively, you could also import your own annotated ground truth images.
-
-
-2. Evaluate the trained object detector on the ground truth annotations
+1. Evaluate the trained object detector on the ground truth annotations
 ```
 python evaluate_trained_faster_rnn_model.py
 ```
 
-## Species distribution mapping
+## Estimate abundance, diversity and spatial distribution of morphotypes
 
 1. Each annotated patch is assigned the georeferenced coordinates of its parent image.
 
 2. These coordinates are used to map the spatial distribution of the detected fauna color coded by the species name.
-
-3. Seafloor bathymetry and its derivatives are also incorporated into the mega-fauna species distribution maps.
