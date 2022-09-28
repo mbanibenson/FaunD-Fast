@@ -26,12 +26,11 @@ python auto_sort_anomalous_patches_into_fauna_non_fauna.py
 
 After classification above, the pure fauna image patches will be located in data/supervised_fauna_non_fauna/predictions/fauna. All we have to do is semantically annotate each of them to a specific morphotype class. For this task, we have developed a simple web based tool for rapid annotation.
 
-1. Start by importing the the fauna image patches into the custom image viewer/annotation tool.
+Use the script below to import the the fauna image patches into the custom image viewer/annotation tool, and click on each image patch and annotate with a semantic morphotype class. After annotation, a csv file is created with details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and the annotated morphotype class name.
+
 ```
 python copy_files_to_image_viewer.py
 ```
-2. Click on each image patch and annotate with a semantic morphotype class. After annotation, a csv file is created with details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and the annotated morphotype class name.
-
 
 
 ## Train a Faster R-CNN object detection model using the Tensorflor object detection API
@@ -64,11 +63,11 @@ python detect_objects_in_image.py
 
 ## Evaluate the performance of the trained object detector
 
-1. Evaluate the trained object detector on the ground truth annotations
+Evaluate the trained object detector on the ground truth annotations
 ```
 python evaluate_trained_faster_rnn_model.py
 ```
 
 ## Estimate abundance, diversity and spatial distribution of morphotypes
 
-1. Each annotated patch is assigned the georeferenced coordinates of its parent image. These coordinates are used to map the spatial distribution of the detected fauna color coded by the species name.
+Each annotated patch is assigned the georeferenced coordinates of its parent image. These coordinates are used to map the spatial distribution of the detected fauna color coded by the species name.
