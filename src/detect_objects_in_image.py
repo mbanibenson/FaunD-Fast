@@ -3,7 +3,10 @@ from custom_object_detection.tf_object_detection_utilities import detect_objects
 from custom_object_detection.tf_object_detection_utilities import load_label_map_info
 from custom_object_detection.tf_object_detection_utilities import visualize_detections
 from custom_object_detection.tf_object_detection_utilities import read_image_into_a_tensor
+from custom_object_detection.tf_object_detection_utilities import generate_matrix_of_detections
+from custom_object_detection.tf_object_detection_utilities import save_georeferenced_detection_results_as_csv
 import numpy as np
+import pandas as pd
 import shutil
 import matplotlib.pyplot as plt
 from pathlib import Path
@@ -11,13 +14,25 @@ import time
 
 if __name__ == '__main__':
     
-    path_to_saved_model = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/models/my_model_dir/exported_model_dir/saved_model'
+    object_detection_working_directory = Path.cwd().parents[0] / 'fauna_detection_with_tensorflow_object_detection_api'
     
-    label_map_path = '/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/data/SO268_label_map.pbtxt'
+    path_to_saved_model = object_detection_working_directory / 'my_model_dir/exported_model_dir/saved_model'
     
-    directory_with_subdirectories_to_detect = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/unsupervised_outlier_detection')
+    label_map_path = object_detection_working_directory / 'data/SO268_label_map.pbtxt'
     
-    directory_to_save_predictions = Path('/home/mbani/mardata/project-repos/deepsea-fauna-detection/data/tf_object_detection/predictions')
+    directory_with_subdirectories_to_detect = Path.cwd().parents[0] /'data/unsupervised_outlier_detection'
+    
+    directory_to_save_predictions = object_detection_working_directory / 'predictions'
+    directory_to_save_predictions.mkdir(exist_ok=True)
+    
+    detection_matrix = []
+    
+    print('Loading detection model ...')
+
+    detection_model = load_saved_model_for_inference(str(path_to_saved_model))
+
+    category_index, label_map_dict = load_label_map_info(str(label_map_path))
+    
     
     for subdirectory_to_detect in directory_with_subdirectories_to_detect.iterdir():
         
@@ -36,12 +51,6 @@ if __name__ == '__main__':
 
         start_time = time.time()
 
-        print('Loading detection model ...')
-
-        detection_model = load_saved_model_for_inference(path_to_saved_model)
-
-        category_index, label_map_dict = load_label_map_info(label_map_path)
-
         for image_file_path in image_file_paths:
 
             figname = image_file_path.stem
@@ -56,6 +65,10 @@ if __name__ == '__main__':
 
             if number_of_plausible_detections > 0:
 
+                selected_detection_matrix = generate_matrix_of_detections(detections, score_threshold, image_file_path)
+
+                detection_matrix.append(selected_detection_matrix)
+
                 visualize_detections(image_tensor, detections, category_index,score_threshold, directory_to_save_detection_figures,figname)
 
         end_time = time.time()
@@ -65,3 +78,9 @@ if __name__ == '__main__':
         with open(directory_to_save_detection_figures/'processing_time.txt', 'w') as file:
 
             print(f'Finished making detections in {time_taken.tm_hour} hours, {time_taken.tm_min} minutes and {time_taken.tm_sec} seconds.', file=file)
+    
+    complete_detection_matrix = np.concatenate(detection_matrix, axis=0)
+    
+    detection_results_csv_file_name = directory_to_save_predictions / 'detections_summary_table.csv'
+
+    save_georeferenced_detection_results_as_csv(complete_detection_matrix, label_map_path, detection_results_csv_file_name)

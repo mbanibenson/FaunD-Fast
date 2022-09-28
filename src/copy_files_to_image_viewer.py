@@ -14,7 +14,7 @@ if __name__ == '__main__':
     
     directory_containing_unsupervised_outlier_detection_results = data_directory / 'unsupervised_outlier_detection'
     
-    image_viewer_directory = Path.cwd().parents[0] / 'reports/mbani-image-viewer'
+    image_viewer_directory = Path.cwd().parents[0] / 'custom_annotation_tool'
     
     
     print('Saving post processed csv ...')

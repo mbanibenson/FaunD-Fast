@@ -27,6 +27,10 @@ def generate_superpixels_using_slic(image_as_rgb, number_of_segments, compactnes
     
     segmented_image = felzenszwalb(image_as_rgb, scale=200, sigma=10, min_size=20)
     
+    #segmented_image = felzenszwalb(image_as_rgb, scale=500, sigma=0.5, min_size=500)
+    
+    #segmented_image = felzenszwalb(image_as_rgb, scale=200, sigma=1, min_size=250)
+    
     return segmented_image
 
 
@@ -53,27 +57,9 @@ def extract_image_patches_corresponding_to_the_superpixels(segmented_image, imag
     segment_patches = [image_as_rgb[slice_portion] for slice_portion in slice_portions]
     
     segment_patch_bounding_boxes = [region_property.bbox for region_property in region_properties]
+       
+    segment_patches =  [resize(patch, (96,96,3)) for patch in segment_patches]
     
-    number_of_patches = len(segment_patches)
-    
-    indices_of_sampled_patches = rng.integers(0, number_of_patches, size=20)
-    
-    #sampled_segment_patches = np.asarray(segment_patches)[indices_of_sampled_patches].tolist()
-    
-    if training_mode:
-    
-        sampled_segment_patches = [segment_patches[i] for i in indices_of_sampled_patches]
-    
-        sampled_segment_patch_bounding_boxes = [segment_patch_bounding_boxes[i] for i in indices_of_sampled_patches]
-        
-    else:
-        
-        sampled_segment_patches = segment_patches
-    
-        sampled_segment_patch_bounding_boxes = segment_patch_bounding_boxes
-    
-    sampled_segment_patches =  [resize(patch, (96,96,3)) for patch in sampled_segment_patches]
-    
-    return sampled_segment_patches, sampled_segment_patch_bounding_boxes
+    return segment_patches, segment_patch_bounding_boxes
 
 

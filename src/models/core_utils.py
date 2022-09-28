@@ -140,7 +140,7 @@ class underwater_image:
     
     
 
-def segment_image_and_extract_segment_features(file_path, training_mode, feature_extractor_module_url=None, resize_dimension=None):
+def segment_image_and_extract_segment_features(file_path, training_mode=False, feature_extractor_module_url=None, resize_dimension=None):
     '''
     Create an instance of underwater, segment it and extract features from its superpixels
     
