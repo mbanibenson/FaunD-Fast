@@ -67,7 +67,3 @@ Evaluate the trained object detector on the ground truth annotations
 ```
 python evaluate_trained_faster_rnn_model.py
 ```
-
-## Estimate abundance, diversity and spatial distribution of morphotypes
-
-Each annotated patch is assigned the georeferenced coordinates of its parent image. These coordinates are used to map the spatial distribution of the detected fauna color coded by the species name.
