@@ -19,9 +19,7 @@ The image patches flagged as anomalous contain a huge number of false positives 
 
 Therefore, a cnn classifier was configured to help sort the retrieved anomalous image patches into fauna (true positives) and non-fauna(false positives). In order to train this classifier:
 
-1. A few training examples of each class should be selected from the directory containing detected anomalous patches and copied to the respective folder in data/supervised_fauna_non_fauna. You can use e.g xnview to browse the images.
-
-2. The CNN is trained using the training examples, after which it is used to classify all the detected anomalous patches. On the basis of their assigned class, each image patch is automatically sorted into either fauna or non-fauna folder. The classification results can be found in data/supervised_fauna_non_fauna/predictions.
+1. A few training examples of each class should be selected from the directory containing detected anomalous patches and copied to the respective folder in data/supervised_fauna_non_fauna. You can use e.g xnview to browse the images. The CNN is trained using the training examples, after which it is used to classify all the detected anomalous patches. On the basis of their assigned class, each image patch is automatically sorted into either fauna or non-fauna folder. The classification results can be found in data/supervised_fauna_non_fauna/predictions.
 ```
 python auto_sort_anomalous_patches_into_fauna_non_fauna.py
 ```
