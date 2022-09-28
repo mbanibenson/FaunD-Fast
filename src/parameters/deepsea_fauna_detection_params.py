@@ -49,4 +49,6 @@ EXAMPLE_DIRECTORY_WITH_PICKLED_ITEMS = PATH_TO_EXAMPLE_DIVE / 'pickled_items'
 MANUSCRIPT_FIGURES_DIRECTORY = PATH_TO_EXAMPLE_DIVE / 'manuscript_figures'
 
 MANUSCRIPT_FIG_SIZE = (12,8)
+
+DETECTION_PATCHES_DIRECTORY = PATH_TO_EXAMPLE_DIVE / 'detection_patches'
 #####################################################################################################

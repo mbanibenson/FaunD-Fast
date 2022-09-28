@@ -27,11 +27,11 @@ if __name__ == '__main__':
         
     VAE_model_file_path = str(directory_containing_pickled_items / 'trained_VAE_model')  
     
-    trained_VAE_model = load_model(VAE_model_file_path)    
+    trained_VAE_model = load_model(VAE_model_file_path, compile=False)    
     
     detect_anomalous_patches_using_trained_Isolation_Forest(trained_VAE_model,
                                       trained_Isolation_Forest_model, 
                                       directory_containing_test_images,
                                       directory_to_save_patches_of_positive_detections)
     
-    save_copies_of_detected_patches_ordered_by_anomaly_score(unsupervised_learning_working_diectory)
+    #save_copies_of_detected_patches_ordered_by_anomaly_score(unsupervised_learning_working_diectory)

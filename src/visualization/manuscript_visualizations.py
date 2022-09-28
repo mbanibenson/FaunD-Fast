@@ -18,7 +18,10 @@ import random
 from numpy.random import default_rng
 import tensorflow as tf
 from itertools import chain
-from skimage.transform import resize
+from skimage.transform import resize, rescale
+from torchvision.utils import draw_bounding_boxes
+import torch
+from scipy.ndimage import zoom
 
 rng = default_rng
 
@@ -501,7 +504,39 @@ def generate_distribution_of_detected_morphotypes(path_to_detection_summary_tabl
     return
 
 
-def generate_example_images_with_bounding_box_overlays(directory_with_example_detection_images, directory_to_save_manuscript_plots, figsize):
+# def generate_example_images_with_bounding_box_overlays(directory_with_example_detection_images, directory_to_save_manuscript_plots, figsize):
+#     '''
+#     Visualize a few detections
+    
+#     ''' 
+#     figsize = (2.5, 1.8)
+    
+#     directory_to_save_manuscript_plots = directory_to_save_manuscript_plots / 'bounding_box_detections'
+    
+#     directory_to_save_manuscript_plots.mkdir()
+    
+#     bbox_detection_images_file_paths = list(directory_with_example_detection_images.iterdir())
+    
+#     bbox_detection_images = list(map(imread, bbox_detection_images_file_paths))
+    
+#     for num, bbox_detection_image in enumerate(bbox_detection_images, start=1):
+        
+#         fig, ax = plt.subplots(figsize=figsize)
+        
+#         ax.imshow(bbox_detection_image)
+        
+#         ax.set_xticks([])
+        
+#         ax.set_yticks([])
+        
+#         file_name = directory_to_save_manuscript_plots / f'example_image_with_detection_bounding_box_overlay_{num}.png'
+        
+#         plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
+        
+#     return
+
+
+def generate_example_images_with_bounding_box_overlays(path_to_detection_summary_table, directory_to_save_manuscript_plots, figsize):
     '''
     Visualize a few detections
     
@@ -510,26 +545,63 @@ def generate_example_images_with_bounding_box_overlays(directory_with_example_de
     
     directory_to_save_manuscript_plots = directory_to_save_manuscript_plots / 'bounding_box_detections'
     
-    directory_to_save_manuscript_plots.mkdir()
+    directory_to_save_manuscript_plots.mkdir(exist_ok=True)
     
-    bbox_detection_images_file_paths = list(directory_with_example_detection_images.iterdir())
-    
-    bbox_detection_images = list(map(imread, bbox_detection_images_file_paths))
-    
-    for num, bbox_detection_image in enumerate(bbox_detection_images, start=1):
+    df = pd.read_csv(path_to_detection_summary_table)
+
+    COLORS = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6','#6a3d9a','#ffff99','#b15928'] * 2
+
+    morphotype_classes = df.object_class_name.unique()
+
+    color_mapping = {morphotype_class:color for morphotype_class, color in zip(morphotype_classes, COLORS)}
+
+    df['bbox_color'] = df.object_class_name.map(color_mapping)
+
+
+    for file_path, detections in df.groupby('parent_image_path'):
         
-        fig, ax = plt.subplots(figsize=figsize)
-        
-        ax.imshow(bbox_detection_image)
-        
-        ax.set_xticks([])
-        
-        ax.set_yticks([])
-        
-        file_name = directory_to_save_manuscript_plots / f'example_image_with_detection_bounding_box_overlay_{num}.png'
-        
-        plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
-        
+        file_path = Path(file_path)
+
+        if (len(detections) > 3) and (len(detections) < 7):
+
+            scaling_factor = 0.5
+
+            image_array = imread(file_path)
+
+            image_array = zoom(image_array, zoom=(scaling_factor, scaling_factor, 1)).astype('uint8')
+
+            image_array = np.moveaxis(image_array, 2, 0)
+
+            image_array = torch.from_numpy(image_array)
+
+            boxes = (detections.loc[:,['xmin', 'ymin', 'xmax', 'ymax']].to_numpy() - [50,50,0,0]) * scaling_factor
+
+            boxes = torch.from_numpy(boxes) 
+
+            labels = detections.object_class_name.to_list()
+
+            colors = detections.bbox_color.to_list()
+
+            ttf = '/usr/share/fonts/truetype/dejavu/DejaVuSansCondensed.ttf'
+
+            image_array_with_bboxes = draw_bounding_boxes(image_array, boxes, labels,colors, font=ttf, font_size=17).numpy()
+
+            image_array_with_bboxes = np.moveaxis(image_array_with_bboxes, 0, 2)
+
+            fig, ax = plt.subplots(figsize = figsize)
+
+            ax.imshow(image_array_with_bboxes)
+
+            ax.set_xticks([])
+
+            ax.set_yticks([])
+
+            file_name = directory_to_save_manuscript_plots / f'{file_path.stem}_bbox_detections.png'
+
+            plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
+            
+            plt.close()
+            
     return
 
 def crop_detections_for_display(path_to_detections_summary_table):
@@ -599,6 +671,56 @@ def generate_grid_view_of_megafauna_detected_by_faster_rcnn(path_to_detections_s
     
     fig, ax = plt.subplots(figsize=figsize)
         
+    ax.imshow(montage_of_detected_morphotypes)
+
+    ax.set_xticks([])
+
+    ax.set_yticks([])
+
+    file_name = directory_to_save_manuscript_plots / f'grid_view_of_detected_morphotypes.png'
+
+    plt.savefig(file_name, dpi=300, bbox_inches='tight', pad_inches=0)
+    
+    return
+
+
+
+def generate_grid_view_of_megafauna_from_pre_cropped_patches(path_to_cropped_patches, directory_to_save_manuscript_plots, figsize=(4,4)):
+    '''
+    Show a grid view of detected benthic mega fauna
+    
+    ''' 
+
+    morphotype_labels = [morphotype_directory.name for morphotype_directory in path_to_cropped_patches.iterdir()]
+
+    image_arrays_to_visualize = []
+
+    grid_dimension = len(morphotype_labels)
+
+    number_of_morphotypes = len(morphotype_labels)
+    
+
+    for morphotype_directory in sorted(path_to_cropped_patches.iterdir(), key=lambda x: (x.name)):
+
+        file_paths = sorted(morphotype_directory.iterdir(), key=lambda x: float(x.stem.split('_')[0]), reverse=False)
+
+        if morphotype_directory.name == 'Litter':
+
+            file_paths = [file_paths[i] for i in [0,1,2,3,5,6,9,10,11,12,14,15,16]]
+
+        selected_file_paths = file_paths[:grid_dimension]
+
+        selected_image_arrays = [imread(fp) for fp in selected_file_paths]
+
+        image_arrays_to_visualize.extend(selected_image_arrays)
+        
+        
+    montage_of_detected_morphotypes = montage(image_arrays_to_visualize, grid_shape=(number_of_morphotypes, grid_dimension), channel_axis=-1, padding_width=1, fill=[1,1,1])
+
+    Path(directory_to_save_manuscript_plots / f'morphotype_labels_for_detection_grid.txt').write_text('\n'.join(morphotype_labels))
+
+    fig, ax = plt.subplots(figsize=figsize)
+
     ax.imshow(montage_of_detected_morphotypes)
 
     ax.set_xticks([])
