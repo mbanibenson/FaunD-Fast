@@ -5,19 +5,7 @@ This repository contains the source codes used for semi-automatic detection of p
 
 ## Locate the anomalous superpixels
 
-This function operates dive-by-dive and performs the following operations:
-
-1. Randomly samples of a subset of images to reduce computation cost
-
-2. Segments the sampled images and crops out the superpixels into square image patches
-
-3. Trains a variational auto encoder model (VAE)
-
-4. Extracts the features of superpixels using the trained VAE
-
-5. Detects anomalous superpixels with unusual visual properties
-
-6. Visualize the superpixels in VAE embedded feature space (after PCA)
+This function operates dive-by-dive and performs the following operations: Randomly samples of a subset of images to reduce computation cost; Segments the sampled images and crops out the superpixels into square image patches; Trains a variational auto encoder model (VAE); Extracts the features of superpixels using the trained VAE; Detects anomalous superpixels with unusual visual properties; Visualize the superpixels in VAE embedded feature space (after PCA)
 
 ```
 python extract_superpixel_features_and_detect_outliers.py
@@ -46,9 +34,7 @@ After classification above, the pure fauna image patches will be located in data
 ```
 python copy_files_to_image_viewer.py
 ```
-2. Click on each image patch and annotate with a semantic morphotype class.
-
-3. After annotation, a csv file is created with details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and the annotated morphotype class name.
+2. Click on each image patch and annotate with a semantic morphotype class. After annotation, a csv file is created with details about all the annotated fauna patches. These include the parent image name, bounding box coordinates and the annotated morphotype class name.
 
 
 
@@ -89,6 +75,4 @@ python evaluate_trained_faster_rnn_model.py
 
 ## Estimate abundance, diversity and spatial distribution of morphotypes
 
-1. Each annotated patch is assigned the georeferenced coordinates of its parent image.
-
-2. These coordinates are used to map the spatial distribution of the detected fauna color coded by the species name.
+1. Each annotated patch is assigned the georeferenced coordinates of its parent image. These coordinates are used to map the spatial distribution of the detected fauna color coded by the species name.
