@@ -56,14 +56,20 @@ python train_mask_rcnn_object_detector.py
 python export_trained_mask_rcnn_to_saved_tensorflow_model.py
 ```
 
-4. Use the exported faster R-CNN object detector to detect objects from all your images.
-```
-python detect_objects_in_image.py
-```
 
-## Evaluate the performance of the trained object detector
+## Evaluate the performance of the trained Faster R-CNN object detector
 
 Evaluate the trained object detector on the ground truth annotations
 ```
 python evaluate_trained_faster_rnn_model.py
+```
+
+## Detect megabenthic fauna using the trained Faster R-CNN object detector
+```
+python detect_objects_in_image.py
+```
+
+## Crop out the detections into image patches
+```
+python crop_detections_for_verification.py
 ```
