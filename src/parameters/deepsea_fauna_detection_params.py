@@ -1,16 +1,21 @@
 from pathlib import Path
 
+#################################### DATASET DIRECTORY ###################################
+DIRECTORY_CONTAINING_IMAGE_DATASET = Path('/home/mbani/mardata/datasets/Pacific_dataset_for_fauna_detection/') #Must be hard coded. Organize images into dives/folders
+
+########################## ##################################### #########################
+
 ########################## Segmentation, VAE training and outlier detection #########################
 PROJECT_DIRECTORY = Path.cwd().parent
 
 UNSUPERVISED_LEARNING_DIR = PROJECT_DIRECTORY / 'data/unsupervised_outlier_detection/' #Relative to src directory
 
-DIVE_TO_PROCESS = 'example_dive'
+DIVE_TO_DETECT_ANOMALIES = 'example_dive'
 
-DIVE_WORKING_DIR = UNSUPERVISED_LEARNING_DIR / f'{DIVE_TO_PROCESS}'
-    
-DIVE_PARENT_IMAGES_DIR = DIVE_WORKING_DIR / 'parent_images'
+DIVE_PARENT_IMAGES_DIR = DIRECTORY_CONTAINING_IMAGE_DATASET / f'{DIVE_TO_DETECT_ANOMALIES}'
 
+DIVE_WORKING_DIR = UNSUPERVISED_LEARNING_DIR / f'{DIVE_TO_DETECT_ANOMALIES}'
+  
 DIVE_SAMPLED_BACKGROUND_IMAGES_DIR = DIVE_WORKING_DIR / 'background_images'
 
 DIVE_PICKLED_ITEMS_DIR = DIVE_WORKING_DIR / 'pickled_items'
