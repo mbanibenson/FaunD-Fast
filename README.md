@@ -8,7 +8,7 @@ This repository contains the source codes used for semi-automatic detection of p
 Clone the repository
 
 ```
-git clone 
+git clone https://git.geomar.de/benson-mbani/deepsea-fauna-detection.git
 ```
 
 Create folder structure where intermediate datasets will live
