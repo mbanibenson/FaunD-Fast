@@ -3,6 +3,20 @@ This repository contains the source codes used for semi-automatic detection of p
 
 <img src="https://cloud.geomar.de/s/naRyyAdqMsocW4r/preview">
 
+## Set up development environment
+
+Clone the repository
+
+```
+git clone 
+```
+
+Create folder structure where intermediate datasets will live
+
+```
+python create_directory_structure_for_intermediate_datasets.py
+```
+
 ## Locate the anomalous superpixels
 
 This function operates dive-by-dive and performs the following operations: Randomly samples of a subset of images to reduce computation cost; Segments the sampled images and crops out the superpixels into square image patches; Trains a variational auto encoder model (VAE); Extracts the features of superpixels using the trained VAE; Detects anomalous superpixels with unusual visual properties; Visualize the superpixels in VAE embedded feature space (after PCA)
