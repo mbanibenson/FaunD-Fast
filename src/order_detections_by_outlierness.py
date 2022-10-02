@@ -3,6 +3,6 @@ from visualization.sort_patches_by_outlier_scores import save_copies_of_detected
 
 if __name__ == '__main__':
     
-    data_directory = Path.cwd().parents[0] / 'data'
+    data_directory = Path.cwd().parents[0] / 'data/unsupervised_outlier_detection'
     
     save_copies_of_detected_patches_ordered_by_anomaly_score(data_directory)

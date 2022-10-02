@@ -10,7 +10,7 @@ PROJECT_DIRECTORY = Path.cwd().parent
 
 UNSUPERVISED_LEARNING_DIR = PROJECT_DIRECTORY / 'data/unsupervised_outlier_detection/' #Relative to src directory
 
-DIVE_TO_DETECT_ANOMALIES = 'example_dive'
+DIVE_TO_DETECT_ANOMALIES = 'SO268-1_021-1_OFOS-02'
 
 DIVE_PARENT_IMAGES_DIR = DIRECTORY_CONTAINING_IMAGE_DATASET / f'{DIVE_TO_DETECT_ANOMALIES}'
 
@@ -45,7 +45,7 @@ ANNOTATION_TOOL_DIR = PROJECT_DIRECTORY / 'custom_annotation_tool/'
 OBJECT_DETECTION_DIR = PROJECT_DIRECTORY / 'fauna_detection_with_tensorflow_object_detection_api'
 
 ############################### MANUSCRIPT VISUALIZATION ############################################
-EXAMPLE_DIVE = 'example_dive'
+EXAMPLE_DIVE = DIVE_TO_DETECT_ANOMALIES
 
 PATH_TO_EXAMPLE_DIVE = UNSUPERVISED_LEARNING_DIR / f'{EXAMPLE_DIVE}'
 

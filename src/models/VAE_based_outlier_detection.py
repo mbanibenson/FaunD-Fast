@@ -337,7 +337,7 @@ def extract_features_using_trained_VAE(trained_VAE, data_generator, total_number
 
 def detect_outliers_using_trained_VAE(trained_VAE, 
                                       train_generator,number_of_train_batches, 
-                                      directory_containing_test_images,
+                                      directory_containing_parent_images,
                                       directory_to_save_patches_of_positive_detections,
                                       batch_size=32, im_height=96, im_width=96, pca_object=None, contamination=0.01):
     '''
@@ -382,7 +382,7 @@ def detect_outliers_using_trained_VAE(trained_VAE,
     
     
     #Split the training set so we can process the in batches
-    list_of_file_paths_for_test_images = list(directory_containing_test_images.rglob('*.JPG'))
+    list_of_file_paths_for_test_images = list(directory_containing_parent_images.rglob('*.JPG'))
     
     number_of_splits = ceil(len(list_of_file_paths_for_test_images) / 16)
     
@@ -598,16 +598,16 @@ def train_model(directory_containing_training_images, batch_size, epochs, latent
     return trained_VAE_model, train_generator, number_of_train_batches, segmented_images, original_images, training_features, training_patches, pca_object
 
 
-def copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400):
+def copy_training_images_from_parent_images(directory_containing_parent_images, directory_containing_training_images, sample_size=400):
     '''
     Sample a number of images to be used to train the VAE
     
     '''
     directory_containing_training_images = Path(directory_containing_training_images)
     
-    directory_containing_test_images = Path(directory_containing_test_images)
+    directory_containing_parent_images = Path(directory_containing_parent_images)
     
-    file_paths = list(directory_containing_test_images.rglob('*.JPG'))
+    file_paths = list(directory_containing_parent_images.rglob('*.JPG'))
     
     random.shuffle(file_paths)
     
@@ -631,12 +631,12 @@ def copy_training_images_from_parent_images(directory_containing_test_images, di
 
 #     directory_containing_training_images = working_directory / 'background_images'
 
-#     directory_containing_test_images = working_directory / 'parent_images'
+#     directory_containing_parent_images = working_directory / 'parent_images'
 
 #     outputs_directory = working_directory / 'detection_outputs'  
     
 #     print('Copying training images ...')
-#     #copy_training_images_from_parent_images(directory_containing_test_images, directory_containing_training_images, sample_size=400)
+#     #copy_training_images_from_parent_images(directory_containing_parent_images, directory_containing_training_images, sample_size=400)
 #     print('Finished copying training images ...')
 
 #     shutil.rmtree(outputs_directory, ignore_errors=True)
@@ -679,7 +679,7 @@ def copy_training_images_from_parent_images(directory_containing_test_images, di
 #     print('Detecting outliers using trained VAE ...')
 #     #Detect outliers in test images
 #     detect_outliers_using_trained_VAE(trained_VAE_model, train_generator, 
-#                                       number_of_train_batches,directory_containing_test_images,
+#                                       number_of_train_batches,directory_containing_parent_images,
 #                                       directory_to_save_patches_of_positive_detections,
 #                                       batch_size=batch_size, im_height=target_image_height, 
 #                                       im_width=target_image_width, pca_object=None, 

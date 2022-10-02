@@ -41,11 +41,11 @@ def save_copies_of_detected_patches_ordered_by_anomaly_score(data_directory):
 
                 [executor.submit(shutil.copy2, source_file, dest_file) for source_file, dest_file in zip(anomalous_files, anomalous_files_sortable_names)]
 
-            anomalous_files_as_string = '\n'.join(anomalous_files)
+#             anomalous_files_as_string = '\n'.join(anomalous_files)
 
-            with open(dive/'outliers.txt', 'w') as file:
+#             with open(dive/'outliers.txt', 'w') as file:
 
-                file.write(anomalous_files_as_string)
+#                 file.write(anomalous_files_as_string)
 
         else:
 
