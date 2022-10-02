@@ -87,12 +87,20 @@ Use the Faster R-CNN model in inference mode to detect instances of megabenthic 
 python detect_objects_in_image.py
 ```
 
-## Crop out the detections into image patches
+## Crop out the detections into image patches for verification
 
-Crop out the detections to square image patches for purposes of visualization, inspection and validation
+Crop out the detections to square image patches for purposes of visualization, inspection and verification
 
 ```
 python crop_detections_for_verification.py
+```
+
+## Update detection summary table verification
+
+Update the entries of the megabenthic detections table after verification
+
+```
+python update_detection_summary_table_after_verification.py
 ```
 
 ## Generate manuscript figures
