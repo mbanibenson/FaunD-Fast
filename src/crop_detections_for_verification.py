@@ -21,6 +21,8 @@ def crop_detections_for_verification(path_to_detections_summary_table):
 
     detected_megafauna_df['patch_id'] = detected_megafauna_df.parent_image_name.str.cat(patch_ids.astype('str'), sep='#')
     
+    detected_megafauna_df['parent_image_path'] = detected_megafauna_df.parent_image_path.str.replace('deepsea-fauna-detection', 'deepsea-fauna-detection_30_sep_2022', regex=False) #TODO Replace this with correct paths
+    
     detected_megafauna_df.to_csv(path_to_detections_summary_table, index=False) #Save it t disk with patch ids appended
     
     morphotype_groupings = detected_megafauna_df.groupby('object_class_name')
