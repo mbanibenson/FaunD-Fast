@@ -1,4 +1,4 @@
-# Semi-automated deepsea fauna detection
+# Fauna Detection using Faster R-CNN (FaunD-Fast)
 This repository contains the source codes used for semi-automatic detection of potential benthic megafauna on the seafloor. The workflow is based on the processing of a sequence of underwater optical images, and operates on the observation that fauna occurs infrequently in most photos. On the basis of this observation, we implemented the deepsea fauna detection workflow as follows:
 
 <img src="https://cloud.geomar.de/s/naRyyAdqMsocW4r/preview">
