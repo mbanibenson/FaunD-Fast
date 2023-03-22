@@ -9,7 +9,7 @@ This repository contains the source codes used for semi-automatic detection of p
 Clone the repository
 
 ```
-git clone https://git.geomar.de/benson-mbani/faund-fast.git
+git clone https://github.com/mbanibenson/FaunD-Fast.git
 ```
 
 Create folder structure where intermediate datasets will live
